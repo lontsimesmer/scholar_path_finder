@@ -1,8 +1,11 @@
 import { ArrowRight, GraduationCap, Globe, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative min-h-screen flex items-center pt-20">
       {/* Background Image */}
@@ -18,29 +21,29 @@ const Hero = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary-foreground mb-8 animate-fade-in">
             <GraduationCap size={18} />
-            <span className="text-sm font-medium">Your Gateway to Global Education</span>
+            <span className="text-sm font-medium">{t.hero.badge}</span>
           </div>
 
           {/* Headline */}
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-primary-foreground mb-6 animate-slide-up">
-            Transform Your Academic Dreams Into 
-            <span className="block mt-2 text-accent">Global Reality</span>
+            {t.hero.title}
+            <span className="block mt-2 text-accent">{t.hero.titleHighlight}</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-            Expert guidance for students seeking world-class education abroad. From university selection to scholarship applications, we're with you every step of the way.
+            {t.hero.subtitle}
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-slide-up" style={{ animationDelay: "0.2s" }}>
             <Button variant="hero" size="xl" asChild>
               <a href="#contact">
-                Start Your Journey <ArrowRight size={20} />
+                {t.hero.ctaPrimary} <ArrowRight size={20} />
               </a>
             </Button>
             <Button variant="heroOutline" size="xl" asChild>
-              <a href="#services">Explore Services</a>
+              <a href="#services">{t.hero.ctaSecondary}</a>
             </Button>
           </div>
 
@@ -51,21 +54,21 @@ const Hero = () => {
                 <Globe className="text-accent" size={24} />
               </div>
               <p className="text-2xl md:text-3xl font-bold text-primary-foreground">50+</p>
-              <p className="text-sm text-primary-foreground/70">Countries</p>
+              <p className="text-sm text-primary-foreground/70">{t.hero.stats.countries}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20">
                 <GraduationCap className="text-accent" size={24} />
               </div>
               <p className="text-2xl md:text-3xl font-bold text-primary-foreground">500+</p>
-              <p className="text-sm text-primary-foreground/70">Students Placed</p>
+              <p className="text-sm text-primary-foreground/70">{t.hero.stats.studentsPlaced}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20">
                 <Award className="text-accent" size={24} />
               </div>
               <p className="text-2xl md:text-3xl font-bold text-primary-foreground">95%</p>
-              <p className="text-sm text-primary-foreground/70">Success Rate</p>
+              <p className="text-sm text-primary-foreground/70">{t.hero.stats.successRate}</p>
             </div>
           </div>
         </div>

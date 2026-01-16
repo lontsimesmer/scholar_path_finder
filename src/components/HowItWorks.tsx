@@ -1,47 +1,50 @@
 import { MessageCircle, Search, FileText, Plane } from "lucide-react";
-
-const steps = [
-  {
-    icon: MessageCircle,
-    step: "01",
-    title: "Initial Consultation",
-    description: "Share your goals, academic background, and preferences in a free consultation session with our experts.",
-  },
-  {
-    icon: Search,
-    step: "02",
-    title: "Profile Assessment",
-    description: "We analyze your profile to identify the best universities, programs, and scholarship opportunities for you.",
-  },
-  {
-    icon: FileText,
-    step: "03",
-    title: "Application Support",
-    description: "From document preparation to essay writing, we guide you through every step of the application process.",
-  },
-  {
-    icon: Plane,
-    step: "04",
-    title: "Visa & Departure",
-    description: "We assist with visa applications and pre-departure preparations to ensure a smooth transition abroad.",
-  },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const HowItWorks = () => {
+  const { t } = useLanguage();
+
+  const steps = [
+    {
+      icon: MessageCircle,
+      step: "01",
+      title: t.howItWorks.steps.consultation.title,
+      description: t.howItWorks.steps.consultation.description,
+    },
+    {
+      icon: Search,
+      step: "02",
+      title: t.howItWorks.steps.assessment.title,
+      description: t.howItWorks.steps.assessment.description,
+    },
+    {
+      icon: FileText,
+      step: "03",
+      title: t.howItWorks.steps.application.title,
+      description: t.howItWorks.steps.application.description,
+    },
+    {
+      icon: Plane,
+      step: "04",
+      title: t.howItWorks.steps.visa.title,
+      description: t.howItWorks.steps.visa.description,
+    },
+  ];
+
   return (
     <section id="how-it-works" className="section-padding bg-navy text-navy-foreground">
       <div className="section-container">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-sm font-semibold mb-4">
-            How It Works
+            {t.howItWorks.badge}
           </span>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-navy-foreground mb-6">
-            Your Journey to 
-            <span className="text-accent"> Success</span>
+            {t.howItWorks.title}
+            <span className="text-accent"> {t.howItWorks.titleHighlight}</span>
           </h2>
           <p className="text-lg text-navy-foreground/70">
-            Our proven process has helped hundreds of students achieve their dreams of studying abroad.
+            {t.howItWorks.subtitle}
           </p>
         </div>
 

@@ -1,25 +1,6 @@
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
-
-const footerLinks = {
-  services: [
-    { label: "University Selection", href: "#services" },
-    { label: "Scholarship Assistance", href: "#services" },
-    { label: "Visa Guidance", href: "#services" },
-    { label: "Internship Placement", href: "#services" },
-  ],
-  company: [
-    { label: "About Us", href: "#about" },
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Testimonials", href: "#testimonials" },
-    { label: "Contact", href: "#contact" },
-  ],
-  legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Policy", href: "#" },
-  ],
-};
 
 const socialLinks = [
   { icon: Facebook, href: "#", label: "Facebook" },
@@ -29,6 +10,28 @@ const socialLinks = [
 ];
 
 const Footer = () => {
+  const { t } = useLanguage();
+
+  const footerLinks = {
+    services: [
+      { label: t.footer.links.universitySelection, href: "#services" },
+      { label: t.footer.links.scholarshipAssistance, href: "#services" },
+      { label: t.footer.links.visaGuidance, href: "#services" },
+      { label: t.footer.links.internshipPlacement, href: "#services" },
+    ],
+    company: [
+      { label: t.footer.links.aboutUs, href: "#about" },
+      { label: t.footer.links.howItWorks, href: "#how-it-works" },
+      { label: t.footer.links.testimonials, href: "#testimonials" },
+      { label: t.footer.links.contact, href: "#contact" },
+    ],
+    legal: [
+      { label: t.footer.links.privacyPolicy, href: "#" },
+      { label: t.footer.links.termsOfService, href: "#" },
+      { label: t.footer.links.cookiePolicy, href: "#" },
+    ],
+  };
+
   return (
     <footer className="bg-navy text-navy-foreground">
       <div className="section-container py-16">
@@ -37,7 +40,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <img src={logo} alt="Power Prestation" className="h-10 mb-6 brightness-0 invert" />
             <p className="text-navy-foreground/70 mb-6 max-w-sm leading-relaxed">
-              Your trusted partner in academic and professional mobility. Helping students achieve their dreams of studying abroad since 2014.
+              {t.footer.description}
             </p>
             <div className="flex items-center gap-4">
               {socialLinks.map((social, index) => (
@@ -55,7 +58,7 @@ const Footer = () => {
 
           {/* Services */}
           <div>
-            <h4 className="font-semibold text-navy-foreground mb-4">Services</h4>
+            <h4 className="font-semibold text-navy-foreground mb-4">{t.footer.services}</h4>
             <ul className="space-y-3">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
@@ -72,7 +75,7 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold text-navy-foreground mb-4">Company</h4>
+            <h4 className="font-semibold text-navy-foreground mb-4">{t.footer.company}</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
@@ -89,16 +92,16 @@ const Footer = () => {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-semibold text-navy-foreground mb-4">Stay Updated</h4>
+            <h4 className="font-semibold text-navy-foreground mb-4">{t.footer.stayUpdated}</h4>
             <p className="text-navy-foreground/70 text-sm mb-4">
-              Subscribe to get the latest news and updates.
+              {t.footer.subscribeText}
             </p>
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-foreground/50" />
                 <input
                   type="email"
-                  placeholder="Your email"
+                  placeholder={t.footer.emailPlaceholder}
                   className="w-full h-10 pl-10 pr-4 rounded-lg bg-primary/10 border border-primary/20 text-navy-foreground placeholder:text-navy-foreground/50 focus:outline-none focus:border-primary"
                 />
               </div>
@@ -109,7 +112,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-navy-foreground/50 text-sm">
-            © {new Date().getFullYear()} Power Prestation. All rights reserved.
+            © {new Date().getFullYear()} Power Prestation. {t.footer.copyright}
           </p>
           <div className="flex gap-6">
             {footerLinks.legal.map((link, index) => (

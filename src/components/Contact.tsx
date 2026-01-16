@@ -5,31 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/LanguageContext";
 import consultationImage from "@/assets/consultation.jpg";
-
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "contact@powerprestation.com",
-    href: "mailto:contact@powerprestation.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+1 (234) 567-890",
-    href: "tel:+1234567890",
-  },
-  {
-    icon: MapPin,
-    label: "Office",
-    value: "123 Education Street, City",
-    href: "#",
-  },
-];
 
 const Contact = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,11 +18,32 @@ const Contact = () => {
     message: "",
   });
 
+  const contactInfo = [
+    {
+      icon: Mail,
+      label: t.contact.info.email,
+      value: "contact@powerprestation.com",
+      href: "mailto:contact@powerprestation.com",
+    },
+    {
+      icon: Phone,
+      label: t.contact.info.phone,
+      value: "+1 (234) 567-890",
+      href: "tel:+1234567890",
+    },
+    {
+      icon: MapPin,
+      label: t.contact.info.office,
+      value: "123 Education Street, City",
+      href: "#",
+    },
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you shortly.",
+      title: t.contact.form.successTitle,
+      description: t.contact.form.successMessage,
     });
     setFormData({ name: "", email: "", phone: "", message: "" });
   };
@@ -57,14 +59,14 @@ const Contact = () => {
           {/* Left Column */}
           <div>
             <span className="inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm font-semibold mb-4">
-              Contact Us
+              {t.contact.badge}
             </span>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Ready to Start Your 
-              <span className="text-primary"> Journey?</span>
+              {t.contact.title}
+              <span className="text-primary"> {t.contact.titleHighlight}</span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Get in touch with our team for a free consultation. We're here to answer your questions and help you take the first step toward your international education goals.
+              {t.contact.subtitle}
             </p>
 
             {/* Contact Info */}
@@ -100,26 +102,26 @@ const Contact = () => {
           <Card className="bg-card border-border/50 shadow-medium">
             <CardContent className="p-6 lg:p-8">
               <h3 className="font-display text-2xl font-bold text-foreground mb-6">
-                Send Us a Message
+                {t.contact.form.title}
               </h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
-                    Full Name
+                    {t.contact.form.name}
                   </label>
                   <Input
                     id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Your full name"
+                    placeholder={t.contact.form.namePlaceholder}
                     required
                     className="h-12"
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                    Email Address
+                    {t.contact.form.email}
                   </label>
                   <Input
                     id="email"
@@ -127,14 +129,14 @@ const Contact = () => {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="your@email.com"
+                    placeholder={t.contact.form.emailPlaceholder}
                     required
                     className="h-12"
                   />
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                    Phone Number
+                    {t.contact.form.phone}
                   </label>
                   <Input
                     id="phone"
@@ -142,26 +144,26 @@ const Contact = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+1 (234) 567-890"
+                    placeholder={t.contact.form.phonePlaceholder}
                     className="h-12"
                   />
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                    Your Message
+                    {t.contact.form.message}
                   </label>
                   <Textarea
                     id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Tell us about your academic goals..."
+                    placeholder={t.contact.form.messagePlaceholder}
                     required
                     rows={5}
                   />
                 </div>
                 <Button type="submit" size="lg" className="w-full">
-                  Send Message <Send size={18} />
+                  {t.contact.form.submit} <Send size={18} />
                 </Button>
               </form>
             </CardContent>
