@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
-
-const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#about", label: "About Us" },
-  { href: "#how-it-works", label: "How It Works" },
-  { href: "#testimonials", label: "Testimonials" },
-  { href: "#faq", label: "FAQ" },
-];
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { href: "#services", label: t.nav.services },
+    { href: "#about", label: t.nav.aboutUs },
+    { href: "#how-it-works", label: t.nav.howItWorks },
+    { href: "#testimonials", label: t.nav.testimonials },
+    { href: "#faq", label: t.nav.faq },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border/50">
@@ -36,22 +39,26 @@ const Header = () => {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <LanguageSwitcher />
             <Button variant="outline" size="lg" asChild>
-              <a href="#contact">Contact Us</a>
+              <a href="#contact">{t.nav.contactUs}</a>
             </Button>
             <Button size="lg" asChild>
-              <a href="#contact">Get Started</a>
+              <a href="#contact">{t.nav.getStarted}</a>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2 text-foreground"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="lg:hidden flex items-center gap-2">
+            <LanguageSwitcher />
+            <button
+              className="p-2 text-foreground"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -70,10 +77,10 @@ const Header = () => {
               ))}
               <div className="flex flex-col gap-3 pt-4">
                 <Button variant="outline" asChild>
-                  <a href="#contact">Contact Us</a>
+                  <a href="#contact">{t.nav.contactUs}</a>
                 </Button>
                 <Button asChild>
-                  <a href="#contact">Get Started</a>
+                  <a href="#contact">{t.nav.getStarted}</a>
                 </Button>
               </div>
             </nav>
