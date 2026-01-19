@@ -53,14 +53,14 @@ const Hero = () => {
               <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20">
                 <Globe className="text-accent" size={24} />
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-primary-foreground">50+</p>
+              <p className="text-2xl md:text-3xl font-bold text-primary-foreground">05+</p>
               <p className="text-sm text-primary-foreground/70">{t.hero.stats.countries}</p>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20">
                 <GraduationCap className="text-accent" size={24} />
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-primary-foreground">500+</p>
+              <p className="text-2xl md:text-3xl font-bold text-primary-foreground">250+</p>
               <p className="text-sm text-primary-foreground/70">{t.hero.stats.studentsPlaced}</p>
             </div>
             <div className="text-center">

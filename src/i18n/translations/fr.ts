@@ -19,7 +19,7 @@ export const fr = {
     ctaPrimary: "Commencer Votre Parcours",
     ctaSecondary: "Explorer Nos Services",
     stats: {
-      countries: "Pays",
+      countries: "Années",
       studentsPlaced: "Étudiants Placés",
       successRate: "Taux de Réussite",
     },
@@ -64,8 +64,8 @@ export const fr = {
     badge: "À Propos",
     title: "Votre Partenaire de Confiance pour",
     titleHighlight: "l'Éducation Mondiale",
-    description1: "Power Prestation est une agence de conseil en mobilité académique et professionnelle dédiée à transformer vos aspirations éducatives en réalité. Nous croyons que chaque étudiant mérite l'accès à une éducation de classe mondiale, quel que soit son parcours.",
-    description2: "Notre vision est d'accompagner les étudiants tout au long de leurs projets académiques et professionnels à l'étranger, en fournissant un accompagnement complet qui ouvre les portes aux opportunités dans le monde entier.",
+    description1: "Power Prestation est une agence de conseil spécialisée dans : la mobilité académique et professionnelle, les conseils universitaires et d'études à l'étranger, les conseils en bourses et stages adaptés à votre profil.",
+    description2: "Notre vision est d'accompagner les étudiants et chercheurs tout au long de leurs parcours académiques et professionnels à l'étranger, en fournissant un accompagnement complet qui ouvre les portes aux opportunités dans le monde entier.",
     highlights: [
       "Accompagnement personnalisé adapté à votre profil unique",
       "Équipe d'experts avec une expérience internationale en éducation",
@@ -137,15 +137,15 @@ export const fr = {
     items: [
       {
         question: "Combien coûtent vos services?",
-        answer: "Nous proposons différents forfaits adaptés à différents besoins et budgets. Les consultations initiales sont gratuites, et nous fournirons une tarification transparente basée sur les services dont vous avez besoin. Contactez-nous pour un devis personnalisé.",
+        answer: "Nous proposons différents forfaits adaptés à différents besoins et budgets. La consultation initiale coûte 25$, et nous fournirons une tarification transparente basée sur les services dont vous avez besoin. Contactez-nous pour un devis personnalisé.",
       },
       {
         question: "Dans quels pays aidez-vous les étudiants à postuler?",
-        answer: "Nous aidons les étudiants à postuler dans plus de 50 pays dans le monde, y compris des destinations populaires comme la France, l'Allemagne, le Canada, les États-Unis, le Royaume-Uni, l'Australie et bien d'autres. Notre expertise s'étend à travers l'Europe, l'Amérique du Nord et au-delà.",
+        answer: "Nous aidons les étudiants à postuler dans plusieurs pays du monde, y compris des destinations populaires comme la France, l'Allemagne, le Canada, les États-Unis, le Royaume-Uni, l'Australie et bien d'autres. Notre expertise s'étend à travers l'Europe, l'Amérique du Nord et au-delà.",
       },
       {
         question: "Combien de temps prend le processus de candidature?",
-        answer: "Le délai varie en fonction de votre pays cible et de votre programme. En général, nous recommandons de commencer 12 à 18 mois avant votre date de début prévue. Cependant, nous pouvons également aider avec les candidatures de dernière minute lorsque c'est possible.",
+        answer: "Le processus de candidature prend généralement 6 à 12 mois en fonction de votre pays cible et de votre programme. Nous recommandons de commencer tôt pour assurer la meilleure préparation et maximiser vos chances de succès.",
       },
       {
         question: "Garantissez-vous l'admission?",
