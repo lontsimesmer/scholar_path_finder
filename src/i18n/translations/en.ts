@@ -19,7 +19,7 @@ export const en = {
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Explore Services",
     stats: {
-      countries: "Countries",
+      countries: "Years",
       studentsPlaced: "Students Placed",
       successRate: "Success Rate",
     },
@@ -64,8 +64,8 @@ export const en = {
     badge: "About Us",
     title: "Your Trusted Partner in",
     titleHighlight: "Global Education",
-    description1: "Power Prestation is an academic and professional mobility consulting agency dedicated to transforming your educational aspirations into reality. We believe every student deserves access to world-class education, regardless of their background.",
-    description2: "Our vision is to support scholars throughout their academic and professional projects abroad, providing comprehensive guidance that opens doors to opportunities worldwide.",
+    description1: "Power Prestation is a consulting agency specializing in: Academic and professional mobility, University and study abroad advice, Scholarship and internship advice tailored to your profile.",
+    description2: "Our vision is to support students and researchers throughout their academic and professional journeys abroad, providing comprehensive guidance that opens doors to opportunities worldwide.",
     highlights: [
       "Personalized guidance tailored to your unique profile",
       "Expert team with international education experience",
@@ -137,15 +137,15 @@ export const en = {
     items: [
       {
         question: "How much do your services cost?",
-        answer: "We offer various packages tailored to different needs and budgets. Initial consultations are free, and we'll provide transparent pricing based on the services you require. Contact us for a personalized quote.",
+        answer: "We offer various packages tailored to different needs and budgets. The initial consultation costs $25, and we'll provide transparent pricing based on the services you require. Contact us for a personalized quote.",
       },
       {
         question: "Which countries do you help students apply to?",
-        answer: "We assist students in applying to universities in over 50 countries worldwide, including popular destinations like France, Germany, Canada, USA, UK, Australia, and many more. Our expertise spans across Europe, North America, and beyond.",
+        answer: "We assist students in applying to universities in multiple countries worldwide, including popular destinations like France, Germany, Canada, USA, UK, Australia, and many more. Our expertise spans across Europe, North America, and beyond.",
       },
       {
         question: "How long does the application process take?",
-        answer: "The timeline varies depending on your target country and program. Generally, we recommend starting 12-18 months before your intended start date. However, we can also assist with last-minute applications when possible.",
+        answer: "The application process typically takes 6-12 months depending on your target country and program. We recommend starting early to ensure the best preparation and maximize your chances of success.",
       },
       {
         question: "Do you guarantee admission?",

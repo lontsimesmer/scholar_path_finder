@@ -20,7 +20,7 @@ const About = () => {
               />
               {/* Floating Card */}
               <div className="absolute -bottom-6 -right-6 md:bottom-8 md:right-8 bg-card p-4 md:p-6 rounded-xl shadow-medium border border-border/50 max-w-[200px]">
-                <p className="text-3xl md:text-4xl font-bold text-primary mb-1">10+</p>
+                <p className="text-3xl md:text-4xl font-bold text-primary mb-1">05+</p>
                 <p className="text-sm text-muted-foreground">{t.about.yearsOfExcellence}</p>
               </div>
             </div>

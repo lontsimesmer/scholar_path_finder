@@ -1,6 +1,6 @@
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import logo from "@/assets/logo.png";
+import footerLogo from "@/assets/footer-logo.png";
 
 const socialLinks = [
   { icon: Facebook, href: "#", label: "Facebook" },
@@ -38,7 +38,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <img src={logo} alt="Power Prestation" className="h-10 mb-6 brightness-0 invert" />
+            <img src={footerLogo} alt="Power Prestation" className="h-16 mb-6" />
             <p className="text-navy-foreground/70 mb-6 max-w-sm leading-relaxed">
               {t.footer.description}
             </p>

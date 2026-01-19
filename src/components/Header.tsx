@@ -22,7 +22,7 @@ const Header = () => {
       <div className="section-container">
         <div className="flex items-center justify-between h-16 md:h-20">
           <a href="#" className="flex items-center">
-            <img src={logo} alt="Power Prestation" className="h-10 md:h-12 w-auto" />
+            <img src={logo} alt="Power Prestation" className="h-14 md:h-16 w-auto" />
           </a>
 
           {/* Desktop Navigation */}
@@ -42,9 +42,6 @@ const Header = () => {
             <LanguageSwitcher />
             <Button variant="outline" size="lg" asChild>
               <a href="#contact">{t.nav.contactUs}</a>
-            </Button>
-            <Button size="lg" asChild>
-              <a href="#contact">{t.nav.getStarted}</a>
             </Button>
           </div>
 
@@ -78,9 +75,6 @@ const Header = () => {
               <div className="flex flex-col gap-3 pt-4">
                 <Button variant="outline" asChild>
                   <a href="#contact">{t.nav.contactUs}</a>
-                </Button>
-                <Button asChild>
-                  <a href="#contact">{t.nav.getStarted}</a>
                 </Button>
               </div>
             </nav>

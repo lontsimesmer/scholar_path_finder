@@ -28,8 +28,8 @@ const Contact = () => {
     {
       icon: Phone,
       label: t.contact.info.phone,
-      value: "+1 (234) 567-890",
-      href: "tel:+1234567890",
+      value: "+(237)674819411",
+      href: "tel:+237674819411",
     },
     {
       icon: MapPin,
