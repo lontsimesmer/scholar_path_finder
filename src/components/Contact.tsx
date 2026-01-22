@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import consultationImage from "@/assets/consultation.jpg";
 
 const Contact = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,13 +41,39 @@ const Contact = () => {
     },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: t.contact.form.successTitle,
-      description: t.contact.form.successMessage,
-    });
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("submit-lead", {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || undefined,
+          message: formData.message,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      toast({
+        title: t.contact.form.successTitle,
+        description: t.contact.form.successMessage,
+      });
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error: any) {
+      console.error("Error submitting lead:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit your information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -162,8 +190,17 @@ const Contact = () => {
                     rows={5}
                   />
                 </div>
-                <Button type="submit" size="lg" className="w-full">
-                  {t.contact.form.submit} <Send size={18} />
+                <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="animate-spin" size={18} />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      {t.contact.form.submit} <Send size={18} />
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
