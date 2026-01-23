@@ -108,11 +108,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     // Calculate first follow-up time (24 hours from now)
     const nextFollowUp = new Date();
     nextFollowUp.setHours(nextFollowUp.getHours() + 24);
