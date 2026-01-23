@@ -14,6 +14,14 @@ interface LeadRequest {
   message: string;
 }
 
+// Rate limiting: max 5 submissions per email per hour, max 10 per IP per hour
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const MAX_SUBMISSIONS_PER_EMAIL = 5;
+const MAX_SUBMISSIONS_PER_IP = 10;
+
+// Simple email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,11 +30,81 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { name, email, phone, message }: LeadRequest = await req.json();
 
-    // Validate input
+    // Validate required fields
     if (!name || !email || !message) {
       return new Response(
         JSON.stringify({ error: "Name, email, and message are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate input lengths to prevent abuse
+    if (name.length > 100) {
+      return new Response(
+        JSON.stringify({ error: "Name must be less than 100 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (email.length > 255 || !EMAIL_REGEX.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (phone && phone.length > 20) {
+      return new Response(
+        JSON.stringify({ error: "Phone number must be less than 20 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (message.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: "Message must be less than 2000 characters" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Initialize Supabase client for rate limiting check
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Rate limiting: Check recent submissions from this email
+    const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+    
+    const { count: emailCount, error: emailCountError } = await supabase
+      .from("leads")
+      .select("*", { count: "exact", head: true })
+      .eq("email", email.toLowerCase().trim())
+      .gte("created_at", oneHourAgo);
+
+    if (emailCountError) {
+      console.error("Error checking rate limit:", emailCountError);
+    } else if (emailCount !== null && emailCount >= MAX_SUBMISSIONS_PER_EMAIL) {
+      return new Response(
+        JSON.stringify({ error: "Too many submissions. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Get client IP for additional rate limiting
+    const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("cf-connecting-ip") || 
+                     "unknown";
+
+    // Check total submissions in the last hour (global rate limit)
+    const { count: totalCount, error: totalCountError } = await supabase
+      .from("leads")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", oneHourAgo);
+
+    if (totalCountError) {
+      console.error("Error checking global rate limit:", totalCountError);
+    } else if (totalCount !== null && totalCount >= 100) {
+      // Global rate limit: max 100 submissions per hour across all users
+      return new Response(
+        JSON.stringify({ error: "Service is busy. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
