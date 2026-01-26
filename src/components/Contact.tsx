@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import consultationImage from "@/assets/consultation.jpg";
 const Contact = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -64,6 +66,11 @@ const Contact = () => {
         description: t.contact.form.successMessage,
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
+      
+      // Redirect to checkout page with leadId
+      if (data?.leadId) {
+        navigate(`/checkout?leadId=${data.leadId}`);
+      }
     } catch (error: any) {
       console.error("Error submitting lead:", error);
       toast({
