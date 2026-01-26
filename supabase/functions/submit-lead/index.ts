@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { generateWelcomeEmail } from "./email-templates.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -136,79 +137,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send welcome email
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-    const checkoutUrl = `${req.headers.get("origin")}/checkout?leadId=${lead.id}`;
+    const origin = req.headers.get("origin") || "https://power-prestation.lovable.app";
+    const checkoutUrl = `${origin}/checkout?leadId=${lead.id}`;
 
     await resend.emails.send({
       from: "Power Prestation <onboarding@resend.dev>",
       to: [email],
-      subject: "Welcome to Power Prestation - Your Academic Journey Starts Here!",
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #5B7FD3, #4A6BC9); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-            .content { background: #f9f9f9; padding: 30px; }
-            .service-card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #5B7FD3; }
-            .pricing { background: #5B7FD3; color: white; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
-            .cta-button { display: inline-block; background: #F59E0B; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
-            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>Welcome to Power Prestation!</h1>
-              <p>Your Academic & Professional Mobility Partner</p>
-            </div>
-            <div class="content">
-              <p>Dear ${name},</p>
-              <p>Thank you for reaching out to us! We're excited to help you achieve your academic and professional goals abroad.</p>
-              
-              <h2>Our Services</h2>
-              <div class="service-card">
-                <h3>🎓 University & Study Abroad Advice</h3>
-                <p>Personalized guidance for selecting the right universities based on your profile and aspirations.</p>
-              </div>
-              <div class="service-card">
-                <h3>💰 Scholarship & Internship Guidance</h3>
-                <p>Expert advice on finding and applying for scholarships and internships tailored to your profile.</p>
-              </div>
-              <div class="service-card">
-                <h3>📋 Application Assistance</h3>
-                <p>Complete support throughout your application process from start to finish.</p>
-              </div>
-              <div class="service-card">
-                <h3>✈️ Visa & Travel Support</h3>
-                <p>Guidance on visa applications and travel preparations for your journey abroad.</p>
-              </div>
-              
-              <div class="pricing">
-                <h2>Initial Consultation</h2>
-                <h1 style="font-size: 48px; margin: 10px 0;">$25</h1>
-                <p>One-time consultation fee to start your journey</p>
-              </div>
-              
-              <p style="text-align: center;">
-                <a href="${checkoutUrl}" class="cta-button">Book Your Consultation Now</a>
-              </p>
-              
-              <p>After payment, you'll be connected with a professional consultant for a virtual session to discuss your goals and create your personalized roadmap.</p>
-              
-              <p>Have questions? Reply to this email or call us at +(237)674819411</p>
-              
-              <p>Best regards,<br><strong>The Power Prestation Team</strong></p>
-            </div>
-            <div class="footer">
-              <p>© 2024 Power Prestation. All rights reserved.</p>
-              <p>123 Education Street, City</p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `,
+      subject: "Welcome to Power Prestation - Your Academic Journey Starts Here! 🎓",
+      html: generateWelcomeEmail(name, checkoutUrl),
     });
 
     // Send SMS if phone provided
