@@ -21,6 +21,7 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
+  const [isSandbox, setIsSandbox] = useState(false);
 
   useEffect(() => {
     const id = searchParams.get("leadId");
@@ -43,6 +44,9 @@ const Checkout = () => {
         setIsLoading(false);
         return;
       }
+
+      // Set sandbox mode indicator
+      setIsSandbox(data.isSandbox || false);
 
       // Load PayPal SDK
       const script = document.createElement("script");
@@ -164,6 +168,20 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Sandbox Mode Banner */}
+        {isSandbox && (
+          <div className="mb-6 bg-accent/20 border border-accent/50 rounded-lg p-4 text-center">
+            <div className="flex items-center justify-center gap-2 text-accent-foreground">
+              <Shield className="w-5 h-5 text-accent" />
+              <span className="font-semibold">Test Mode Active</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              PayPal is in sandbox mode. Use test credentials to simulate payments.
+              No real transactions will be processed.
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <img src={logoImage} alt="Power Prestation" className="h-16 mx-auto mb-4" />
