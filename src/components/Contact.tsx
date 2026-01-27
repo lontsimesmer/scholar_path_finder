@@ -66,11 +66,6 @@ const Contact = () => {
         description: t.contact.form.successMessage,
       });
       setFormData({ name: "", email: "", phone: "", message: "" });
-      
-      // Redirect to checkout page with leadId
-      if (data?.leadId) {
-        navigate(`/checkout?leadId=${data.leadId}`);
-      }
     } catch (error: any) {
       console.error("Error submitting lead:", error);
       toast({

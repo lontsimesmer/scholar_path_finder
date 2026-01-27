@@ -135,7 +135,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send welcome email
+    // Send welcome email to user
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
     const origin = req.headers.get("origin") || "https://power-prestation.lovable.app";
     const checkoutUrl = `${origin}/checkout?leadId=${lead.id}`;
@@ -145,6 +145,23 @@ const handler = async (req: Request): Promise<Response> => {
       to: [email],
       subject: "Welcome to Power Prestation - Your Academic Journey Starts Here! 🎓",
       html: generateWelcomeEmail(name, checkoutUrl),
+    });
+
+    // Send notification email to admin about new lead
+    await resend.emails.send({
+      from: "Power Prestation <onboarding@resend.dev>",
+      to: ["onboarding@resend.dev"],
+      subject: `New Lead: ${name}`,
+      html: `
+        <h2>New Lead Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+        <hr>
+        <p><a href="${checkoutUrl}">View Checkout Link</a></p>
+      `,
     });
 
     // Send SMS if phone provided
