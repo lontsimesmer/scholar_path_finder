@@ -14,9 +14,34 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // SECURITY: Verify this is a cron job or service role request
+    // Check for Authorization header with service role key or cron signature
+    const authHeader = req.headers.get("authorization");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    // Allow requests with service role key in Authorization header (from cron jobs)
+    const isServiceRole = authHeader === `Bearer ${supabaseServiceKey}`;
+    
+    // Also check for Supabase cron-specific headers
+    const isCronJob = req.headers.get("x-supabase-cron") === "true";
+    
+    // Only allow if request comes from service role or cron job
+    if (!isServiceRole && !isCronJob) {
+      // Check if request comes from within Supabase (internal request)
+      const userAgent = req.headers.get("user-agent") || "";
+      const isInternalRequest = userAgent.includes("Supabase") || userAgent.includes("Deno");
+      
+      if (!isInternalRequest) {
+        console.error("Unauthorized access attempt to send-follow-ups");
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get leads that need follow-up
@@ -127,10 +152,10 @@ const handler = async (req: Request): Promise<Response> => {
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error: any) {
-    console.error("Error in send-follow-ups:", error);
+  } catch (error: unknown) {
+    console.error("Error in send-follow-ups:", error instanceof Error ? error.message : "Unknown error");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An error occurred" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

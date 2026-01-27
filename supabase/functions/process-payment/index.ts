@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// UUID validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// PayPal Order ID format validation (alphanumeric, typically 17 chars)
+const PAYPAL_ORDER_REGEX = /^[A-Z0-9]{17}$/;
+
 interface PaymentRequest {
   leadId: string;
   paypalOrderId: string;
@@ -29,6 +35,86 @@ interface PaymentRequest {
   };
 }
 
+interface PayPalOrderResponse {
+  id: string;
+  status: string;
+  purchase_units: Array<{
+    amount: {
+      value: string;
+      currency_code: string;
+    };
+  }>;
+  payer?: {
+    email_address: string;
+  };
+}
+
+// Get PayPal access token for API calls
+async function getPayPalAccessToken(): Promise<string> {
+  const paypalMode = Deno.env.get("PAYPAL_MODE") || "sandbox";
+  const isSandbox = paypalMode.toLowerCase() === "sandbox";
+  
+  const clientId = isSandbox 
+    ? Deno.env.get("PAYPAL_CLIENT_ID_SANDBOX") 
+    : Deno.env.get("PAYPAL_CLIENT_ID");
+  const clientSecret = isSandbox 
+    ? Deno.env.get("PAYPAL_CLIENT_SECRET_SANDBOX") 
+    : Deno.env.get("PAYPAL_CLIENT_SECRET");
+
+  if (!clientId || !clientSecret) {
+    throw new Error("PayPal credentials not configured");
+  }
+
+  const baseUrl = isSandbox 
+    ? "https://api-m.sandbox.paypal.com" 
+    : "https://api-m.paypal.com";
+
+  const response = await fetch(`${baseUrl}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+    },
+    body: "grant_type=client_credentials",
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("PayPal auth failed:", errorText);
+    throw new Error("Failed to authenticate with PayPal");
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
+
+// Verify PayPal order with PayPal API
+async function verifyPayPalOrder(orderId: string): Promise<PayPalOrderResponse> {
+  const accessToken = await getPayPalAccessToken();
+  
+  const paypalMode = Deno.env.get("PAYPAL_MODE") || "sandbox";
+  const isSandbox = paypalMode.toLowerCase() === "sandbox";
+  const baseUrl = isSandbox 
+    ? "https://api-m.sandbox.paypal.com" 
+    : "https://api-m.paypal.com";
+
+  const response = await fetch(`${baseUrl}/v2/checkout/orders/${orderId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("PayPal order verification failed:", errorText);
+    throw new Error("Failed to verify PayPal order");
+  }
+
+  return await response.json();
+}
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -36,6 +122,61 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { leadId, paypalOrderId, paymentDetails }: PaymentRequest = await req.json();
+
+    // Validate leadId format (UUID)
+    if (!leadId || !UUID_REGEX.test(leadId)) {
+      console.error("Invalid leadId format:", leadId);
+      return new Response(
+        JSON.stringify({ error: "Invalid lead identifier" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate paypalOrderId format
+    if (!paypalOrderId || typeof paypalOrderId !== "string" || paypalOrderId.length < 10) {
+      console.error("Invalid paypalOrderId format:", paypalOrderId);
+      return new Response(
+        JSON.stringify({ error: "Invalid payment order identifier" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // SERVER-SIDE PAYPAL VERIFICATION - Critical security check
+    console.log("Verifying PayPal order with PayPal API:", paypalOrderId);
+    let verifiedOrder: PayPalOrderResponse;
+    try {
+      verifiedOrder = await verifyPayPalOrder(paypalOrderId);
+    } catch (verifyError) {
+      console.error("PayPal verification error:", verifyError);
+      return new Response(
+        JSON.stringify({ error: "Payment verification failed. Please contact support." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify order status is COMPLETED or APPROVED
+    if (verifiedOrder.status !== "COMPLETED" && verifiedOrder.status !== "APPROVED") {
+      console.error("PayPal order not completed. Status:", verifiedOrder.status);
+      return new Response(
+        JSON.stringify({ error: "Payment not completed" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify payment amount (expected $25.00 USD)
+    const expectedAmount = "25.00";
+    const expectedCurrency = "USD";
+    const orderAmount = verifiedOrder.purchase_units?.[0]?.amount;
+    
+    if (!orderAmount || orderAmount.value !== expectedAmount || orderAmount.currency_code !== expectedCurrency) {
+      console.error("Payment amount mismatch. Expected:", expectedAmount, expectedCurrency, "Got:", orderAmount);
+      return new Response(
+        JSON.stringify({ error: "Payment amount verification failed" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("PayPal order verified successfully:", verifiedOrder.id, verifiedOrder.status);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -50,19 +191,29 @@ const handler = async (req: Request): Promise<Response> => {
       .single();
 
     if (leadError || !lead) {
+      console.error("Lead not found:", leadId);
       return new Response(
         JSON.stringify({ error: "Lead not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Update lead status
+    // Check for duplicate payment (idempotency)
+    if (lead.payment_status === "paid" && lead.payment_id) {
+      console.log("Payment already processed for lead:", leadId);
+      return new Response(
+        JSON.stringify({ success: true, message: "Payment already processed" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Update lead status with verified payment info
     const { error: updateError } = await supabase
       .from("leads")
       .update({
         status: "paid",
         payment_status: "paid",
-        payment_id: paypalOrderId,
+        payment_id: verifiedOrder.id, // Use verified order ID from PayPal
         next_follow_up_at: null, // Stop follow-ups
       })
       .eq("id", leadId);
@@ -77,8 +228,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send receipt email
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-    const amount = paymentDetails.purchase_units?.[0]?.amount?.value || "25.00";
-    const currency = paymentDetails.purchase_units?.[0]?.amount?.currency_code || "USD";
+    const amount = verifiedOrder.purchase_units?.[0]?.amount?.value || "25.00";
+    const currency = verifiedOrder.purchase_units?.[0]?.amount?.currency_code || "USD";
 
     await resend.emails.send({
       from: "Power Prestation <onboarding@resend.dev>",
@@ -114,7 +265,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <h2 style="margin-top: 0;">Payment Receipt</h2>
                 <div class="receipt-row">
                   <span>Transaction ID:</span>
-                  <span>${paypalOrderId}</span>
+                  <span>${verifiedOrder.id}</span>
                 </div>
                 <div class="receipt-row">
                   <span>Date:</span>
@@ -193,10 +344,10 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ success: true, message: "Payment processed successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error: any) {
-    console.error("Error in process-payment:", error);
+  } catch (error: unknown) {
+    console.error("Error in process-payment:", error instanceof Error ? error.message : "Unknown error");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An error occurred processing your payment" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
