@@ -3,150 +3,25 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Check, CreditCard, Shield, Clock, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/logo.png";
-
-declare global {
-  interface Window {
-    paypal?: any;
-  }
-}
+import { PaymentMethodSelector, PaymentMethod } from "@/components/checkout/PaymentMethodSelector";
+import { PayPalPayment } from "@/components/checkout/PayPalPayment";
+import { MobileMoneyPayment } from "@/components/checkout/MobileMoneyPayment";
+import { BankTransferPayment } from "@/components/checkout/BankTransferPayment";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [leadId, setLeadId] = useState<string | null>(null);
-  const [isSandbox, setIsSandbox] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
 
   useEffect(() => {
     const id = searchParams.get("leadId");
     setLeadId(id);
-    loadPayPalScript();
   }, [searchParams]);
 
-  const loadPayPalScript = async () => {
-    try {
-      // Get PayPal client ID from edge function
-      const { data, error } = await supabase.functions.invoke("get-paypal-client-id");
-      
-      if (error || !data?.clientId) {
-        console.error("Failed to get PayPal client ID:", error);
-        toast({
-          title: "Error",
-          description: "Payment system unavailable. Please try again later.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Set sandbox mode indicator
-      setIsSandbox(data.isSandbox || false);
-
-      // Load PayPal SDK
-      const script = document.createElement("script");
-      script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=USD`;
-      script.async = true;
-      script.onload = () => {
-        setPaypalLoaded(true);
-        setIsLoading(false);
-        initializePayPalButtons();
-      };
-      script.onerror = () => {
-        toast({
-          title: "Error",
-          description: "Failed to load payment system.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-      };
-      document.body.appendChild(script);
-    } catch (err) {
-      console.error("Error loading PayPal:", err);
-      setIsLoading(false);
-    }
-  };
-
-  const initializePayPalButtons = () => {
-    if (!window.paypal) return;
-
-    window.paypal
-      .Buttons({
-        style: {
-          layout: "vertical",
-          color: "gold",
-          shape: "rect",
-          label: "pay",
-        },
-        createOrder: (_data: any, actions: any) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                description: "Power Prestation - Initial Consultation",
-                amount: {
-                  value: "25.00",
-                  currency_code: "USD",
-                },
-              },
-            ],
-          });
-        },
-        onApprove: async (_data: any, actions: any) => {
-          setIsProcessing(true);
-          try {
-            const details = await actions.order.capture();
-            
-            // Process payment on backend
-            const { error } = await supabase.functions.invoke("process-payment", {
-              body: {
-                leadId: leadId,
-                paypalOrderId: details.id,
-                paymentDetails: details,
-              },
-            });
-
-            if (error) {
-              throw new Error(error.message);
-            }
-
-            toast({
-              title: "Payment Successful!",
-              description: "Check your email for confirmation and next steps.",
-            });
-
-            navigate("/payment-success");
-          } catch (err: any) {
-            console.error("Payment processing error:", err);
-            toast({
-              title: "Payment Error",
-              description: err.message || "Failed to process payment. Please try again.",
-              variant: "destructive",
-            });
-          } finally {
-            setIsProcessing(false);
-          }
-        },
-        onError: (err: any) => {
-          console.error("PayPal error:", err);
-          toast({
-            title: "Payment Error",
-            description: "Something went wrong. Please try again.",
-            variant: "destructive",
-          });
-        },
-        onCancel: () => {
-          toast({
-            title: "Payment Cancelled",
-            description: "You cancelled the payment. Feel free to try again when ready.",
-          });
-        },
-      })
-      .render("#paypal-button-container");
+  const handlePaymentSuccess = () => {
+    navigate("/payment-success");
   };
 
   const benefits = [
@@ -165,23 +40,22 @@ const Checkout = () => {
     "Q&A session with our expert",
   ];
 
+  const renderPaymentForm = () => {
+    switch (paymentMethod) {
+      case "paypal":
+        return <PayPalPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
+      case "mobile_money":
+        return <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
+      case "bank_transfer":
+        return <BankTransferPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Sandbox Mode Banner */}
-        {isSandbox && (
-          <div className="mb-6 bg-accent/20 border border-accent/50 rounded-lg p-4 text-center">
-            <div className="flex items-center justify-center gap-2 text-accent-foreground">
-              <Shield className="w-5 h-5 text-accent" />
-              <span className="font-semibold">Test Mode Active</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              PayPal is in sandbox mode. Use test credentials to simulate payments.
-              No real transactions will be processed.
-            </p>
-          </div>
-        )}
-
         {/* Header */}
         <div className="text-center mb-8">
           <img src={logoImage} alt="Power Prestation" className="h-16 mx-auto mb-4" />
@@ -249,34 +123,24 @@ const Checkout = () => {
                 <p className="text-sm text-muted-foreground mt-1">One-time payment</p>
               </div>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
+            <CardContent className="pt-6 space-y-6">
+              <PaymentMethodSelector
+                selectedMethod={paymentMethod}
+                onMethodChange={setPaymentMethod}
+              />
+
+              <div className="border-t border-border pt-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                   <CreditCard className="w-4 h-4" />
-                  <span>Secure payment via PayPal</span>
+                  <span>Secure payment processing</span>
                 </div>
 
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  </div>
-                ) : (
-                  <>
-                    <div id="paypal-button-container" className="min-h-[150px]"></div>
-                    
-                    {isProcessing && (
-                      <div className="text-center py-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                        <p className="text-sm text-muted-foreground">Processing your payment...</p>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  By completing this purchase, you agree to our Terms of Service and Privacy Policy.
-                </p>
+                {renderPaymentForm()}
               </div>
+
+              <p className="text-xs text-center text-muted-foreground">
+                By completing this purchase, you agree to our Terms of Service and Privacy Policy.
+              </p>
             </CardContent>
           </Card>
         </div>
