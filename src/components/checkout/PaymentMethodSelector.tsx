@@ -1,8 +1,8 @@
-import { CreditCard, Smartphone, Building2, Wallet } from "lucide-react";
+import { CreditCard, Smartphone, Building2 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
-export type PaymentMethod = "paypal" | "mobile_money" | "bank_transfer";
+export type PaymentMethod = "card" | "mobile_money" | "bank_transfer";
 
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod;
@@ -11,10 +11,10 @@ interface PaymentMethodSelectorProps {
 
 const paymentMethods = [
   {
-    id: "paypal" as PaymentMethod,
-    name: "PayPal / Credit Card",
-    description: "Pay securely with PayPal or any major credit card",
-    icon: Wallet,
+    id: "card" as PaymentMethod,
+    name: "Credit/Debit Card",
+    description: "Pay securely with Visa, Mastercard, or any major card",
+    icon: CreditCard,
   },
   {
     id: "mobile_money" as PaymentMethod,

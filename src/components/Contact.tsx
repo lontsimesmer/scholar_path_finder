@@ -8,13 +8,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
-import consultationImage from "@/assets/consultation.jpg";
+import { CountryCodeSelect } from "@/components/CountryCodeSelect";
+import consultationImage from "@/assets/contact-consultation.jpg";
 
 const Contact = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [countryCode, setCountryCode] = useState("+237");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,7 +54,7 @@ const Contact = () => {
         body: {
           name: formData.name,
           email: formData.email,
-          phone: formData.phone || undefined,
+          phone: formData.phone ? `${countryCode}${formData.phone}` : undefined,
           message: formData.message,
         },
       });
@@ -168,15 +170,18 @@ const Contact = () => {
                   <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
                     {t.contact.form.phone}
                   </label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder={t.contact.form.phonePlaceholder}
-                    className="h-12"
-                  />
+                  <div className="flex gap-2">
+                    <CountryCodeSelect value={countryCode} onValueChange={setCountryCode} />
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="674819411"
+                      className="h-12 flex-1"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
