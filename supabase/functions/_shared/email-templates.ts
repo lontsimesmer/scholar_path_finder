@@ -1,3 +1,5 @@
+import { escapeHtml } from "./html-utils.ts";
+
 // Email template styles matching the landing page design
 export const emailStyles = `
   body {
@@ -254,7 +256,7 @@ export function generateWelcomeEmail(name: string, checkoutUrl: string): string 
         </div>
         
         <div class="content">
-          <p class="greeting">Dear <strong>${name}</strong>,</p>
+          <p class="greeting">Dear <strong>${escapeHtml(name)}</strong>,</p>
           
           <p class="intro-text">
             Thank you for reaching out to us! We're thrilled to be part of your journey towards achieving your academic and professional goals abroad. Our team of experienced consultants is ready to guide you every step of the way.
@@ -366,7 +368,7 @@ export function generateNurturingEmail(
         </div>
         
         <div class="content">
-          <p class="greeting">Dear <strong>${name}</strong>,</p>
+          <p class="greeting">Dear <strong>${escapeHtml(name)}</strong>,</p>
           
           <p class="intro-text">${nurturingContent.intro}</p>
           

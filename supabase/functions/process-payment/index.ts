@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { escapeHtml } from "../_shared/html-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -258,7 +259,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p>Your consultation is now scheduled</p>
             </div>
             <div class="content">
-              <p>Dear ${lead.name},</p>
+              <p>Dear ${escapeHtml(lead.name)},</p>
               <p>Thank you for your payment! Your registration for Power Prestation consultation services is now complete.</p>
               
               <div class="receipt">
@@ -320,7 +321,7 @@ const handler = async (req: Request): Promise<Response> => {
 
         if (twilioAccountSid && twilioAuthToken && twilioPhone) {
           const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-          const smsBody = `Payment confirmed! Thank you ${lead.name}. Your Power Prestation consultation is booked. A consultant will contact you within 24-48hrs. Receipt sent to your email.`;
+          const smsBody = `Payment confirmed! Thank you ${lead.name}. Your Power Prestation consultation is booked. A consultant will contact you within 24-48hrs. Receipt sent to your email.`; // SMS is plain text, no escaping needed
 
           await fetch(twilioUrl, {
             method: "POST",

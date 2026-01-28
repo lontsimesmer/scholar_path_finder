@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { generateWelcomeEmail } from "../_shared/email-templates.ts";
+import { escapeHtml } from "../_shared/html-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -151,14 +152,14 @@ const handler = async (req: Request): Promise<Response> => {
     await resend.emails.send({
       from: "Power Prestation <onboarding@resend.dev>",
       to: ["onboarding@resend.dev"],
-      subject: `New Lead: ${name}`,
+      subject: `New Lead: ${escapeHtml(name)}`,
       html: `
         <h2>New Lead Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(phone || "Not provided")}</p>
         <p><strong>Message:</strong></p>
-        <p>${message}</p>
+        <p>${escapeHtml(message)}</p>
         <hr>
         <p><a href="${checkoutUrl}">View Checkout Link</a></p>
       `,

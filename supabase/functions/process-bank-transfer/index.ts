@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { escapeHtml } from "../_shared/html-utils.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -81,16 +82,16 @@ const handler = async (req: Request): Promise<Response> => {
     await resend.emails.send({
       from: "Power Prestation <onboarding@resend.dev>",
       to: ["onboarding@resend.dev"],
-      subject: `Bank Transfer Pending: ${reference}`,
+      subject: `Bank Transfer Pending: ${escapeHtml(reference)}`,
       html: `
         <h2>Bank Transfer Payment Pending</h2>
-        <p><strong>Reference:</strong> ${reference}</p>
-        <p><strong>Amount:</strong> $${amount} USD</p>
+        <p><strong>Reference:</strong> ${escapeHtml(reference)}</p>
+        <p><strong>Amount:</strong> $${escapeHtml(String(amount))} USD</p>
         <hr>
         <p><strong>Lead Details:</strong></p>
-        <p><strong>Name:</strong> ${lead.name}</p>
-        <p><strong>Email:</strong> ${lead.email}</p>
-        <p><strong>Phone:</strong> ${lead.phone || "Not provided"}</p>
+        <p><strong>Name:</strong> ${escapeHtml(lead.name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(lead.email)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(lead.phone || "Not provided")}</p>
         <hr>
         <p>Please verify the bank transfer and update the lead status accordingly.</p>
       `,

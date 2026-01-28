@@ -93,7 +93,7 @@ const handler = async (req: Request): Promise<Response> => {
         if (lead.phone && twilioAccountSid && twilioAuthToken && twilioPhone) {
           try {
             const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-            const smsBody = `Hi ${lead.name}! Your academic dreams await. Book your $25 consultation now: ${checkoutUrl} - Power Prestation`;
+            const smsBody = `Hi ${lead.name}! Your academic dreams await. Book your $25 consultation now: ${checkoutUrl} - Power Prestation`; // SMS is plain text, no escaping needed
 
             await fetch(twilioUrl, {
               method: "POST",
