@@ -27,17 +27,11 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Only allow if request comes from service role or cron job
     if (!isServiceRole && !isCronJob) {
-      // Check if request comes from within Supabase (internal request)
-      const userAgent = req.headers.get("user-agent") || "";
-      const isInternalRequest = userAgent.includes("Supabase") || userAgent.includes("Deno");
-      
-      if (!isInternalRequest) {
-        console.error("Unauthorized access attempt to send-follow-ups");
-        return new Response(
-          JSON.stringify({ error: "Unauthorized" }),
-          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      console.error("Unauthorized access attempt to send-follow-ups");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Initialize Supabase client
