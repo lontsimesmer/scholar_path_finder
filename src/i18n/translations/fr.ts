@@ -62,8 +62,8 @@ export const fr = {
   // About
   about: {
     badge: "À Propos",
-    title: "Votre Partenaire de Confiance pour",
-    titleHighlight: "l'Éducation Mondiale",
+  title: "Votre Conseiller de Confiance pour",
+  titleHighlight: "l'Éducation Mondiale",
     description1: "Power Prestation est une agence de conseil spécialisée dans : la mobilité académique et professionnelle, les conseils universitaires et d'études à l'étranger, les conseils en bourses et stages adaptés à votre profil.",
     description2: "Notre vision est d'accompagner les étudiants et chercheurs tout au long de leurs parcours académiques et professionnels à l'étranger, en fournissant un accompagnement complet qui ouvre les portes aux opportunités dans le monde entier.",
     highlights: [
@@ -86,7 +86,7 @@ export const fr = {
     steps: {
       consultation: {
         title: "Consultation Initiale",
-        description: "Partagez vos objectifs, votre parcours académique et vos préférences lors d'une session de consultation gratuite avec nos experts.",
+        description: "Partagez vos objectifs, votre parcours académique et vos préférences lors d'une session de consultation avec nos experts.",
       },
       assessment: {
         title: "Évaluation du Profil",

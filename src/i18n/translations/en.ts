@@ -62,8 +62,8 @@ export const en = {
   // About
   about: {
     badge: "About Us",
-    title: "Your Trusted Partner in",
-    titleHighlight: "Global Education",
+  title: "Your Trusted Advisor in",
+  titleHighlight: "Global Education",
     description1: "Power Prestation is a consulting agency specializing in: Academic and professional mobility, University and study abroad advice, Scholarship and internship advice tailored to your profile.",
     description2: "Our vision is to support students and researchers throughout their academic and professional journeys abroad, providing comprehensive guidance that opens doors to opportunities worldwide.",
     highlights: [
@@ -86,7 +86,7 @@ export const en = {
     steps: {
       consultation: {
         title: "Initial Consultation",
-        description: "Share your goals, academic background, and preferences in a free consultation session with our experts.",
+        description: "Share your goals, academic background, and preferences in a consultation session with our experts.",
       },
       assessment: {
         title: "Profile Assessment",

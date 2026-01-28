@@ -62,8 +62,8 @@ export const zh = {
   // About
   about: {
     badge: "关于我们",
-    title: "您在全球教育领域的",
-    titleHighlight: "可信赖伙伴",
+  title: "您在全球教育领域的",
+  titleHighlight: "可信赖顾问",
     description1: "Power Prestation是一家专业咨询机构，专注于：学术和职业流动、大学和留学建议、根据您的个人资料量身定制的奖学金和实习建议。",
     description2: "我们的愿景是在学生和研究人员的海外学术和职业旅程中全程支持他们，提供全面的指导，为全球机遇打开大门。",
     highlights: [
@@ -86,7 +86,7 @@ export const zh = {
     steps: {
       consultation: {
         title: "初步咨询",
-        description: "在与我们专家的免费咨询会议中分享您的目标、学术背景和偏好。",
+        description: "在与我们专家的咨询会议中分享您的目标、学术背景和偏好。",
       },
       assessment: {
         title: "个人档案评估",
