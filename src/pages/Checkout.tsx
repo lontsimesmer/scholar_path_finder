@@ -1,27 +1,56 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Check, CreditCard, Shield, Clock, Users } from "lucide-react";
+import { Check, CreditCard, Shield, Clock, Users, LogOut } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/logo.png";
 import { PaymentMethodSelector, PaymentMethod } from "@/components/checkout/PaymentMethodSelector";
-import { PayPalPayment } from "@/components/checkout/PayPalPayment";
+import { StripePayment } from "@/components/checkout/StripePayment";
 import { MobileMoneyPayment } from "@/components/checkout/MobileMoneyPayment";
 import { BankTransferPayment } from "@/components/checkout/BankTransferPayment";
+import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [leadId, setLeadId] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypal");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [user, setUser] = useState<{ email?: string } | null>(null);
 
   useEffect(() => {
     const id = searchParams.get("leadId");
     setLeadId(id);
-  }, [searchParams]);
+
+    // Check authentication
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
+        return;
+      }
+      setUser({ email: session.user.email });
+    };
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
+      } else {
+        setUser({ email: session.user.email });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [searchParams, navigate]);
 
   const handlePaymentSuccess = () => {
     navigate("/payment-success");
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
   };
 
   const benefits = [
@@ -42,8 +71,8 @@ const Checkout = () => {
 
   const renderPaymentForm = () => {
     switch (paymentMethod) {
-      case "paypal":
-        return <PayPalPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
+      case "card":
+        return <StripePayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
       case "mobile_money":
         return <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
       case "bank_transfer":
@@ -52,6 +81,10 @@ const Checkout = () => {
         return null;
     }
   };
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background py-12 px-4">
@@ -62,9 +95,18 @@ const Checkout = () => {
           <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
             Complete Your <span className="text-primary">Registration</span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-2">
             Secure your consultation and start your academic journey
           </p>
+          {user.email && (
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <span>Signed in as {user.email}</span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 mr-1" />
+                Sign Out
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
