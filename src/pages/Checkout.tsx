@@ -7,7 +7,6 @@ import logoImage from "@/assets/logo.png";
 import { PaymentMethodSelector, PaymentMethod } from "@/components/checkout/PaymentMethodSelector";
 import { StripePayment } from "@/components/checkout/StripePayment";
 import { MobileMoneyPayment } from "@/components/checkout/MobileMoneyPayment";
-import { BankTransferPayment } from "@/components/checkout/BankTransferPayment";
 import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
@@ -75,8 +74,6 @@ const Checkout = () => {
         return <StripePayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
       case "mobile_money":
         return <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
-      case "bank_transfer":
-        return <BankTransferPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
       default:
         return null;
     }

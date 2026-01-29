@@ -32,13 +32,20 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Validate provider
-    const validProviders = ["mtn", "orange", "airtel"];
+    const validProviders = ["mtn", "orange"];
     if (!validProviders.includes(provider)) {
       return new Response(
         JSON.stringify({ error: "Invalid mobile money provider" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Get account number based on provider
+    const accountNumbers: Record<string, string> = {
+      mtn: "651831709",
+      orange: "690830651",
+    };
+    const targetAccount = accountNumbers[provider];
 
     // Validate amount
     if (amount !== 25.00) {
@@ -70,15 +77,15 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // In a real implementation, you would integrate with MTN MoMo API, Orange Money API, etc.
-    // For now, we just record the payment intent
-    console.log(`Mobile Money payment initiated: ${provider} - ${phoneNumber} - $${amount}`);
+    // Log the payment details with the target account
+    console.log(`Mobile Money payment initiated: ${provider} - Account: ${targetAccount} - Phone: ${phoneNumber} - $${amount}`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Payment request sent. Please check your phone to approve.",
-        transactionId: `MM-${provider.toUpperCase()}-${Date.now()}`
+        message: "Payment confirmation received. We'll verify and contact you shortly.",
+        transactionId: `MM-${provider.toUpperCase()}-${Date.now()}`,
+        targetAccount: targetAccount,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

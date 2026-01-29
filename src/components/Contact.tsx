@@ -28,8 +28,8 @@ const Contact = () => {
     {
       icon: Mail,
       label: t.contact.info.email,
-      value: "contact@powerprestation.com",
-      href: "mailto:contact@powerprestation.com",
+      value: "powerprestationint@gmail.com",
+      href: "mailto:powerprestationint@gmail.com",
     },
     {
       icon: Phone,
@@ -63,10 +63,7 @@ const Contact = () => {
         throw new Error(error.message);
       }
 
-      toast({
-        title: t.contact.form.successTitle,
-        description: t.contact.form.successMessage,
-      });
+      // Silently reset form without showing popup
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error: any) {
       console.error("Error submitting lead:", error);

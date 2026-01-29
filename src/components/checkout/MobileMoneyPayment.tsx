@@ -19,9 +19,8 @@ interface MobileMoneyPaymentProps {
 }
 
 const providers = [
-  { id: "mtn", name: "MTN Mobile Money" },
-  { id: "orange", name: "Orange Money" },
-  { id: "airtel", name: "Airtel Money" },
+  { id: "mtn", name: "MTN Mobile Money", account: "651831709" },
+  { id: "orange", name: "Orange Money", account: "690830651" },
 ];
 
 export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProps) => {
@@ -73,6 +72,8 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
     }
   };
 
+  const selectedProvider = providers.find(p => p.id === provider);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -91,8 +92,21 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
         </Select>
       </div>
 
+      {selectedProvider && (
+        <div className="bg-muted/50 rounded-lg p-4">
+          <p className="text-sm font-medium mb-2">Send payment to:</p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{selectedProvider.name} Account:</span>
+            <span className="font-mono font-semibold text-primary">{selectedProvider.account}</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Transfer exactly $25.00 USD (or equivalent in XAF) to this number
+          </p>
+        </div>
+      )}
+
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
+        <Label htmlFor="phone">Your Phone Number (for confirmation)</Label>
         <Input
           id="phone"
           type="tel"
@@ -115,7 +129,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
         ) : (
           <>
             <Smartphone className="w-4 h-4 mr-2" />
-            Pay $25.00 with Mobile Money
+            I've Sent Payment - Confirm
           </>
         )}
       </Button>
