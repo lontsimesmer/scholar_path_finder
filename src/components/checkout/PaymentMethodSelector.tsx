@@ -1,8 +1,8 @@
-import { CreditCard, Smartphone, Building2 } from "lucide-react";
+import { CreditCard, Smartphone } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
-export type PaymentMethod = "card" | "mobile_money" | "bank_transfer";
+export type PaymentMethod = "card" | "mobile_money";
 
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod;
@@ -19,14 +19,8 @@ const paymentMethods = [
   {
     id: "mobile_money" as PaymentMethod,
     name: "Mobile Money",
-    description: "MTN, Orange, Airtel Money",
+    description: "MTN Mobile Money, Orange Money",
     icon: Smartphone,
-  },
-  {
-    id: "bank_transfer" as PaymentMethod,
-    name: "Bank Transfer",
-    description: "Direct bank transfer (manual confirmation)",
-    icon: Building2,
   },
 ];
 
