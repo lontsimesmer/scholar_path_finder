@@ -11,7 +11,6 @@ import { useLanguage, Language } from "@/i18n/LanguageContext";
 const languages: { code: Language; name: string; flag: string }[] = [
   { code: "en", name: "English", flag: "🇬🇧" },
   { code: "fr", name: "Français", flag: "🇫🇷" },
-  { code: "zh", name: "中文", flag: "🇨🇳" },
 ];
 
 const LanguageSwitcher = () => {
