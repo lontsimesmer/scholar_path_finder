@@ -47,16 +47,9 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     logStep("Stripe initialized");
 
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
-
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
-    } else {
-      logStep("Creating new customer");
-    }
+    // Skip customer lookup due to restricted key permissions
+    // Stripe will handle customer creation/lookup during checkout
+    logStep("Creating checkout session for", { email: user.email });
 
     // Parse request body for leadId
     let leadId: string | null = null;
@@ -69,8 +62,7 @@ serve(async (req) => {
 
     // Create checkout session for one-time payment
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: user.email,
       line_items: [
         {
           price_data: {
