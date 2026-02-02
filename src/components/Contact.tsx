@@ -63,8 +63,10 @@ const Contact = () => {
         throw new Error(error.message);
       }
 
-      // Silently reset form without showing popup
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      // Redirect to checkout with lead ID
+      if (data?.leadId) {
+        navigate(`/checkout?leadId=${data.leadId}`);
+      }
     } catch (error: any) {
       console.error("Error submitting lead:", error);
       toast({
