@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { en } from "./translations/en";
 import { fr } from "./translations/fr";
-import { zh } from "./translations/zh";
 
-export type Language = "en" | "fr" | "zh";
+export type Language = "en" | "fr";
 
 type Translations = typeof en;
 
@@ -16,7 +15,6 @@ interface LanguageContextType {
 const translations: Record<Language, Translations> = {
   en,
   fr,
-  zh,
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

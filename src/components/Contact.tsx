@@ -40,7 +40,7 @@ const Contact = () => {
     {
       icon: MapPin,
       label: t.contact.info.office,
-      value: "123 Education Street, City",
+      value: "FOUDA, derrière le FNE-Yaoundé",
       href: "#",
     },
   ];
