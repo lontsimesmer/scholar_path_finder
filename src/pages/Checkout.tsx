@@ -98,7 +98,7 @@ const Checkout = () => {
           <p className="text-muted-foreground mb-2">
             Secure your consultation and start your academic journey
           </p>
-          {user.email && (
+          {user?.email && (
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <span>Signed in as {user.email}</span>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
