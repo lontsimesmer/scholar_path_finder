@@ -66,8 +66,8 @@ const PaymentSuccess = () => {
         <div className="bg-primary/5 rounded-lg p-6 mb-8">
           <p className="text-sm text-muted-foreground mb-2">Have questions? Contact us:</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="mailto:contact@powerprestation.com" className="text-primary hover:underline">
-              contact@powerprestation.com
+            <a href="mailto:powerprestationint@gmail.com" className="text-primary hover:underline">
+              powerprestationint@gmail.com
             </a>
             <span className="hidden sm:inline text-muted-foreground">•</span>
             <a href="tel:+237674819411" className="text-primary hover:underline">

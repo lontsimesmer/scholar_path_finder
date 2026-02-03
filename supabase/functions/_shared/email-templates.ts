@@ -335,7 +335,7 @@ export function generateWelcomeEmail(name: string, checkoutUrl: string): string 
         
         <div class="footer">
           <p><strong>Power Prestation</strong></p>
-          <p>123 Education Street, City</p>
+          <p>FOUDA, derrière le FNE-Yaoundé</p>
           <p>© ${new Date().getFullYear()} Power Prestation. All rights reserved.</p>
         </div>
       </div>
