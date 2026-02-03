@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CreditCard, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,18 @@ interface StripePaymentProps {
 export const StripePayment = ({ leadId, onSuccess }: StripePaymentProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [leadEmail, setLeadEmail] = useState<string | null>(null);
+
+  // Fetch lead email if leadId is provided
+  useEffect(() => {
+    const fetchLeadEmail = async () => {
+      if (leadId) {
+        // We'll pass the leadId to the edge function which will look up the email
+        setLeadEmail(null); // Email will be fetched server-side
+      }
+    };
+    fetchLeadEmail();
+  }, [leadId]);
 
   const handlePayment = async () => {
     setIsLoading(true);

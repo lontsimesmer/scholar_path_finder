@@ -15,28 +15,28 @@ const Checkout = () => {
   const [leadId, setLeadId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const id = searchParams.get("leadId");
     setLeadId(id);
 
-    // Check authentication
+    // Check authentication - but allow guest checkout
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
-        return;
+      if (session) {
+        setUser({ email: session.user.email });
       }
-      setUser({ email: session.user.email });
+      setIsLoading(false);
     };
     checkAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
-      } else {
+      if (session) {
         setUser({ email: session.user.email });
+      } else {
+        setUser(null);
       }
     });
 
@@ -49,7 +49,6 @@ const Checkout = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/");
   };
 
   const benefits = [
@@ -79,8 +78,12 @@ const Checkout = () => {
     }
   };
 
-  if (!user) {
-    return null; // Will redirect to login
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
   }
 
   return (
@@ -199,6 +202,19 @@ const Checkout = () => {
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
               <span className="text-sm">5+ Years Experience</span>
+            </div>
+          </div>
+          {/* Contact Info */}
+          <div className="mt-6 text-sm text-muted-foreground">
+            <p>Questions? Contact us:</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-2">
+              <a href="mailto:powerprestationint@gmail.com" className="text-primary hover:underline">
+                powerprestationint@gmail.com
+              </a>
+              <span className="hidden sm:inline">•</span>
+              <a href="tel:+237674819411" className="text-primary hover:underline">
+                +(237)674819411
+              </a>
             </div>
           </div>
         </div>

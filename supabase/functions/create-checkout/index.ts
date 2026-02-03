@@ -17,27 +17,69 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  
+  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
     logStep("Function started");
 
+    // Parse request body for leadId and email
+    let leadId: string | null = null;
+    let guestEmail: string | null = null;
+    try {
+      const body = await req.json();
+      leadId = body.leadId || null;
+      guestEmail = body.email || null;
+    } catch {
+      // No body or invalid JSON
+    }
+
+    let customerEmail: string | null = null;
+    let userId: string | null = null;
+
+    // Try to get authenticated user first
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      throw new Error("No authorization header provided");
+    if (authHeader) {
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await supabaseClient.auth.getUser(token);
+        if (data.user?.email) {
+          customerEmail = data.user.email;
+          userId = data.user.id;
+          logStep("User authenticated", { userId, email: customerEmail });
+        }
+      } catch {
+        logStep("Auth check failed, trying guest checkout");
+      }
     }
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-
-    if (!user?.email) {
-      throw new Error("User not authenticated or email not available");
+    // If no authenticated user, try to get email from lead
+    if (!customerEmail && leadId) {
+      const { data: lead, error: leadError } = await supabaseAdmin
+        .from("leads")
+        .select("email, name")
+        .eq("id", leadId)
+        .single();
+      
+      if (!leadError && lead?.email) {
+        customerEmail = lead.email;
+        logStep("Using email from lead", { leadId, email: customerEmail });
+      }
     }
-    logStep("User authenticated", { userId: user.id, email: user.email });
+
+    // If still no email, use the provided guest email
+    if (!customerEmail && guestEmail) {
+      customerEmail = guestEmail;
+      logStep("Using provided guest email", { email: customerEmail });
+    }
+
+    if (!customerEmail) {
+      throw new Error("No email available for checkout. Please ensure you have a valid lead or provide an email.");
+    }
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) {
@@ -47,22 +89,11 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     logStep("Stripe initialized");
 
-    // Skip customer lookup due to restricted key permissions
-    // Stripe will handle customer creation/lookup during checkout
-    logStep("Creating checkout session for", { email: user.email });
-
-    // Parse request body for leadId
-    let leadId: string | null = null;
-    try {
-      const body = await req.json();
-      leadId = body.leadId || null;
-    } catch {
-      // No body or invalid JSON
-    }
-
     // Create checkout session for one-time payment
+    logStep("Creating checkout session for", { email: customerEmail });
+    
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
+      customer_email: customerEmail,
       line_items: [
         {
           price_data: {
@@ -81,11 +112,24 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/checkout${leadId ? `?leadId=${leadId}` : ''}`,
       metadata: {
         leadId: leadId || "",
-        userId: user.id,
+        userId: userId || "",
       },
     });
 
     logStep("Checkout session created", { sessionId: session.id });
+
+    // Update lead payment status to pending
+    if (leadId) {
+      await supabaseAdmin
+        .from("leads")
+        .update({
+          payment_status: "pending",
+          payment_id: session.id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", leadId);
+      logStep("Lead updated with pending payment", { leadId });
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
