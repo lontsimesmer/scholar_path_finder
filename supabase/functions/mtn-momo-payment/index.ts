@@ -7,8 +7,11 @@ const corsHeaders = {
 };
 
 // MTN MoMo API Configuration
+// Sandbox URL for provisioning API users
+const MTN_SANDBOX_URL = "https://sandbox.momodeveloper.mtn.com";
+// Production URL for actual payments (Cameroon)
 const MTN_MOMO_BASE_URL = "https://proxy.momoapi.mtn.com";
-const MTN_COLLECTION_URL = `${MTN_MOMO_BASE_URL}/collection`;
+const MTN_COLLECTION_URL = `${MTN_SANDBOX_URL}/collection`;
 
 // Supported currencies for MTN MoMo
 const SUPPORTED_CURRENCIES = ["XAF", "XOF", "EUR", "USD", "GHS", "UGX", "ZMW", "RWF"];
@@ -57,7 +60,7 @@ async function createApiUser(config: MoMoConfig): Promise<{ success: boolean; us
   try {
     logStep("Creating API User", { referenceId });
     
-    const response = await fetch(`${MTN_MOMO_BASE_URL}/v1_0/apiuser`, {
+    const response = await fetch(`${MTN_SANDBOX_URL}/v1_0/apiuser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +91,7 @@ async function getApiKey(config: MoMoConfig, userId: string): Promise<{ success:
   try {
     logStep("Getting API Key for user", { userId });
     
-    const response = await fetch(`${MTN_MOMO_BASE_URL}/v1_0/apiuser/${userId}/apikey`, {
+    const response = await fetch(`${MTN_SANDBOX_URL}/v1_0/apiuser/${userId}/apikey`, {
       method: "POST",
       headers: {
         "Ocp-Apim-Subscription-Key": config.primaryKey,
