@@ -9,9 +9,14 @@ const corsHeaders = {
 // MTN MoMo API Configuration
 // Sandbox URL for provisioning API users
 const MTN_SANDBOX_URL = "https://sandbox.momodeveloper.mtn.com";
-// Production URL for actual payments (Cameroon)
+// Production URL for actual payments
 const MTN_MOMO_BASE_URL = "https://proxy.momoapi.mtn.com";
-const MTN_COLLECTION_URL = `${MTN_SANDBOX_URL}/collection`;
+
+// Determine environment from env var (default to sandbox for safety)
+const IS_PRODUCTION = Deno.env.get("MTN_MOMO_ENVIRONMENT") === "production";
+const MTN_COLLECTION_URL = IS_PRODUCTION 
+  ? `${MTN_MOMO_BASE_URL}/collection`
+  : `${MTN_SANDBOX_URL}/collection`;
 
 // Supported currencies for MTN MoMo
 const SUPPORTED_CURRENCIES = ["XAF", "XOF", "EUR", "USD", "GHS", "UGX", "ZMW", "RWF"];
@@ -289,17 +294,20 @@ serve(async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get or create API credentials
-    // In production, these should be stored securely after initial provisioning
-    let apiUserId = Deno.env.get("MTN_MOMO_API_USER_ID");
-    let apiKey = Deno.env.get("MTN_MOMO_API_KEY");
+    // Get API credentials from environment
+    const apiUserId = Deno.env.get("MTN_MOMO_API_USER_ID");
+    const apiKey = Deno.env.get("MTN_MOMO_API_KEY");
+    
+    // Determine target environment
+    // Production environments: mtnuganda, mtnghana, mtnivorycoast, mtnzambia, mtncameroon, mtnbenin, mtncongo, mtnswaziland, mtnguineaconakry, mtnsouthafrica
+    const targetEnvironment = Deno.env.get("MTN_MOMO_TARGET_ENVIRONMENT") || "sandbox";
     
     const config: MoMoConfig = {
       primaryKey,
       secondaryKey,
       apiUserId: apiUserId || "",
       apiKey: apiKey || "",
-      environment: "mtnCameroon", // Use "sandbox" for testing, "mtnCameroon" for production
+      environment: targetEnvironment,
       callbackHost: Deno.env.get("SUPABASE_URL") || "https://webhook.site",
     };
 
