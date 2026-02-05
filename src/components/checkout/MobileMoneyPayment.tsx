@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { CountryCodeSelect } from "@/components/CountryCodeSelect";
 
 interface MobileMoneyPaymentProps {
   leadId: string | null;
@@ -25,13 +26,14 @@ interface Currency {
 }
 
 const providers = [
-  { id: "mtn", name: "MTN Mobile Money", account: "651831709", hasApi: true },
-  { id: "orange", name: "Orange Money", account: "690830651", hasApi: false },
+  { id: "mtn", name: "MTN Mobile Money", account: "677724613", hasApi: true },
+  { id: "orange", name: "Orange Money", account: "698090612", hasApi: false },
 ];
 
 export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProps) => {
   const { toast } = useToast();
   const [provider, setProvider] = useState("");
+  const [countryCode, setCountryCode] = useState("+237");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [currency, setCurrency] = useState("XAF");
   const [currencies, setCurrencies] = useState<Currency[]>([]);
@@ -84,11 +86,12 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
     setPaymentStatus("pending");
     
     try {
+      const fullPhoneNumber = `${countryCode}${phoneNumber.replace(/^0+/, '')}`;
       const { data, error } = await supabase.functions.invoke("mtn-momo-payment", {
         body: {
           action: "request_payment",
           leadId,
-          phoneNumber,
+          phoneNumber: fullPhoneNumber,
           currency,
         },
       });
@@ -157,7 +160,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
       setPaymentStatus("pending");
       toast({
         title: "Payment Confirmation Received!",
-        description: "Please send the payment to Orange Money 690830651. We'll verify and contact you shortly.",
+        description: "Please send the payment to Orange Money 698090612. We'll verify and contact you shortly.",
       });
       
       onSuccess();
@@ -357,13 +360,17 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
 
       <div className="space-y-2">
         <Label htmlFor="phone">Your Phone Number</Label>
-        <Input
-          id="phone"
-          type="tel"
-          placeholder="+237 6XX XXX XXX"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-        />
+        <div className="flex gap-2">
+          <CountryCodeSelect value={countryCode} onValueChange={setCountryCode} />
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="6XX XXX XXX"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            className="flex-1"
+          />
+        </div>
         <p className="text-xs text-muted-foreground">
           {provider === "mtn" 
             ? "You will receive a payment request on this number"

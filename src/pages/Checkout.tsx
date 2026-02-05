@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Check, CreditCard, Shield, Clock, Users, LogOut } from "lucide-react";
+import { Check, Shield, Clock, Users, LogOut } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/logo.png";
-import { PaymentMethodSelector, PaymentMethod } from "@/components/checkout/PaymentMethodSelector";
-import { StripePayment } from "@/components/checkout/StripePayment";
 import { MobileMoneyPayment } from "@/components/checkout/MobileMoneyPayment";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,7 +11,6 @@ const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [leadId, setLeadId] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [user, setUser] = useState<{ email?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,13 +18,16 @@ const Checkout = () => {
     const id = searchParams.get("leadId");
     setLeadId(id);
 
-    // Check authentication - but allow guest checkout
+    // Check authentication - require login for checkout
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUser({ email: session.user.email });
+        setIsLoading(false);
+      } else {
+        // Redirect to login if not authenticated
+        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
       }
-      setIsLoading(false);
     };
     checkAuth();
 
@@ -35,13 +35,14 @@ const Checkout = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setUser({ email: session.user.email });
+        setIsLoading(false);
       } else {
-        setUser(null);
+        navigate(`/login?redirect=/checkout${leadId ? `?leadId=${leadId}` : ''}`);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, leadId]);
 
   const handlePaymentSuccess = () => {
     navigate("/payment-success");
@@ -66,17 +67,6 @@ const Checkout = () => {
     "Timeline and planning strategy",
     "Q&A session with our expert",
   ];
-
-  const renderPaymentForm = () => {
-    switch (paymentMethod) {
-      case "card":
-        return <StripePayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
-      case "mobile_money":
-        return <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />;
-      default:
-        return null;
-    }
-  };
 
   if (isLoading) {
     return (
@@ -121,7 +111,9 @@ const Checkout = () => {
               <ul className="space-y-3">
                 {included.map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
                     <span className="text-foreground">{item}</span>
                   </li>
                 ))}
@@ -166,19 +158,14 @@ const Checkout = () => {
               </div>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
-              <PaymentMethodSelector
-                selectedMethod={paymentMethod}
-                onMethodChange={setPaymentMethod}
-              />
-
-              <div className="border-t border-border pt-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                  <CreditCard className="w-4 h-4" />
-                  <span>Secure payment processing</span>
-                </div>
-
-                {renderPaymentForm()}
+              <div className="bg-muted/50 rounded-lg p-4">
+                <h3 className="font-medium mb-2">Mobile Money Payment</h3>
+                <p className="text-sm text-muted-foreground">
+                  Pay securely using MTN Mobile Money or Orange Money.
+                </p>
               </div>
+
+              <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />
 
               <p className="text-xs text-center text-muted-foreground">
                 By completing this purchase, you agree to our Terms of Service and Privacy Policy.
