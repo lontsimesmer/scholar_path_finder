@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Check, Shield, Clock, Users, LogOut } from "lucide-react";
+import { Check, Shield, Clock, Users, LogOut, CreditCard, Smartphone } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/logo.png";
 import { MobileMoneyPayment } from "@/components/checkout/MobileMoneyPayment";
+import { CardPaymentModal, CardPaymentData } from "@/components/checkout/CardPaymentModal";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+type PaymentMethod = "card" | "mobile_money";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [leadId, setLeadId] = useState<string | null>(null);
   const [user, setUser] = useState<{ email?: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("mobile_money");
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [isProcessingCard, setIsProcessingCard] = useState(false);
   useEffect(() => {
     const id = searchParams.get("leadId");
     setLeadId(id);
@@ -50,6 +56,38 @@ const Checkout = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+  };
+
+  const handleCardPayment = async (data: CardPaymentData) => {
+    setIsProcessingCard(true);
+    try {
+      // For now, show a message that card payment is being processed
+      // In production, this would connect to UBA payment gateway
+      toast({
+        title: "Processing Card Payment",
+        description: "Your card payment is being processed. Please wait...",
+      });
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast({
+        title: "Payment Submitted",
+        description: "Your payment has been submitted for processing. We'll notify you once confirmed.",
+      });
+      
+      setShowCardModal(false);
+      // Navigate to success page or show confirmation
+      navigate("/payment-success");
+    } catch (error: any) {
+      toast({
+        title: "Payment Error",
+        description: error.message || "Failed to process card payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingCard(false);
+    }
   };
 
   const benefits = [
@@ -158,14 +196,73 @@ const Checkout = () => {
               </div>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
-              <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-medium mb-2">Mobile Money Payment</h3>
-                <p className="text-sm text-muted-foreground">
-                  Pay securely using MTN Mobile Money or Orange Money.
-                </p>
+              {/* Payment Method Selection */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Select Payment Method</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                      paymentMethod === "card"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <CreditCard className={`w-6 h-6 ${paymentMethod === "card" ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className={`text-sm font-medium ${paymentMethod === "card" ? "text-primary" : ""}`}>
+                      Card
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("mobile_money")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                      paymentMethod === "mobile_money"
+                        ? "border-primary bg-primary/5 ring-1 ring-primary"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <Smartphone className={`w-6 h-6 ${paymentMethod === "mobile_money" ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className={`text-sm font-medium ${paymentMethod === "mobile_money" ? "text-primary" : ""}`}>
+                      Mobile Money
+                    </span>
+                  </button>
+                </div>
               </div>
 
-              <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />
+              {/* Card Payment */}
+              {paymentMethod === "card" && (
+                <div className="space-y-4">
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h3 className="font-medium mb-2">Card Payment</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Pay securely with Visa, Mastercard, Amex or any international card.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => setShowCardModal(true)} 
+                    className="w-full"
+                    size="lg"
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Pay with Card - $25
+                  </Button>
+                </div>
+              )}
+
+              {/* Mobile Money Payment */}
+              {paymentMethod === "mobile_money" && (
+                <div className="space-y-4">
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h3 className="font-medium mb-2">Mobile Money Payment</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Pay securely using MTN Mobile Money or Orange Money.
+                    </p>
+                  </div>
+                  <MobileMoneyPayment leadId={leadId} onSuccess={handlePaymentSuccess} />
+                </div>
+              )}
 
               <p className="text-xs text-center text-muted-foreground">
                 By completing this purchase, you agree to our Terms of Service and Privacy Policy.
@@ -213,6 +310,14 @@ const Checkout = () => {
           </Button>
         </div>
       </div>
+
+      {/* Card Payment Modal */}
+      <CardPaymentModal
+        open={showCardModal}
+        onClose={() => setShowCardModal(false)}
+        onSubmit={handleCardPayment}
+        isProcessing={isProcessingCard}
+      />
     </div>
   );
 };
