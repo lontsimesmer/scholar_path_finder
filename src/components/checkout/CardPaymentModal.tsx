@@ -20,11 +20,49 @@ export interface CardPaymentData {
   country: string;
 }
 
+const VisaIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto">
+    <rect width="48" height="32" rx="4" fill="#1A1F71" />
+    <text x="24" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="14" fontWeight="bold" fontFamily="Arial">VISA</text>
+  </svg>
+);
+
+const MastercardIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto">
+    <rect width="48" height="32" rx="4" fill="#000000" />
+    <circle cx="19" cy="16" r="9" fill="#EB001B" />
+    <circle cx="29" cy="16" r="9" fill="#F79E1B" />
+    <path d="M24 9.5a9 9 0 0 1 0 13" fill="#FF5F00" />
+  </svg>
+);
+
+const AmexIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto">
+    <rect width="48" height="32" rx="4" fill="#006FCF" />
+    <text x="24" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="Arial">AMEX</text>
+  </svg>
+);
+
+const DiscoverIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto">
+    <rect width="48" height="32" rx="4" fill="#FF6600" />
+    <text x="24" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="Arial">DISCOVER</text>
+  </svg>
+);
+
+const UBAIcon = () => (
+  <svg viewBox="0 0 48 32" className="h-6 w-auto">
+    <rect width="48" height="32" rx="4" fill="#D32F2F" />
+    <text x="24" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="bold" fontFamily="Arial">UBA</text>
+  </svg>
+);
+
 const cardBrands = [
-  { name: "Visa", color: "#1A1F71", textColor: "#FFFFFF" },
-  { name: "Mastercard", color: "#EB001B", textColor: "#FFFFFF" },
-  { name: "Amex", color: "#006FCF", textColor: "#FFFFFF" },
-  { name: "Discover", color: "#FF6600", textColor: "#FFFFFF" },
+  { name: "Visa", Icon: VisaIcon },
+  { name: "Mastercard", Icon: MastercardIcon },
+  { name: "Amex", Icon: AmexIcon },
+  { name: "Discover", Icon: DiscoverIcon },
+  { name: "UBA", Icon: UBAIcon },
 ];
 
 const countries = [
@@ -88,7 +126,7 @@ export const CardPaymentModal = ({ open, onClose, onSubmit, isProcessing }: Card
     onSubmit({ cardNumber, expiryDate, cvc, country });
   };
 
-  const currentBrand = cardBrands[currentBrandIndex];
+  
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -113,14 +151,11 @@ export const CardPaymentModal = ({ open, onClose, onSubmit, isProcessing }: Card
                 className="pr-16 h-12 text-base border-border"
                 required
               />
-              <div 
-                className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-xs font-bold transition-all duration-500"
-                style={{ 
-                  backgroundColor: currentBrand.color, 
-                  color: currentBrand.textColor 
-                }}
-              >
-                {currentBrand.name.toUpperCase()}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-500">
+                {(() => {
+                  const BrandIcon = cardBrands[currentBrandIndex].Icon;
+                  return <BrandIcon />;
+                })()}
               </div>
             </div>
           </div>
