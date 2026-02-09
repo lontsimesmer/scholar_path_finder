@@ -26,7 +26,7 @@ interface Currency {
 }
 
 const providers = [
-  { id: "mtn", name: "MTN Mobile Money", account: "677724613", hasApi: true },
+  { id: "mtn", name: "MTN Mobile Money", account: "677724613", hasApi: false },
   { id: "orange", name: "Orange Money", account: "698090612", hasApi: false },
 ];
 
@@ -313,7 +313,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
           <SelectContent>
             {providers.map((p) => (
               <SelectItem key={p.id} value={p.id}>
-                {p.name} {p.hasApi && "(Automated)"}
+                {p.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -341,7 +341,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
       {selectedProvider && (
         <div className="bg-muted/50 rounded-lg p-4">
           <p className="text-sm font-medium mb-2">
-            {provider === "mtn" ? "Payment will be requested from your phone" : "Send payment to:"}
+            Send payment to:
           </p>
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">{selectedProvider.name} Account:</span>
@@ -352,7 +352,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
           </p>
           {provider === "mtn" && (
             <p className="text-xs text-primary mt-1">
-              ✓ Automated payment request - approve on your phone
+              ✓ Send payment to the account above, then confirm below
             </p>
           )}
         </div>
@@ -372,10 +372,7 @@ export const MobileMoneyPayment = ({ leadId, onSuccess }: MobileMoneyPaymentProp
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          {provider === "mtn" 
-            ? "You will receive a payment request on this number"
-            : "We'll contact you on this number for confirmation"
-          }
+          We'll contact you on this number for confirmation
         </p>
       </div>
 
