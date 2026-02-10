@@ -92,7 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Mobile Money error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to process mobile money payment. Please try again later." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
