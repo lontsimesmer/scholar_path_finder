@@ -80,8 +80,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification email to admin
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
     await resend.emails.send({
-      from: "Power Prestation <onboarding@resend.dev>",
-      to: ["onboarding@resend.dev"],
+      from: "Power Prestation <noreply@powerprestation.ca>",
+      to: ["powerprestation@gmail.com"],
       subject: `Bank Transfer Pending: ${escapeHtml(reference)}`,
       html: `
         <h2>Bank Transfer Payment Pending</h2>
