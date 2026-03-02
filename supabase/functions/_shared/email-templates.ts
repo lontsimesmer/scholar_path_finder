@@ -322,7 +322,7 @@ export function generateWelcomeEmail(name: string, checkoutUrl: string): string 
           
           <div class="contact-info">
             <p><strong>Have questions?</strong></p>
-            <p>📧 Email: <a href="mailto:powerprestationint@gmail.com">powerprestationint@gmail.com</a></p>
+            <p>📧 Email: <a href="mailto:powerprestation@gmail.com">powerprestation@gmail.com</a></p>
             <p>📞 Phone: <a href="tel:+237674819411">+(237) 674 819 411</a></p>
           </div>
           
@@ -390,7 +390,7 @@ export function generateNurturingEmail(
           
           <div class="contact-info">
             <p><strong>Questions? We're here to help!</strong></p>
-            <p>📧 <a href="mailto:powerprestationint@gmail.com">powerprestationint@gmail.com</a></p>
+            <p>📧 <a href="mailto:powerprestation@gmail.com">powerprestation@gmail.com</a></p>
             <p>📞 <a href="tel:+237674819411">+(237) 674 819 411</a></p>
           </div>
           

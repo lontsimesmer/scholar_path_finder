@@ -142,7 +142,8 @@ const handler = async (req: Request): Promise<Response> => {
     const checkoutUrl = `${origin}/checkout?leadId=${lead.id}`;
 
     await resend.emails.send({
-      from: "Power Prestation <noreply@beamstars.work.gd>",
+      from: "Power Prestation <noreply@powerprestation.ca>",
+      replyTo: "powerprestation@gmail.com",
       to: [email],
       subject: "Welcome to Power Prestation - Your Academic Journey Starts Here! 🎓",
       html: generateWelcomeEmail(name, checkoutUrl),
@@ -150,8 +151,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin about new lead
     await resend.emails.send({
-      from: "Power Prestation <noreply@beamstars.work.gd>",
-      to: ["onboarding@resend.dev"],
+      from: "Power Prestation <noreply@powerprestation.ca>",
+      to: ["powerprestation@gmail.com"],
       subject: `New Lead: ${escapeHtml(name)}`,
       html: `
         <h2>New Lead Submission</h2>

@@ -83,7 +83,8 @@ const handler = async (req: Request): Promise<Response> => {
 
         // Send styled nurturing email
         await resend.emails.send({
-          from: "Power Prestation <noreply@beamstars.work.gd>",
+          from: "Power Prestation <noreply@powerprestation.ca>",
+          replyTo: "powerprestation@gmail.com",
           to: [lead.email],
           subject: subject,
           html: generateNurturingEmail(lead.name, checkoutUrl, dayNumber),
