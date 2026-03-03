@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
     await resend.emails.send({
       from: "Power Prestation <noreply@powerprestation.ca>",
-      to: ["powerprestation@gmail.com"],
+      to: ["onboarding@resend.dev"],
       subject: `Bank Transfer Pending: ${escapeHtml(reference)}`,
       html: `
         <h2>Bank Transfer Payment Pending</h2>
