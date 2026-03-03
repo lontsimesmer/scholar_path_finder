@@ -15,7 +15,8 @@ export const en = {
     badge: "Your Gateway to Global Education",
     title: "Transform Your Academic Dreams Into",
     titleHighlight: "Global Reality",
-    subtitle: "Expert guidance for students seeking world-class education abroad. From university selection to scholarship applications, we're with you every step of the way.",
+    subtitle:
+      "Expert guidance for students seeking world-class education abroad. From university selection to scholarship applications, we're with you every step of the way.",
     ctaPrimary: "Start Your Journey",
     ctaSecondary: "Explore Services",
     stats: {
@@ -30,23 +31,28 @@ export const en = {
     badge: "Our Services",
     title: "Comprehensive Support for Your",
     titleHighlight: "Academic Journey",
-    subtitle: "From choosing the right university to landing your dream internship, we provide end-to-end support for your international education goals.",
+    subtitle:
+      "From choosing the right university to landing your dream internship, we provide end-to-end support for your international education goals.",
     items: {
       universitySelection: {
         title: "University Selection",
-        description: "Expert guidance to find the perfect university matching your academic profile, career goals, and budget.",
+        description:
+          "Expert guidance to find the perfect university matching your academic profile, career goals, and budget.",
       },
       foreignStudies: {
         title: "Foreign Studies Advisory",
-        description: "Comprehensive support for studying abroad including course selection, admission requirements, and documentation.",
+        description:
+          "Comprehensive support for studying abroad including course selection, admission requirements, and documentation.",
       },
       scholarship: {
         title: "Scholarship Assistance",
-        description: "Identify and apply for scholarships that match your profile, maximizing your chances of financial support.",
+        description:
+          "Identify and apply for scholarships that match your profile, maximizing your chances of financial support.",
       },
       internship: {
         title: "Internship Placement",
-        description: "Connect with international internship opportunities to boost your resume and gain global experience.",
+        description:
+          "Connect with international internship opportunities to boost your resume and gain global experience.",
       },
       application: {
         title: "Application Support",
@@ -54,7 +60,8 @@ export const en = {
       },
       visa: {
         title: "Visa Guidance",
-        description: "Navigate the visa process with confidence. We guide you through documentation and interview preparation.",
+        description:
+          "Navigate the visa process with confidence. We guide you through documentation and interview preparation.",
       },
     },
   },
@@ -62,10 +69,12 @@ export const en = {
   // About
   about: {
     badge: "About Us",
-  title: "Your Trusted Advisor in",
-  titleHighlight: "Global Education",
-    description1: "Power Prestation is a consulting agency specializing in: Academic and professional mobility, University and study abroad advice, Scholarship and internship advice tailored to your profile.",
-    description2: "Our vision is to support students and researchers throughout their academic and professional journeys abroad, providing comprehensive guidance that opens doors to opportunities worldwide.",
+    title: "Your Trusted Advisor in",
+    titleHighlight: "Global Education",
+    description1:
+      "Power Prestation is a consulting agency specializing in: Academic and professional mobility, University and study abroad advice, Scholarship and internship advice tailored to your profile.",
+    description2:
+      "Our vision is to support students and researchers throughout their academic and professional journeys abroad, providing comprehensive guidance that opens doors to opportunities worldwide.",
     highlights: [
       "Personalized guidance tailored to your unique profile",
       "Expert team with international education experience",
@@ -86,19 +95,23 @@ export const en = {
     steps: {
       consultation: {
         title: "Initial Consultation",
-        description: "Share your goals, academic background, and preferences in a consultation session with our experts.",
+        description:
+          "Share your goals, academic background, and preferences in a consultation session with our experts.",
       },
       assessment: {
         title: "Profile Assessment",
-        description: "We analyze your profile to identify the best universities, programs, and scholarship opportunities for you.",
+        description:
+          "We analyze your profile to identify the best universities, programs, and scholarship opportunities for you.",
       },
       application: {
         title: "Application Support",
-        description: "From document preparation to essay writing, we guide you through every step of the application process.",
+        description:
+          "From document preparation to essay writing, we guide you through every step of the application process.",
       },
       visa: {
         title: "Visa & Departure",
-        description: "We assist with visa applications and pre-departure preparations to ensure a smooth transition abroad.",
+        description:
+          "We assist with visa applications and pre-departure preparations to ensure a smooth transition abroad.",
       },
     },
   },
@@ -113,17 +126,20 @@ export const en = {
       {
         name: "Marie K.",
         role: "Master's Student, France",
-        content: "Power Prestation made my dream of studying in France a reality. Their guidance through the scholarship process was invaluable. I couldn't have done it without them!",
+        content:
+          "Power Prestation made my dream of studying in France a reality. Their guidance through the scholarship process was invaluable. I couldn't have done it without them!",
       },
       {
         name: "Jean-Pierre M.",
         role: "PhD Candidate, Germany",
-        content: "The team's expertise in navigating complex university applications saved me countless hours. They found programs I never knew existed that were perfect for my research interests.",
+        content:
+          "The team's expertise in navigating complex university applications saved me countless hours. They found programs I never knew existed that were perfect for my research interests.",
       },
       {
         name: "Aminata D.",
         role: "Undergraduate, Canada",
-        content: "From visa guidance to finding the right university, Power Prestation was with me every step. Their personalized approach made all the difference in my journey.",
+        content:
+          "From visa guidance to finding the right university, Power Prestation was with me every step. Their personalized approach made all the difference in my journey.",
       },
     ],
   },
@@ -137,27 +153,33 @@ export const en = {
     items: [
       {
         question: "How much do your services cost?",
-        answer: "We offer various packages tailored to different needs and budgets. The initial consultation costs $25, and we'll provide transparent pricing based on the services you require. Contact us for a personalized quote.",
+        answer:
+          "We offer various packages tailored to different needs and budgets. The initial consultation costs $25, and we'll provide transparent pricing based on the services you require. Contact us for a personalized quote.",
       },
       {
         question: "Which countries do you help students apply to?",
-        answer: "We assist students in applying to universities in multiple countries worldwide, including popular destinations like France, Germany, Canada, USA, UK, Australia, and many more. Our expertise spans across Europe, North America, and beyond.",
+        answer:
+          "We assist students in applying to universities in multiple countries worldwide, including popular destinations like France, Germany, Canada, USA, UK, Australia, and many more. Our expertise spans across Europe, North America, and beyond.",
       },
       {
         question: "How long does the application process take?",
-        answer: "The application process typically takes 6-12 months depending on your target country and program. We recommend starting early to ensure the best preparation and maximize your chances of success.",
+        answer:
+          "The application process typically takes 6-12 months depending on your target country and program. We recommend starting early to ensure the best preparation and maximize your chances of success.",
       },
       {
         question: "Do you guarantee admission?",
-        answer: "While we cannot guarantee admission as final decisions rest with universities, our 95% success rate speaks to our expertise. We work diligently to present your strongest application and match you with programs where you have the best chances.",
+        answer:
+          "While we cannot guarantee admission as final decisions rest with universities, our 95% success rate speaks to our expertise. We work diligently to present your strongest application and match you with programs where you have the best chances.",
       },
       {
         question: "Can you help with scholarship applications?",
-        answer: "Absolutely! Scholarship assistance is one of our core services. We help identify scholarships that match your profile, guide you through application requirements, and review your scholarship essays and documents.",
+        answer:
+          "Absolutely! Scholarship assistance is one of our core services. We help identify scholarships that match your profile, guide you through application requirements, and review your scholarship essays and documents.",
       },
       {
         question: "What if I don't know which program or country to choose?",
-        answer: "That's exactly where we come in! Our comprehensive profile assessment will help identify programs and destinations that align with your academic background, career goals, personal preferences, and budget.",
+        answer:
+          "That's exactly where we come in! Our comprehensive profile assessment will help identify programs and destinations that align with your academic background, career goals, personal preferences, and budget.",
       },
     ],
   },
@@ -167,7 +189,8 @@ export const en = {
     badge: "Contact Us",
     title: "Ready to Start Your",
     titleHighlight: "Journey?",
-    subtitle: "Get in touch with our team for a free consultation. We're here to answer your questions and help you take the first step toward your international education goals.",
+    subtitle:
+      "Get in touch with our team for your consultation. We're here to answer your questions and help you take the first step toward your international education goals.",
     info: {
       email: "Email",
       phone: "Phone",
@@ -191,7 +214,8 @@ export const en = {
 
   // Footer
   footer: {
-    description: "Your trusted partner in academic and professional mobility. Helping students achieve their dreams of studying abroad since 2014.",
+    description:
+      "Your trusted partner in academic and professional mobility. Helping students achieve their dreams of studying abroad since 2014.",
     services: "Services",
     company: "Company",
     stayUpdated: "Stay Updated",
