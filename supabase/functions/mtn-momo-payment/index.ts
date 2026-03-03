@@ -351,10 +351,10 @@ serve(async (req: Request): Promise<Response> => {
           );
         }
 
-        // Check if API credentials are configured
-        if (!config.apiUserId || !config.apiKey) {
-          // For now, if credentials aren't set, update lead for manual verification
-          logStep("API credentials not fully configured, using manual flow");
+        // Always use manual verification flow for now
+        // MTN sandbox only supports EUR, not local currencies like XAF
+        {
+          logStep("Using manual verification flow");
           
           const localAmount = calculateLocalAmount(CONSULTATION_AMOUNT_USD, currency);
           const transactionId = `MTN-${Date.now()}-${generateUUID().substring(0, 8)}`;
@@ -390,61 +390,6 @@ serve(async (req: Request): Promise<Response> => {
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-
-        // Get access token
-        const tokenResult = await getAccessToken(config);
-        if (!tokenResult.success) {
-          return new Response(
-            JSON.stringify({ error: tokenResult.error }),
-            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        // Calculate amount in local currency
-        const localAmount = calculateLocalAmount(CONSULTATION_AMOUNT_USD, currency);
-        const externalId = `LEAD-${leadId}-${Date.now()}`;
-
-        // Request to Pay
-        const payResult = await requestToPay(
-          config,
-          tokenResult.accessToken!,
-          localAmount,
-          currency,
-          phoneNumber,
-          externalId,
-          "Power Prestation - Consultation Payment",
-          "Thank you for your payment"
-        );
-
-        if (!payResult.success) {
-          return new Response(
-            JSON.stringify({ error: payResult.error }),
-            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        // Update lead with pending payment
-        await supabase
-          .from("leads")
-          .update({
-            payment_status: "mobile_money_pending",
-            payment_id: payResult.referenceId,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", leadId);
-
-        return new Response(
-          JSON.stringify({ 
-            success: true,
-            referenceId: payResult.referenceId,
-            amount: localAmount,
-            currency,
-            usdEquivalent: CONSULTATION_AMOUNT_USD,
-            message: `Payment request sent to ${phoneNumber}. Please approve on your phone.`,
-            status: "pending"
-          }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
 
       case "check_status": {
