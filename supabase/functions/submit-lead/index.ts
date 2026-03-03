@@ -143,7 +143,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     await resend.emails.send({
       from: "Power Prestation <noreply@powerprestation.ca>",
-      replyTo: "powerprestation@gmail.com",
+      replyTo: "powerprestationint@gmail.com",
       to: [email],
       subject: "Welcome to Power Prestation - Your Academic Journey Starts Here! 🎓",
       html: generateWelcomeEmail(name, checkoutUrl),
@@ -152,7 +152,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification email to admin about new lead
     await resend.emails.send({
       from: "Power Prestation <noreply@powerprestation.ca>",
-      to: ["powerprestation@gmail.com"],
+      to: ["onboarding@resend.dev"],
       subject: `New Lead: ${escapeHtml(name)}`,
       html: `
         <h2>New Lead Submission</h2>
