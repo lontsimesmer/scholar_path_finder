@@ -22,14 +22,23 @@ const Login = () => {
   const redirectTo = searchParams.get("redirect") || "/checkout";
 
   useEffect(() => {
+    // Listen for auth state changes (handles OAuth callback)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate(redirectTo, { replace: true });
+      }
+    });
+
     // Check if user is already logged in
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(redirectTo);
+        navigate(redirectTo, { replace: true });
       }
     };
     checkAuth();
+
+    return () => subscription.unsubscribe();
   }, [navigate, redirectTo]);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
