@@ -1,5 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  createServiceRoleClient,
+  requireAuthenticatedUser,
+  requireOwnedLead,
+} from "../_shared/auth-utils.ts";
+import { ensureConsultationApplication } from "../_shared/student-applications.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,9 +90,10 @@ async function createApiUser(config: MoMoConfig): Promise<{ success: boolean; us
     const errorText = await response.text();
     logStep("API User creation failed", { status: response.status, error: errorText });
     return { success: false, error: `Failed to create API user: ${response.status} - ${errorText}` };
-  } catch (error: any) {
-    logStep("API User creation error", { error: error.message });
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    logStep("API User creation error", { error: message });
+    return { success: false, error: message };
   }
 }
 
@@ -112,9 +118,10 @@ async function getApiKey(config: MoMoConfig, userId: string): Promise<{ success:
     const errorText = await response.text();
     logStep("API Key retrieval failed", { status: response.status, error: errorText });
     return { success: false, error: `Failed to get API key: ${response.status} - ${errorText}` };
-  } catch (error: any) {
-    logStep("API Key retrieval error", { error: error.message });
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    logStep("API Key retrieval error", { error: message });
+    return { success: false, error: message };
   }
 }
 
@@ -143,9 +150,10 @@ async function getAccessToken(config: MoMoConfig): Promise<{ success: boolean; a
     const errorText = await response.text();
     logStep("Access token retrieval failed", { status: response.status, error: errorText });
     return { success: false, error: `Failed to get access token: ${response.status} - ${errorText}` };
-  } catch (error: any) {
-    logStep("Access token error", { error: error.message });
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    logStep("Access token error", { error: message });
+    return { success: false, error: message };
   }
 }
 
@@ -206,9 +214,10 @@ async function requestToPay(
     const errorText = await response.text();
     logStep("Request to Pay failed", { status: response.status, error: errorText });
     return { success: false, error: `Request to Pay failed: ${response.status} - ${errorText}` };
-  } catch (error: any) {
-    logStep("Request to Pay error", { error: error.message });
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    logStep("Request to Pay error", { error: message });
+    return { success: false, error: message };
   }
 }
 
@@ -243,9 +252,10 @@ async function checkTransactionStatus(
     const errorText = await response.text();
     logStep("Transaction status check failed", { status: response.status, error: errorText });
     return { success: false, error: `Failed to check status: ${response.status} - ${errorText}` };
-  } catch (error: any) {
-    logStep("Transaction status error", { error: error.message });
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    logStep("Transaction status error", { error: message });
+    return { success: false, error: message };
   }
 }
 
@@ -266,6 +276,7 @@ serve(async (req: Request): Promise<Response> => {
 
   try {
     const { action, leadId, phoneNumber, currency = "XAF", referenceId } = await req.json();
+    const user = await requireAuthenticatedUser(req);
     
     logStep("Request received", { action, leadId, currency });
 
@@ -290,9 +301,7 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createServiceRoleClient();
 
     // Get API credentials from environment
     const apiUserId = Deno.env.get("MTN_MOMO_API_USER_ID");
@@ -314,31 +323,9 @@ serve(async (req: Request): Promise<Response> => {
     // Handle different actions
     switch (action) {
       case "provision": {
-        // Create API user and get API key (sandbox only)
-        const userResult = await createApiUser(config);
-        if (!userResult.success) {
-          return new Response(
-            JSON.stringify({ error: userResult.error }),
-            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        
-        const keyResult = await getApiKey(config, userResult.userId!);
-        if (!keyResult.success) {
-          return new Response(
-            JSON.stringify({ error: keyResult.error }),
-            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        
         return new Response(
-          JSON.stringify({ 
-            success: true,
-            apiUserId: userResult.userId,
-            apiKey: keyResult.apiKey,
-            message: "API credentials provisioned. Store these securely!"
-          }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ error: "Provisioning is disabled from the public API" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
@@ -350,6 +337,8 @@ serve(async (req: Request): Promise<Response> => {
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
+
+        await requireOwnedLead(supabase, leadId, user.email);
 
         // Always use manual verification flow for now
         // MTN sandbox only supports EUR, not local currencies like XAF
@@ -384,7 +373,7 @@ serve(async (req: Request): Promise<Response> => {
               currency,
               usdEquivalent: CONSULTATION_AMOUNT_USD,
               targetAccount: "651831709",
-              message: `Please send ${localAmount} ${currency} (≈$${CONSULTATION_AMOUNT_USD} USD) to MTN number 651831709. Your payment will be verified shortly.`,
+              message: `Please send ${localAmount} ${currency} (~$${CONSULTATION_AMOUNT_USD} USD) to MTN number 651831709. Your payment will be verified shortly.`,
               status: "pending_verification"
             }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -393,12 +382,14 @@ serve(async (req: Request): Promise<Response> => {
       }
 
       case "check_status": {
-        if (!referenceId) {
+        if (!referenceId || !leadId) {
           return new Response(
-            JSON.stringify({ error: "Missing referenceId" }),
+            JSON.stringify({ error: "Missing referenceId or leadId" }),
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
+
+        await requireOwnedLead(supabase, leadId, user.email);
 
         if (!config.apiUserId || !config.apiKey) {
           return new Response(
@@ -433,9 +424,17 @@ serve(async (req: Request): Promise<Response> => {
             .from("leads")
             .update({
               payment_status: "paid",
+              status: "paid",
               updated_at: new Date().toISOString(),
             })
             .eq("id", leadId);
+
+          const applicationResult = await ensureConsultationApplication(supabase, user.id);
+          logStep("Student application ensured after MTN payment", {
+            studentId: user.id,
+            applicationId: applicationResult.application.id,
+            created: applicationResult.created,
+          });
         }
 
         return new Response(
@@ -470,10 +469,11 @@ serve(async (req: Request): Promise<Response> => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
     }
-  } catch (error: any) {
-    logStep("Unhandled error", { error: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    logStep("Unhandled error", { error: message });
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

@@ -1,32 +1,36 @@
-import { useState, useEffect } from "react";
-import { CreditCard, Loader2 } from "lucide-react";
+import * as React from "react";
+import { CreditCard, Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/language";
+import { createLogger, getErrorMessage } from "@/lib/logger";
 
 interface StripePaymentProps {
   leadId: string | null;
-  onSuccess: () => void;
 }
 
-export const StripePayment = ({ leadId, onSuccess }: StripePaymentProps) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [leadEmail, setLeadEmail] = useState<string | null>(null);
+const logger = createLogger("StripePayment");
 
-  // Fetch lead email if leadId is provided
-  useEffect(() => {
-    const fetchLeadEmail = async () => {
-      if (leadId) {
-        // We'll pass the leadId to the edge function which will look up the email
-        setLeadEmail(null); // Email will be fetched server-side
-      }
-    };
-    fetchLeadEmail();
-  }, [leadId]);
+export const StripePayment = ({ leadId }: StripePaymentProps) => {
+  const { toast } = useToast();
+  const { t } = useLanguage();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handlePayment = async () => {
+    if (!leadId) {
+      logger.warn("Card payment attempted without a lead identifier");
+      toast({
+        title: t.checkout.payment.missingLeadTitle,
+        description: t.checkout.payment.missingLeadDescription,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
+    logger.info("Creating Stripe checkout session", { leadId });
+
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: { leadId },
@@ -36,63 +40,71 @@ export const StripePayment = ({ leadId, onSuccess }: StripePaymentProps) => {
         throw new Error(error.message);
       }
 
-      if (data?.url) {
-        // Open Stripe Checkout in a new tab
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("No checkout URL received");
+      if (!data?.url) {
+        throw new Error(t.checkout.payment.noCheckoutUrlReceived);
       }
-    } catch (err: unknown) {
-      console.error("Checkout error:", err);
+
+      logger.info("Stripe checkout session created, redirecting", { leadId });
+      window.location.assign(data.url);
+    } catch (error: unknown) {
+      logger.error("Stripe checkout creation failed", {
+        leadId,
+        message: getErrorMessage(error, t.checkout.payment.errorDescription),
+      });
       toast({
-        title: "Payment Error",
-        description: err instanceof Error ? err.message : "Failed to initiate payment. Please try again.",
+        title: t.checkout.payment.errorTitle,
+        description: error instanceof Error ? error.message : t.checkout.payment.errorDescription,
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <div className="bg-muted/50 rounded-lg p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <CreditCard className="w-5 h-5 text-primary" />
-          <span className="font-medium">Secure Card Payment</span>
+    <div className="space-y-5">
+      <div className="rounded-[1.35rem] border border-border/70 bg-white/72 p-5 shadow-soft">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-[1rem] bg-primary/10 text-primary">
+            <CreditCard className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">{t.checkout.payment.stripeTitle}</p>
+            <p className="text-sm text-muted-foreground">{t.checkout.payment.stripeSubtitle}</p>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground mb-4">
-          Pay securely with Visa, Mastercard, American Express, or any major credit/debit card.
-        </p>
-        <div className="flex gap-2 mb-4">
-          <img src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg" alt="Visa" className="h-8" />
-          <img src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg" alt="Mastercard" className="h-8" />
-          <img src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg" alt="American Express" className="h-8" />
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {["Visa", "Mastercard", "Amex"].map((brand) => (
+            <span
+              key={brand}
+              className="rounded-full border border-border/70 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+            >
+              {brand}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-5 flex items-start gap-3 rounded-[1.2rem] border border-primary/10 bg-primary/6 p-4">
+          <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
+          <p className="text-sm leading-6 text-muted-foreground">
+            {t.checkout.payment.stripeHelper}
+          </p>
         </div>
       </div>
 
-      <Button
-        onClick={handlePayment}
-        disabled={isLoading}
-        className="w-full"
-        size="lg"
-      >
+      <Button onClick={handlePayment} disabled={isLoading} className="w-full" size="lg">
         {isLoading ? (
           <>
             <Loader2 className="animate-spin mr-2" size={18} />
-            Redirecting to Checkout...
+            {t.checkout.payment.redirecting}
           </>
         ) : (
           <>
             <CreditCard className="mr-2" size={18} />
-            Pay $25.00 with Card
+            {t.checkout.payment.payWithCard}
           </>
         )}
       </Button>
-
-      <p className="text-xs text-center text-muted-foreground">
-        You will be redirected to Stripe's secure checkout page
-      </p>
     </div>
   );
 };
