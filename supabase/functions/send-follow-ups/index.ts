@@ -19,14 +19,10 @@ const handler = async (req: Request): Promise<Response> => {
     const authHeader = req.headers.get("authorization");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     
-    // Allow requests with service role key in Authorization header (from cron jobs)
+    // Only allow requests with service role key in Authorization header
     const isServiceRole = authHeader === `Bearer ${supabaseServiceKey}`;
     
-    // Also check for Supabase cron-specific headers
-    const isCronJob = req.headers.get("x-supabase-cron") === "true";
-    
-    // Only allow if request comes from service role or cron job
-    if (!isServiceRole && !isCronJob) {
+    if (!isServiceRole) {
       console.error("Unauthorized access attempt to send-follow-ups");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),

@@ -58,31 +58,27 @@ const Checkout = () => {
     await supabase.auth.signOut();
   };
 
-  const handleCardPayment = async (data: CardPaymentData) => {
+  const handleCardPayment = async (_data: CardPaymentData) => {
     setIsProcessingCard(true);
     try {
-      // For now, show a message that card payment is being processed
-      // In production, this would connect to UBA payment gateway
-      toast({
-        title: "Processing Card Payment",
-        description: "Your card payment is being processed. Please wait...",
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { leadId },
       });
-      
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Payment Submitted",
-        description: "Your payment has been submitted for processing. We'll notify you once confirmed.",
-      });
-      
-      setShowCardModal(false);
-      // Navigate to success page or show confirmation
-      navigate("/payment-success");
-    } catch (error: any) {
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.url) {
+        setShowCardModal(false);
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error: unknown) {
       toast({
         title: "Payment Error",
-        description: error.message || "Failed to process card payment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to process card payment. Please try again.",
         variant: "destructive",
       });
     } finally {
