@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Login from "./pages/Login";
+import Verify2FA from "./pages/Verify2FA";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
