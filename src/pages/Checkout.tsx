@@ -24,18 +24,28 @@ const Checkout = () => {
     const id = searchParams.get("leadId");
     setLeadId(id);
 
-    // Optional auth: show user info if signed in, but don't require login
+    const redirectQuery = id ? `?redirect=${encodeURIComponent(`/checkout?leadId=${id}`)}` : "";
+
+    // Required auth: redirect to /login if no session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setUser({ email: session.user.email });
+      if (!session) {
+        navigate(`/login${redirectQuery}`, { replace: true });
+        return;
+      }
+      setUser({ email: session.user.email });
       setIsLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session ? { email: session.user.email } : null);
+      if (!session) {
+        navigate(`/login${redirectQuery}`, { replace: true });
+        return;
+      }
+      setUser({ email: session.user.email });
     });
 
     return () => subscription.unsubscribe();
-  }, [searchParams]);
+  }, [searchParams, navigate]);
 
   const handlePaymentSuccess = () => {
     navigate("/payment-success");

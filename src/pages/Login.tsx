@@ -74,10 +74,21 @@ const Login = () => {
         },
       });
       if (error) throw error;
-      toast({
-        title: "Account Created",
-        description: "You can now sign in with your credentials.",
+
+      // Trigger email OTP for 2FA verification at signup
+      const { error: otpError } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
       });
+      if (otpError) throw otpError;
+
+      toast({
+        title: "Verify Your Email",
+        description: "We sent a 6-digit code to your inbox.",
+      });
+
+      const params = new URLSearchParams({ email, redirect: redirectTo });
+      navigate(`/verify-2fa?${params.toString()}`);
     } catch (error: unknown) {
       toast({
         title: "Sign Up Failed",
