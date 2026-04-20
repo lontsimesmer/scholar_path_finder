@@ -24,31 +24,18 @@ const Checkout = () => {
     const id = searchParams.get("leadId");
     setLeadId(id);
 
-    // Check authentication - require login for checkout
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setUser({ email: session.user.email });
-        setIsLoading(false);
-      } else {
-        // Redirect to login if not authenticated
-        navigate(`/login?redirect=/checkout${id ? `?leadId=${id}` : ''}`);
-      }
-    };
-    checkAuth();
+    // Optional auth: show user info if signed in, but don't require login
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setUser({ email: session.user.email });
+      setIsLoading(false);
+    });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser({ email: session.user.email });
-        setIsLoading(false);
-      } else {
-        navigate(`/login?redirect=/checkout${leadId ? `?leadId=${leadId}` : ''}`);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session ? { email: session.user.email } : null);
     });
 
     return () => subscription.unsubscribe();
-  }, [searchParams, navigate, leadId]);
+  }, [searchParams]);
 
   const handlePaymentSuccess = () => {
     navigate("/payment-success");
