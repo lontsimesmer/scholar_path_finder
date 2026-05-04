@@ -10,7 +10,6 @@ INSERT INTO auth.users (
   email,
   encrypted_password,
   email_confirmed_at,
-  confirmed_at,
   confirmation_token,
   recovery_token,
   email_change,
@@ -31,7 +30,6 @@ VALUES
     'admin@powerprestation.com',
     crypt('AdminPower123!', gen_salt('bf')),
     now(),
-    now(),
     '',
     '',
     '',
@@ -39,19 +37,18 @@ VALUES
     '',
     '',
     '{"provider":"email","providers":["email"]}',
-    '{"full_name":"Official Admin","email":"admin@powerprestation.com","email_verified":true,"phone_verified":false,"sub":"00000000-0000-0000-0000-000000000000"}',
+    '{"first_name":"Official","last_name":"Admin","email":"admin@powerprestation.com","email_verified":true,"phone_verified":false,"sub":"00000000-0000-0000-0000-000000000000"}',
     now(),
     now()
   ),
   (
     '00000000-0000-0000-0000-000000000000',
-    'd1111111-1111-1111-1111-111111111111',
+    'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
     'authenticated',
     'authenticated',
     'jean.dupont@example.com',
     crypt('password123', gen_salt('bf')),
     now(),
-    now(),
     '',
     '',
     '',
@@ -59,19 +56,18 @@ VALUES
     '',
     '',
     '{"provider":"email","providers":["email"]}',
-    '{"full_name":"Jean Dupont","email":"jean.dupont@example.com","email_verified":true,"phone_verified":false,"sub":"d1111111-1111-1111-1111-111111111111"}',
+    '{"first_name":"Jean","last_name":"Dupont","email":"jean.dupont@example.com","email_verified":true,"phone_verified":false,"sub":"a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"}',
     now(),
     now()
   ),
   (
     '00000000-0000-0000-0000-000000000000',
-    'd2222222-2222-2222-2222-222222222222',
+    'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
     'authenticated',
     'authenticated',
     'amina.njoya@example.com',
     crypt('password123', gen_salt('bf')),
     now(),
-    now(),
     '',
     '',
     '',
@@ -79,18 +75,17 @@ VALUES
     '',
     '',
     '{"provider":"email","providers":["email"]}',
-    '{"full_name":"Amina Njoya","email":"amina.njoya@example.com","email_verified":true,"phone_verified":false,"sub":"d2222222-2222-2222-2222-222222222222"}',
+    '{"first_name":"Amina","last_name":"Njoya","email":"amina.njoya@example.com","email_verified":true,"phone_verified":false,"sub":"c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f"}',
     now(),
     now()
   ),
   (
     '00000000-0000-0000-0000-000000000000',
-    'd3333333-3333-3333-3333-333333333333',
+    'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b',
     'authenticated',
     'authenticated',
     'kevin.kamga@example.com',
     crypt('password123', gen_salt('bf')),
-    now(),
     now(),
     '',
     '',
@@ -99,7 +94,7 @@ VALUES
     '',
     '',
     '{"provider":"email","providers":["email"]}',
-    '{"full_name":"Kevin Kamga","email":"kevin.kamga@example.com","email_verified":true,"phone_verified":false,"sub":"d3333333-3333-3333-3333-333333333333"}',
+    '{"first_name":"Kevin","last_name":"Kamga","email":"kevin.kamga@example.com","email_verified":true,"phone_verified":false,"sub":"e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b"}',
     now(),
     now()
   )
@@ -109,7 +104,6 @@ ON CONFLICT (id) DO UPDATE SET
   email = EXCLUDED.email,
   encrypted_password = EXCLUDED.encrypted_password,
   email_confirmed_at = EXCLUDED.email_confirmed_at,
-  confirmed_at = EXCLUDED.confirmed_at,
   confirmation_token = EXCLUDED.confirmation_token,
   recovery_token = EXCLUDED.recovery_token,
   email_change = EXCLUDED.email_change,
@@ -142,31 +136,31 @@ VALUES
     now()
   ),
   (
-    '1d111111-1111-1111-1111-111111111111',
-    'd1111111-1111-1111-1111-111111111111',
-    '{"sub":"d1111111-1111-1111-1111-111111111111","email":"jean.dupont@example.com","email_verified":true,"phone_verified":false}',
+    'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e',
+    'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+    '{"sub":"a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d","email":"jean.dupont@example.com","email_verified":true,"phone_verified":false}',
     'email',
-    'd1111111-1111-1111-1111-111111111111',
+    'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
     now(),
     now(),
     now()
   ),
   (
-    '1d222222-2222-2222-2222-222222222222',
-    'd2222222-2222-2222-2222-222222222222',
-    '{"sub":"d2222222-2222-2222-2222-222222222222","email":"amina.njoya@example.com","email_verified":true,"phone_verified":false}',
+    'd4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a',
+    'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
+    '{"sub":"c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f","email":"amina.njoya@example.com","email_verified":true,"phone_verified":false}',
     'email',
-    'd2222222-2222-2222-2222-222222222222',
+    'c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f',
     now(),
     now(),
     now()
   ),
   (
-    '1d333333-3333-3333-3333-333333333333',
-    'd3333333-3333-3333-3333-333333333333',
-    '{"sub":"d3333333-3333-3333-3333-333333333333","email":"kevin.kamga@example.com","email_verified":true,"phone_verified":false}',
+    'f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c',
+    'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b',
+    '{"sub":"e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b","email":"kevin.kamga@example.com","email_verified":true,"phone_verified":false}',
     'email',
-    'd3333333-3333-3333-3333-333333333333',
+    'e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b',
     now(),
     now(),
     now()
@@ -178,21 +172,30 @@ ON CONFLICT (provider_id, provider) DO UPDATE SET
   updated_at = EXCLUDED.updated_at;
 
 -- 2. Student Profiles
-INSERT INTO public.student_profiles (id, full_name, email, current_degree, target_country, target_program)
+INSERT INTO public.student_profiles (
+  id,
+  first_name,
+  last_name,
+  email,
+  current_degree,
+  target_country,
+  target_program
+)
 VALUES
-  ('d1111111-1111-1111-1111-111111111111', 'Jean Dupont', 'jean.dupont@example.com', 'Licence en Droit', 'France', 'Master Droit International'),
-  ('d2222222-2222-2222-2222-222222222222', 'Amina Njoya', 'amina.njoya@example.com', 'Baccalauréat C', 'Canada', 'Bachelor Génie Logiciel'),
-  ('d3333333-3333-3333-3333-333333333333', 'Kevin Kamga', 'kevin.kamga@example.com', 'Master en Physique', 'Allemagne', 'PhD Quantum Computing')
+  ('a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d', 'Jean', 'Dupont', 'jean.dupont@example.com', 'Licence en Droit', 'France', 'Master Droit International'),
+  ('c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f', 'Amina', 'Njoya', 'amina.njoya@example.com', 'Baccalauréat C', 'Canada', 'Bachelor Génie Logiciel'),
+  ('e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b', 'Kevin', 'Kamga', 'kevin.kamga@example.com', 'Master en Physique', 'Allemagne', 'PhD Quantum Computing')
 ON CONFLICT (id) DO UPDATE SET
-  full_name = EXCLUDED.full_name,
+  first_name = EXCLUDED.first_name,
+  last_name = EXCLUDED.last_name,
   target_country = EXCLUDED.target_country;
 
 -- 3. Student Applications (Timeline)
 INSERT INTO public.student_applications (student_id, status, notes)
 VALUES
-  ('d1111111-1111-1111-1111-111111111111', 'university_selection', 'Étudiant très motivé, dossier en cours de constitution.'),
-  ('d2222222-2222-2222-2222-222222222222', 'consultation_paid', 'Consultation initiale effectuée. En attente de l''évaluation du profil.'),
-  ('d3333333-3333-3333-3333-333333333333', 'visa_processing', 'Admission reçue de TU Berlin. Procédure visa en cours.')
+  ('a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d', 'university_selection', 'Étudiant très motivé, dossier en cours de constitution.'),
+  ('c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f', 'consultation_paid', 'Consultation initiale effectuée. En attente de l''évaluation du profil.'),
+  ('e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b', 'visa_processing', 'Admission reçue de TU Berlin. Procédure visa en cours.')
 ON CONFLICT DO NOTHING;
 
 -- 4. Blog Posts Seeds (Bilingual Unified Structure)
@@ -203,7 +206,7 @@ INSERT INTO public.blog_posts (
 )
 VALUES
   (
-    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1',
+    '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
     'Comment obtenir une bourse pour étudier au Canada depuis le Cameroun',
     'comment-obtenir-bourse-canada-cameroun',
     '<h2>Projet d''études au Canada</h2><p>Le guide complet pour réussir son admission...</p>',
@@ -216,7 +219,7 @@ VALUES
     'published'
   ),
   (
-    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2',
+    '8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e',
     'Visa étudiant France: les points à vérifier avant le dépôt',
     'visa-etudiant-france-points-a-verifier',
     '<h2>Réussir son Visa France</h2><p>Checklist complète pour Campus France...</p>',

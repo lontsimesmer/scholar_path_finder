@@ -3,7 +3,6 @@ param(
   [ValidateSet(
     "start",
     "stop",
-    "reset",
     "status"
   )]
   [string]$Command
@@ -19,11 +18,6 @@ switch ($Command) {
 
   "stop" {
     npx supabase stop
-    break
-  }
-
-  "reset" {
-    npx supabase db reset
     break
   }
 
