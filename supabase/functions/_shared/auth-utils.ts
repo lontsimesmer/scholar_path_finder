@@ -33,6 +33,33 @@ export const createServiceRoleClient = () => {
   return createClient(supabaseUrl, supabaseServiceKey);
 };
 
+export const tryGetAuthenticatedUser = async (req: Request) => {
+  const authorization = req.headers.get("Authorization") || req.headers.get("authorization");
+  if (!authorization?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  try {
+    const token = authorization.replace("Bearer ", "").trim();
+    if (!token) {
+      return null;
+    }
+
+    const supabase = createAnonClient();
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user?.email) {
+      return null;
+    }
+
+    return {
+      id: data.user.id,
+      email: normalizeEmail(data.user.email),
+    };
+  } catch {
+    return null;
+  }
+};
+
 export const requireAuthenticatedUser = async (req: Request) => {
   const token = getBearerToken(req);
   const supabase = createAnonClient();
@@ -46,6 +73,25 @@ export const requireAuthenticatedUser = async (req: Request) => {
     id: data.user.id,
     email: normalizeEmail(data.user.email),
   };
+};
+
+export const requireAdminUser = async (supabase: SupabaseClient, req: Request) => {
+  const user = await requireAuthenticatedUser(req);
+  const { data, error } = await supabase
+    .from("admins")
+    .select("email")
+    .eq("email", user.email)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to verify admin access: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("Admin access is required");
+  }
+
+  return user;
 };
 
 export const requireOwnedLead = async (

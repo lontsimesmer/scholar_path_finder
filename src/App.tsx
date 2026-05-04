@@ -11,13 +11,17 @@ const Index = lazy(() => import("./pages/Index"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Login = lazy(() => import("./pages/Login"));
+const VerifyContact = lazy(() => import("./pages/VerifyContact"));
 const StartProcedure = lazy(() => import("./pages/StartProcedure"));
 const LegalDocument = lazy(() => import("./pages/LegalDocument"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const AdminCRM = lazy(() => import("./pages/AdminCRM"));
+const AdminCRMStudent = lazy(() => import("./pages/AdminCRMStudent"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminLeads = lazy(() => import("./pages/AdminLeads"));
+const AdminPayments = lazy(() => import("./pages/AdminPayments"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -44,12 +48,16 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/verify-contact" element={<VerifyContact />} />
               <Route path="/start-procedure" element={<StartProcedure />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/legal/:document" element={<LegalDocument />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
+              <Route path="/admin/leads" element={<AdminLeads />} />
+              <Route path="/admin/payments" element={<AdminPayments />} />
+              <Route path="/admin/students/:studentId" element={<AdminCRMStudent />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/admin/crm" element={<AdminCRM />} />

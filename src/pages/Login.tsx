@@ -10,7 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/language";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ADMIN_DASHBOARD_PATH, isAdminEmail } from "@/lib/admin-session";
+import {
+  buildVerifyContactUrl,
+  type ContactVerificationStatus,
+} from "@/lib/contact-verification";
 import { createLogger, getErrorMessage } from "@/lib/logger";
+import type { User } from "@supabase/supabase-js";
 
 const sanitizeRedirect = (value: string | null) => {
   if (!value || !value.startsWith("/")) {
@@ -21,11 +27,19 @@ const sanitizeRedirect = (value: string | null) => {
 
 const logger = createLogger("Login");
 
+type LoginTextExtensions = typeof import("@/i18n/translations/en").en.login & {
+  verificationPendingTitle: string;
+  verificationPendingDescription: string;
+  verificationRequiredTitle: string;
+  verificationRequiredDescription: string;
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const loginText = t.login as LoginTextExtensions;
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");
@@ -34,6 +48,89 @@ const Login = () => {
   const redirectTo = sanitizeRedirect(searchParams.get("redirect"));
 
   useEffect(() => {
+    const resolveVerificationStatus = async (user: User) => {
+      if (!user.id) {
+        return null;
+      }
+
+      const { data, error } = await supabase.functions.invoke("get-contact-verification-status", {
+        body: {},
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return (data as ContactVerificationStatus | null) ?? null;
+    };
+
+    const redirectToVerification = async (user: User, channels: Array<"email" | "sms">) => {
+      navigate(
+        buildVerifyContactUrl({
+          email: user.email ?? email,
+          channels,
+          redirect: redirectTo,
+        }),
+        { replace: true },
+      );
+    };
+
+    const redirectAuthenticatedUser = async (user: User) => {
+      logger.info("Resolving post-auth redirect", {
+        userId: user.id,
+        redirectTo,
+      });
+
+      try {
+        const verificationStatus = await resolveVerificationStatus(user);
+        if (
+          verificationStatus?.enabled &&
+          verificationStatus.verificationRequired &&
+          verificationStatus.pendingChannels.length > 0
+        ) {
+          logger.info("Authenticated user still has pending contact verification", {
+            userId: user.id,
+            pendingChannels: verificationStatus.pendingChannels,
+          });
+          toast({
+            title: loginText.verificationRequiredTitle,
+            description: loginText.verificationRequiredDescription,
+          });
+          await redirectToVerification(user, verificationStatus.pendingChannels);
+          return;
+        }
+      } catch (verificationError: unknown) {
+        logger.error("Failed to resolve contact verification status after authentication", {
+          userId: user.id,
+          message: getErrorMessage(verificationError),
+        });
+      }
+
+      let admin = false;
+      try {
+        admin = await isAdminEmail(user.email);
+      } catch (adminError: unknown) {
+        logger.error("Failed to check admin status after authentication", {
+          userId: user.id,
+          message: getErrorMessage(adminError),
+        });
+      }
+
+      if (admin) {
+        logger.info("Authenticated user is an admin, redirecting to the admin dashboard", {
+          userId: user.id,
+        });
+        navigate(ADMIN_DASHBOARD_PATH, { replace: true });
+        return;
+      }
+
+      logger.info("Authenticated user is not an admin, redirecting", {
+        userId: user.id,
+        redirectTo,
+      });
+      navigate(redirectTo, { replace: true });
+    };
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -41,21 +138,25 @@ const Login = () => {
           userId: session.user.id,
           redirectTo,
         });
-        navigate(redirectTo, { replace: true });
+        await redirectAuthenticatedUser(session.user);
       }
     };
-    checkAuth();
+    void checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       logger.info("Login auth state changed", { event, hasSession: Boolean(session) });
 
+      if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") {
+        return;
+      }
+
       if (session) {
-        navigate(redirectTo, { replace: true });
+        void redirectAuthenticatedUser(session.user);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, redirectTo]);
+  }, [email, loginText.verificationRequiredDescription, loginText.verificationRequiredTitle, navigate, redirectTo, toast]);
 
   const handleEmailSignIn = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -71,31 +172,7 @@ const Login = () => {
       logger.info("Sign in successful", { userId: data.user?.id });
 
       if (data.user) {
-        // Check if user is admin
-        const { data: admin, error: adminError } = await supabase
-          .from("admins")
-          .select("email")
-          .eq("email", data.user.email)
-          .maybeSingle();
-
-        if (adminError) {
-          logger.error("Failed to check admin status after sign in", {
-            message: adminError.message,
-          });
-        }
-
-        if (admin) {
-          logger.info("Signed in user is an admin, redirecting to CRM", {
-            userId: data.user.id,
-          });
-          navigate("/admin/crm", { replace: true });
-        } else {
-          logger.info("Signed in user is not an admin, redirecting", {
-            userId: data.user.id,
-            redirectTo,
-          });
-          navigate(redirectTo, { replace: true });
-        }
+        logger.info("Delegating post-sign-in routing", { userId: data.user.id });
       }
     } catch (error: unknown) {
       const message = getErrorMessage(error);
@@ -111,9 +188,11 @@ const Login = () => {
     setIsLoading(true);
     logger.info("Attempting email sign up", { hasEmail: Boolean(email.trim()) });
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
-      logger.info("Sign up succeeded, awaiting email confirmation");
+      logger.info("Sign up succeeded", { userId: data.user?.id });
+
+      logger.info("Sign up completed without custom verification");
       toast({ title: t.login.signUpTab, description: t.login.signUpSuccessDescription });
     } catch (error: unknown) {
       const message = getErrorMessage(error);

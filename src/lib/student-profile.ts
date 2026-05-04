@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 export interface StudentProfileRecord {
   id: string;
   email: string | null;
-  full_name: string | null;
   phone_number: string | null;
   first_name: string | null;
   last_name: string | null;
@@ -21,6 +20,13 @@ export interface StudentProfileRecord {
 export type StudentProfileReviewStatus = "pending" | "validated" | "correction_requested";
 
 const trimValue = (value: string | null | undefined) => value?.trim() ?? "";
+const inFlightProfileRequests = new Map<string, Promise<StudentProfileRecord>>();
+
+const isDuplicateProfileInsertError = (error: unknown) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  error.code === "23505";
 
 export const buildStudentFullName = (
   firstName: string | null | undefined,
@@ -30,12 +36,34 @@ export const buildStudentFullName = (
   return parts.length > 0 ? parts.join(" ") : null;
 };
 
+export const splitStudentFullName = (fullName: string | null | undefined) => {
+  const normalizedFullName = trimValue(fullName);
+  if (!normalizedFullName) {
+    return {
+      firstName: "",
+      lastName: "",
+    };
+  }
+
+  const parts = normalizedFullName.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) {
+    return {
+      firstName: parts[0],
+      lastName: "",
+    };
+  }
+
+  return {
+    firstName: parts.slice(0, -1).join(" "),
+    lastName: parts[parts.length - 1],
+  };
+};
+
 export const getStudentDisplayName = (
-  profile: Pick<StudentProfileRecord, "full_name" | "first_name" | "last_name"> | null | undefined,
+  profile: Pick<StudentProfileRecord, "first_name" | "last_name"> | null | undefined,
   fallbackEmail?: string | null,
 ) =>
   buildStudentFullName(profile?.first_name, profile?.last_name) ||
-  trimValue(profile?.full_name) ||
   trimValue(fallbackEmail?.split("@")[0]) ||
   "Student";
 
@@ -93,7 +121,7 @@ export const hasValidatedProcedureProfile = (
     | undefined,
 ) => hasRequiredProcedureProfile(profile) && isStudentProfileLocked(profile);
 
-export const ensureStudentProfile = async (
+const loadStudentProfile = async (
   user: Pick<User, "id" | "email">,
 ) => {
   const { data: existingProfile, error: selectError } = await supabase
@@ -120,8 +148,38 @@ export const ensureStudentProfile = async (
     .single();
 
   if (error) {
+    if (isDuplicateProfileInsertError(error)) {
+      const { data: concurrentProfile, error: concurrentSelectError } = await supabase
+        .from("student_profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (concurrentSelectError) {
+        throw concurrentSelectError;
+      }
+
+      return concurrentProfile as StudentProfileRecord;
+    }
+
     throw error;
   }
 
   return data as StudentProfileRecord;
+};
+
+export const ensureStudentProfile = async (
+  user: Pick<User, "id" | "email">,
+) => {
+  const existingRequest = inFlightProfileRequests.get(user.id);
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = loadStudentProfile(user).finally(() => {
+    inFlightProfileRequests.delete(user.id);
+  });
+
+  inFlightProfileRequests.set(user.id, request);
+  return request;
 };

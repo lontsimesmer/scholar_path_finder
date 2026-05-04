@@ -2,10 +2,22 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
-import { createAnonClient, normalizeEmail } from "../_shared/auth-utils.ts";
+import { normalizeEmail, tryGetAuthenticatedUser } from "../_shared/auth-utils.ts";
+import {
+  buildVerificationAccessToken,
+  type VerificationChannel,
+  requiresContactVerification,
+  resolveVerificationChannels,
+  upsertStudentContactVerification,
+} from "../_shared/contact-verification.ts";
 import { generateWelcomeEmail } from "../_shared/email-templates.ts";
 import { escapeHtml } from "../_shared/html-utils.ts";
 import { createLogger, getErrorMessage } from "../_shared/logger.ts";
+import {
+  getPhoneNumberComparisonKey,
+  normalizePhoneNumber,
+} from "../_shared/phone-utils.ts";
+import { enforceRequestRateLimit, getClientAddress } from "../_shared/request-throttle.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +25,9 @@ const corsHeaders = {
 };
 
 interface LeadRequest {
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone?: string;
   message: string;
@@ -26,11 +40,6 @@ type EmailDeliveryInput = {
   html: string;
   from?: string;
   replyTo?: string;
-};
-
-type AuthenticatedUser = {
-  id: string;
-  email: string;
 };
 
 type LeadRecord = {
@@ -61,31 +70,28 @@ const RESUMABLE_PAYMENT_STATUSES = new Set([
 
 const logger = createLogger("SUBMIT-LEAD");
 
-const getAuthenticatedUserFromRequest = async (req: Request): Promise<AuthenticatedUser | null> => {
-  const authorization = req.headers.get("Authorization") || req.headers.get("authorization");
-  if (!authorization?.startsWith("Bearer ")) {
-    return null;
+const jsonResponse = (body: Record<string, unknown>, status: number) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const isUniqueViolationError = (error: unknown) =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  error.code === "23505";
+
+const isStudentPhoneUniqueViolation = (error: unknown) => {
+  if (!isUniqueViolationError(error)) {
+    return false;
   }
 
-  try {
-    const token = authorization.replace("Bearer ", "").trim();
-    if (!token) {
-      return null;
-    }
-
-    const anonClient = createAnonClient();
-    const { data, error } = await anonClient.auth.getUser(token);
-    if (error || !data.user?.email) {
-      return null;
-    }
-
-    return {
-      id: data.user.id,
-      email: normalizeEmail(data.user.email),
-    };
-  } catch {
-    return null;
+  if (!("message" in error) || typeof error.message !== "string") {
+    return false;
   }
+
+  return error.message.includes("student_profiles_phone_number_unique_idx");
 };
 
 const sendEmailIfConfigured = async (
@@ -126,6 +132,11 @@ const isExistingUserConflict = (message: string) => {
     normalizedMessage.includes("user already registered")
   );
 };
+
+const trimValue = (value: string | null | undefined) => value?.trim() ?? "";
+
+const buildFullName = (firstName: string, lastName: string) =>
+  [trimValue(firstName), trimValue(lastName)].filter(Boolean).join(" ").trim();
 
 const resolveLeadForEmail = async (
   supabase: ReturnType<typeof createClient>,
@@ -221,7 +232,8 @@ const syncStudentProfileContact = async (
   input: {
     userId: string | null;
     email: string;
-    fullName: string;
+    firstName?: string;
+    lastName?: string;
     phone?: string;
   },
 ) => {
@@ -229,21 +241,64 @@ const syncStudentProfileContact = async (
     return;
   }
 
+  const profilePayload: Record<string, string | null> = {
+    id: input.userId,
+    email: input.email,
+    phone_number: normalizePhoneNumber(input.phone),
+    updated_at: new Date().toISOString(),
+  };
+
+  if (typeof input.firstName === "string") {
+    profilePayload.first_name = trimValue(input.firstName) || null;
+  }
+
+  if (typeof input.lastName === "string") {
+    profilePayload.last_name = trimValue(input.lastName) || null;
+  }
+
   const { error } = await supabase.from("student_profiles").upsert(
-    {
-      id: input.userId,
-      email: input.email,
-      full_name: input.fullName,
-      phone_number: input.phone ?? null,
-      updated_at: new Date().toISOString(),
-    },
+    profilePayload,
     {
       onConflict: "id",
     },
   );
 
   if (error) {
-    throw new Error(`Failed to synchronize the student profile contact details: ${error.message}`);
+    throw error;
+  }
+};
+
+const ensureUniqueStudentPhoneNumber = async (
+  supabase: ReturnType<typeof createClient>,
+  input: {
+    phone: string | null | undefined;
+    userId: string | null;
+  },
+) => {
+  const submittedPhoneKey = getPhoneNumberComparisonKey(input.phone);
+  if (!submittedPhoneKey) {
+    return;
+  }
+
+  const { data: profiles, error } = await supabase
+    .from("student_profiles")
+    .select("id, phone_number")
+    .not("phone_number", "is", null);
+
+  if (error) {
+    throw new Error(`Failed to validate phone number uniqueness: ${error.message}`);
+  }
+
+  const conflictingProfile = (profiles ?? []).find((profile) => {
+    if (!profile?.id || profile.id === input.userId) {
+      return false;
+    }
+
+    return getPhoneNumberComparisonKey(profile.phone_number) === submittedPhoneKey;
+  });
+
+  if (conflictingProfile) {
+    throw new Error("PHONE_ALREADY_USED");
   }
 };
 
@@ -253,15 +308,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { name, email, phone, message, password }: LeadRequest = await req.json();
-    const normalizedName = name.trim();
+    const { name, firstName, lastName, email, phone, message, password }: LeadRequest = await req.json();
+    const normalizedFirstName = trimValue(firstName);
+    const normalizedLastName = trimValue(lastName);
+    const normalizedName = buildFullName(normalizedFirstName, normalizedLastName) || trimValue(name);
     const normalizedEmail = email.toLowerCase().trim();
-    const normalizedPhone = phone?.trim() || undefined;
+    const normalizedPhone = normalizePhoneNumber(phone);
     const normalizedMessage = message.trim();
     const normalizedPassword = password?.trim() || "";
-    const authenticatedUser = await getAuthenticatedUserFromRequest(req);
+    const authenticatedUser = await tryGetAuthenticatedUser(req);
 
     logger.info("Lead submission received", {
+      hasFirstName: Boolean(normalizedFirstName),
+      hasLastName: Boolean(normalizedLastName),
       hasPhone: Boolean(normalizedPhone),
       hasPassword: normalizedPassword.length > 0,
       hasAuthenticatedUser: Boolean(authenticatedUser),
@@ -274,58 +333,69 @@ const handler = async (req: Request): Promise<Response> => {
         hasEmail: Boolean(normalizedEmail),
         hasMessage: Boolean(normalizedMessage),
       });
-      return new Response(JSON.stringify({ error: "Name, email, and message are required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return jsonResponse({ error: "Name, email, and message are required" }, 400);
+    }
+
+    if ((normalizedFirstName && !normalizedLastName) || (!normalizedFirstName && normalizedLastName)) {
+      logger.warn("Lead submission rejected because first name or last name is missing", {
+        hasFirstName: Boolean(normalizedFirstName),
+        hasLastName: Boolean(normalizedLastName),
       });
+      return jsonResponse({ error: "First name and last name are required together" }, 400);
     }
 
     if (normalizedName.length > 100) {
       logger.warn("Lead submission rejected because name is too long", { length: normalizedName.length });
-      return new Response(JSON.stringify({ error: "Name must be less than 100 characters" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Name must be less than 100 characters" }, 400);
     }
 
     if (normalizedEmail.length > 255 || !EMAIL_REGEX.test(normalizedEmail)) {
       logger.warn("Lead submission rejected because email is invalid");
-      return new Response(JSON.stringify({ error: "Invalid email address" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Invalid email address" }, 400);
+    }
+
+    if (phone && !normalizedPhone) {
+      logger.warn("Lead submission rejected because phone is invalid");
+      return jsonResponse({ error: "Invalid phone number", code: "INVALID_PHONE_NUMBER" }, 400);
     }
 
     if (normalizedPhone && normalizedPhone.length > 20) {
       logger.warn("Lead submission rejected because phone is too long", { length: normalizedPhone.length });
-      return new Response(JSON.stringify({ error: "Phone number must be less than 20 characters" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Phone number must be less than 20 characters" }, 400);
     }
 
     if (normalizedMessage.length > 2000) {
       logger.warn("Lead submission rejected because message is too long", { length: normalizedMessage.length });
-      return new Response(JSON.stringify({ error: "Message must be less than 2000 characters" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Message must be less than 2000 characters" }, 400);
     }
 
     if (!authenticatedUser && normalizedPassword.length > 0 && normalizedPassword.length < MIN_PASSWORD_LENGTH) {
       logger.warn("Lead submission rejected because password is too short");
-      return new Response(
-        JSON.stringify({ error: `Password must contain at least ${MIN_PASSWORD_LENGTH} characters` }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+      return jsonResponse(
+        { error: `Password must contain at least ${MIN_PASSWORD_LENGTH} characters` },
+        400,
       );
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const clientIp = getClientAddress(req);
+
+    const ipRateLimit = await enforceRequestRateLimit(supabase, {
+      scope: "submit_lead:ip",
+      bucketKey: clientIp,
+      maxRequests: 20,
+      windowSeconds: 60 * 60,
+      metadata: {
+        email: normalizedEmail,
+      },
+    });
+
+    if (!ipRateLimit.allowed) {
+      logger.warn("Lead submission blocked by IP rate limit", { clientIp });
+      return jsonResponse({ error: "Too many submissions. Please try again later." }, 429);
+    }
 
     const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
 
@@ -341,10 +411,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     } else if (emailCount !== null && emailCount >= MAX_SUBMISSIONS_PER_EMAIL) {
       logger.warn("Lead submission blocked by per-email rate limit", { emailCount });
-      return new Response(JSON.stringify({ error: "Too many submissions. Please try again later." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Too many submissions. Please try again later." }, 429);
     }
 
     const { count: totalCount, error: totalCountError } = await supabase
@@ -358,30 +425,26 @@ const handler = async (req: Request): Promise<Response> => {
       });
     } else if (totalCount !== null && totalCount >= 100) {
       logger.warn("Lead submission blocked by global rate limit", { totalCount });
-      return new Response(JSON.stringify({ error: "Service is busy. Please try again later." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Service is busy. Please try again later." }, 429);
     }
     if (authenticatedUser && authenticatedUser.email !== normalizedEmail) {
       logger.warn("Lead submission rejected because the authenticated email does not match", {
         authenticatedEmail: authenticatedUser.email,
         submittedEmail: normalizedEmail,
       });
-      return new Response(
-        JSON.stringify({
+      return jsonResponse(
+        {
           error: "You are signed in with another account. Use the same email or sign out first.",
           code: "AUTH_EMAIL_MISMATCH",
-        }),
-        {
-          status: 409,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
+        409,
       );
     }
 
     let accountStatus: AccountStatus = authenticatedUser ? "authenticated" : "none";
     let profileOwnerId: string | null = authenticatedUser?.id ?? null;
+    let verificationChannels: VerificationChannel[] = [];
+    let verificationAccessToken: string | null = null;
 
     if (!authenticatedUser && normalizedPassword) {
       const { data: createdUser, error: createUserError } = await supabase.auth.admin.createUser({
@@ -389,7 +452,8 @@ const handler = async (req: Request): Promise<Response> => {
         password: normalizedPassword,
         email_confirm: true,
         user_metadata: {
-          full_name: normalizedName,
+          first_name: normalizedFirstName || undefined,
+          last_name: normalizedLastName || undefined,
           onboarding_source: "procedure_submit",
         },
       });
@@ -411,12 +475,65 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    await syncStudentProfileContact(supabase, {
-      userId: profileOwnerId,
-      email: normalizedEmail,
-      fullName: normalizedName,
-      phone: normalizedPhone,
-    });
+    try {
+      await ensureUniqueStudentPhoneNumber(supabase, {
+        phone: normalizedPhone,
+        userId: profileOwnerId,
+      });
+
+      await syncStudentProfileContact(supabase, {
+        userId: profileOwnerId,
+        email: normalizedEmail,
+        firstName: normalizedFirstName || undefined,
+        lastName: normalizedLastName || undefined,
+        phone: normalizedPhone,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message === "PHONE_ALREADY_USED") {
+        return jsonResponse(
+          {
+            error: "This phone number is already linked to another account.",
+            code: "PHONE_ALREADY_USED",
+          },
+          409,
+        );
+      }
+
+      if (isStudentPhoneUniqueViolation(error)) {
+        return jsonResponse(
+          {
+            error: "This phone number is already linked to another account.",
+            code: "PHONE_ALREADY_USED",
+          },
+          409,
+        );
+      }
+
+      throw error;
+    }
+
+    if (accountStatus === "created" && profileOwnerId) {
+      verificationChannels = resolveVerificationChannels({
+        email: normalizedEmail,
+        phoneNumber: normalizedPhone,
+      });
+
+      if (requiresContactVerification(verificationChannels)) {
+        await upsertStudentContactVerification(supabase, {
+          userId: profileOwnerId,
+          email: normalizedEmail,
+          phoneNumber: normalizedPhone,
+          requiredChannels: verificationChannels,
+        });
+
+        verificationAccessToken = await buildVerificationAccessToken({
+          userId: profileOwnerId,
+          email: normalizedEmail,
+          phoneNumber: normalizedPhone,
+          channels: verificationChannels,
+        });
+      }
+    }
 
     const leadResolution = await resolveLeadForEmail(supabase, {
       name: normalizedName,
@@ -434,8 +551,8 @@ const handler = async (req: Request): Promise<Response> => {
       alreadyActive: leadResolution.alreadyActive,
     });
 
-    const origin = req.headers.get("origin") || "https://power-prestation.lovable.app";
-    const checkoutUrl = `${origin}/checkout?leadId=${lead.id}&email=${encodeURIComponent(normalizedEmail)}`;
+    const siteUrl = Deno.env.get("SITE_URL")?.trim() || "http://127.0.0.1:8080";
+    const checkoutUrl = `${siteUrl.replace(/\/+$/g, "")}/checkout?leadId=${lead.id}&email=${encodeURIComponent(normalizedEmail)}`;
 
     await sendEmailIfConfigured(
       {
@@ -510,28 +627,26 @@ const handler = async (req: Request): Promise<Response> => {
 
     logger.info("Lead submission completed", { leadId: lead.id });
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         success: true,
         leadId: lead.id,
         accountStatus,
         leadReused: leadResolution.reused,
         alreadyActive: leadResolution.alreadyActive,
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        verificationRequired: requiresContactVerification(verificationChannels),
+        verificationChannels,
+        verificationEmail: requiresContactVerification(verificationChannels) ? normalizedEmail : null,
+        verificationAccessToken,
       },
+      200,
     );
   } catch (error: unknown) {
     logger.error("Unhandled submit-lead error", {
       message: getErrorMessage(error),
     });
 
-    return new Response(JSON.stringify({ error: "Failed to process your request. Please try again later." }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "Failed to process your request. Please try again later." }, 500);
   }
 };
 

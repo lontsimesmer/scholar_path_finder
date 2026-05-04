@@ -67,7 +67,7 @@ const Services = () => {
                   index === 0 && "xl:min-h-[20rem]",
                 )}
               >
-                <CardContent className="relative flex h-full flex-col p-8 lg:p-10">
+                <CardContent className="relative flex h-full flex-col p-8 pt-8 lg:p-10 lg:pt-10">
                   <div className="mb-12 flex items-start justify-between">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                       <service.icon className="h-7 w-7" />

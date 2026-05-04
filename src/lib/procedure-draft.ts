@@ -1,7 +1,8 @@
 const PROCEDURE_DRAFT_KEY = "procedure-start-draft";
 
 export type ProcedureDraft = {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   message: string;
@@ -21,13 +22,22 @@ export const loadProcedureDraft = (): ProcedureDraft | null => {
       return null;
     }
 
-    const parsed = JSON.parse(rawValue) as Partial<ProcedureDraft> | null;
+    const parsed = JSON.parse(rawValue) as
+      | (Partial<ProcedureDraft> & { name?: string | null })
+      | null;
     if (!parsed) {
       return null;
     }
 
+    const legacyNameParts = (parsed.name ?? "").trim().split(/\s+/).filter(Boolean);
+    const legacyFirstName =
+      legacyNameParts.length > 1 ? legacyNameParts.slice(0, -1).join(" ") : legacyNameParts[0] ?? "";
+    const legacyLastName =
+      legacyNameParts.length > 1 ? legacyNameParts[legacyNameParts.length - 1] : "";
+
     return {
-      name: parsed.name ?? "",
+      firstName: parsed.firstName ?? legacyFirstName,
+      lastName: parsed.lastName ?? legacyLastName,
       email: parsed.email ?? "",
       phone: parsed.phone ?? "",
       message: parsed.message ?? "",

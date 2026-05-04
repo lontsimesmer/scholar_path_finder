@@ -53,9 +53,14 @@ const Header = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       logger.info("Header auth state changed", { event, hasSession: Boolean(session) });
+
+      if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") {
+        return;
+      }
+
       if (session) {
         setUser({ email: session.user.email });
-        checkAuth();
+        void checkAuth();
       } else {
         setUser(null);
         setIsAdmin(false);

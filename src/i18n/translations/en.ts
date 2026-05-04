@@ -219,8 +219,10 @@ export const en = {
     },
     form: {
       title: "Send Us a Message",
-      name: "Full Name",
-      namePlaceholder: "Your full name",
+      firstName: "First Name",
+      firstNamePlaceholder: "Your first name",
+      lastName: "Last Name",
+      lastNamePlaceholder: "Your last name",
       email: "Email Address",
       emailPlaceholder: "your@email.com",
       phone: "Phone Number",
@@ -288,6 +290,7 @@ export const en = {
     },
     terms: "By completing this purchase, you agree to our Terms of Service and Privacy Policy.",
     backToHome: "Back to Home",
+    backToDashboard: "Back to Dashboard",
     unavailableTitle: "Checkout unavailable",
     unavailableDescription: "Start from the contact form so we can attach your payment to a lead.",
     profileRequiredTitle: "Validate your profile first",
@@ -340,6 +343,10 @@ export const en = {
     subtitle: "Track your application progress and manage your documents securely.",
     roadmapTitle: "Your Admission Roadmap",
     documentsTitle: "Document Vault",
+    documentRequestsTitle: "Documents requested by the team",
+    documentRequestsDescription: "Upload these documents so the team can continue reviewing your file.",
+    documentRequestPendingBadge: "Requested",
+    documentRequestUploadAction: "Upload",
     profileTitle: "Academic Profile",
     status: {
       consultation_paid: "Consultation Paid",
@@ -357,6 +364,7 @@ export const en = {
       rejected: "Needs Attention",
     },
     uploadDoc: "Upload document",
+    replaceDocumentAction: "Replace document",
     docTitle: "Document title",
     docTitlePlaceholder: "e.g. Bachelor's Degree",
     selectFile: "Select file",
@@ -378,7 +386,7 @@ export const en = {
     correctionRequestedTitle: "Correction requested by the team",
     correctionRequestedPrompt: "The team asked you to update your profile information before the procedure can continue.",
     confirmProfilePrompt: "Review your details carefully. Once you validate this profile, you will not be able to edit it anymore.",
-    requiredForProcedure: "Required for the procedure",
+    requiredForProcedure: "Profile required to continue",
     validateProfile: "Validate my information",
     validateAndContinue: "Validate and continue",
     confirmValidationTitle: "Confirm profile validation",
@@ -621,6 +629,14 @@ export const en = {
     subtitle: "Welcome to your Power Prestation control center.",
     signOut: "Sign out",
     studentsTotal: "Total Students",
+    leadsTitle: "Lead Intake",
+    leadsDescription:
+      "Review new leads, payment intent, and follow-up opportunities before they turn into files.",
+    openLeads: "Open leads",
+    paymentsTitle: "Payment Monitoring",
+    paymentsDescription:
+      "Track pending, accepted, and failed payment attempts in one place.",
+    openPayments: "Open payments",
     crmTitle: "Client Management (CRM)",
     crmDescription: "Manage student files, update statuses, and validate secured documents.",
     openCrm: "Open CRM",
@@ -629,11 +645,59 @@ export const en = {
     blogDescription: "Write new guides, edit existing articles, or hide drafts.",
     manageBlogs: "Manage blog",
     newArticle: "New Article",
+    operationalOverview: "Operational Overview",
+    operationalDescription:
+      "Move quickly between files, leads, payments, and editorial tasks without losing the operational picture.",
+    actionRequiredTitle: "Action Required",
+    actionRequiredDescription: "This is where the current workload concentrates right now.",
+    reviewDocumentsTitle: "Documents waiting for review",
+    reviewDocumentsDescription:
+      "Student uploads that still require an admin decision.",
+    reviewPaymentsTitle: "Payments still pending",
+    reviewPaymentsDescription:
+      "Transactions that need monitoring before the procedure can move forward.",
     publicSite: "Public Site",
     viewSite: "View site",
     seoHealth: "SEO Health",
     optimizationOk: "Optimization OK",
     settings: "Settings",
+    pricing: {
+      title: "Consultation price",
+      description:
+        "Update the XAF amount used on the checkout page and by the CinetPay transaction creation.",
+      amountLabel: "Amount charged",
+      amountHelp: "Enter an amount in XAF. CinetPay amounts must be positive and multiples of 5.",
+      currentPriceLabel: "Current price",
+      save: "Save price",
+      saving: "Saving...",
+      loading: "Loading...",
+      invalidAmountTitle: "Invalid amount",
+      invalidAmountDescription: "Use a positive XAF amount that is a multiple of 5.",
+      updateSuccessTitle: "Price updated",
+      updateSuccessDescription: "The consultation price is now used by checkout and CinetPay.",
+      updateErrorTitle: "Update failed",
+      updateErrorDescription: "The consultation price could not be updated. Try again.",
+    },
+    metrics: {
+      activeStudents: "Active Files",
+      totalLeads: "Incoming Leads",
+      paidConsultations: "Paid Consultations",
+      pendingPayments: "Pending Payments",
+      pendingDocuments: "Pending Documents",
+      publishedPosts: "Published Articles",
+      activeStudentsDescription:
+        "Student applications currently tracked by the team.",
+      totalLeadsDescription:
+        "All leads captured from the website and private procedure flow.",
+      paidConsultationsDescription:
+        "Leads whose consultation payment has been confirmed.",
+      pendingPaymentsDescription:
+        "Transactions that still require monitoring or confirmation.",
+      pendingDocumentsDescription:
+        "Uploaded files that still need a review decision.",
+      publishedPostsDescription:
+        "Public articles currently visible on the website.",
+    },
   },
 
   adminBlog: {
@@ -724,12 +788,52 @@ export const en = {
     title: "CRM Dashboard",
     subtitle: "Manage student applications and document verification.",
     searchPlaceholder: "Search students...",
-    filter: "Filter",
+    filters: {
+      all: "All",
+      status: "Application status",
+      profile: "Profile review",
+      payment: "Payment",
+      documents: "Documents",
+      country: "Target country",
+    },
+    profileStates: {
+      all: "All profiles",
+      validated: "Validated",
+      correction_requested: "Correction requested",
+      pending: "Pending validation",
+    },
+    paymentStates: {
+      all: "All payments",
+      paid: "Paid",
+      pending: "Pending",
+      unpaid: "Unpaid",
+      refunded: "Refunded",
+      none: "No payment",
+    },
+    documentStates: {
+      all: "All documents",
+      pending: "Pending review",
+      approved: "Approved",
+      rejected: "Rejected",
+      none: "No documents",
+    },
     columns: {
       student: "Student",
       target: "Target",
       currentStatus: "Current Status",
+      payment: "Payment",
+      documents: "Documents",
       actions: "Actions",
+    },
+    metrics: {
+      totalStudents: "Active Files",
+      validatedProfiles: "Validated Profiles",
+      paidConsultations: "Paid Consultations",
+      pendingDocuments: "Documents to Review",
+      totalStudentsDescription: "Students currently tracked inside the admissions pipeline.",
+      validatedProfilesDescription: "Profiles validated and ready to progress to the next step.",
+      paidConsultationsDescription: "Students with a confirmed consultation payment or accepted transaction.",
+      pendingDocumentsDescription: "Student files that still contain at least one pending document.",
     },
     empty: "No student records found.",
     noEmail: "No email",
@@ -739,7 +843,26 @@ export const en = {
     studentUpdated: "Student profile updated successfully",
     updateFailed: "Update failed",
     statusUpdated: "Status updated",
+    applicationStatusChangedSummary: "Application status changed from {from} to {to}.",
+    unknownStatus: "Unknown status",
     documentUpdated: "Document updated",
+    documentRequestTitle: "Document requests",
+    documentRequestDescription: "Create a targeted request that will appear in the student's dashboard.",
+    documentRequestNameLabel: "Requested document",
+    documentRequestNamePlaceholder: "Example: Passport copy",
+    documentRequestDetailsLabel: "Instructions",
+    documentRequestDetailsPlaceholder: "Optional details for the student...",
+    documentRequestCreate: "Request document",
+    documentRequestCreating: "Requesting...",
+    documentRequestCreated: "Document request sent",
+    documentRequestRequiredTitle: "Document name required",
+    documentRequestRequiredDescription: "Enter the document name before sending the request.",
+    documentRequestsEmpty: "No document request yet.",
+    documentRequestStatuses: {
+      pending: "Pending",
+      fulfilled: "Uploaded",
+      cancelled: "Cancelled",
+    },
     profileValidated: "Profile validated",
     profilePendingValidation: "Pending validation",
     profileCorrectionRequested: "Correction requested",
@@ -762,11 +885,146 @@ export const en = {
     },
     saveChanges: "Save Changes",
     documentsTitle: "Documents for",
+    sheet: {
+      title: "Student File",
+      profileSummary: "Profile",
+      procedureSummary: "Procedure",
+      paymentSummary: "Payment",
+      documentSummary: "Documents",
+      latestTransaction: "Latest transaction",
+      transactionCount: "transactions",
+      noTransactions: "No transaction recorded",
+      leadStatus: "Lead status",
+      paymentStatus: "Payment status",
+      documentsPending: "pending",
+      documentsApproved: "approved",
+      documentsRejected: "rejected",
+      totalDocuments: "documents",
+      noTargetCountry: "No target country",
+      noTargetProgram: "No target program",
+      noCurrentDegree: "No current degree",
+    },
     noDocuments: "No documents uploaded.",
     viewFile: "View File",
     approve: "Approve",
     reject: "Reject",
     feedbackPlaceholder: "Add feedback for this document...",
+  },
+
+  adminLeads: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "Leads",
+    title: "Lead Pipeline",
+    subtitle:
+      "Monitor prospect intake, payment progression, and follow-up opportunities before a student file is opened.",
+    openPayments: "Open payments",
+    searchPlaceholder:
+      "Search by name, email, phone, status, or message...",
+    noPhone: "No phone provided",
+    noMessage: "No message available",
+    notProvided: "Not provided",
+    empty: "No lead matches the current filters.",
+    openCheckout: "Open checkout",
+    metrics: {
+      total: "Total Leads",
+      paid: "Paid Consultations",
+      pendingPayments: "Pending Payments",
+      followUpDue: "Follow-ups Due",
+      totalDescription:
+        "All captured prospects across the website and private procedure flow.",
+      paidDescription:
+        "Leads already converted into paid consultations.",
+      pendingDescription:
+        "Leads with a payment still awaiting confirmation.",
+      followUpDescription:
+        "Leads whose next follow-up date is due or already overdue.",
+    },
+    filters: {
+      payment: "Payment Status",
+      pipeline: "Pipeline Status",
+      all: "All",
+    },
+    paymentStatuses: {
+      unpaid: "Unpaid",
+      pending: "Pending",
+      mobile_money_pending: "Mobile Money Pending",
+      bank_transfer_pending: "Bank Transfer Pending",
+      paid: "Paid",
+      refunded: "Refunded",
+    },
+    pipelineStatuses: {
+      pending: "Pending",
+      paid: "Paid",
+      follow_up: "Follow-up",
+      completed: "Completed",
+      expired: "Expired",
+    },
+    columns: {
+      contact: "Contact",
+      message: "Message",
+      payment: "Payment",
+      pipeline: "Pipeline",
+      createdAt: "Created At",
+      actions: "Actions",
+    },
+  },
+
+  adminPayments: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "Payments",
+    title: "Payment Monitoring",
+    subtitle:
+      "Review transaction outcomes, resume incomplete checkouts, and keep the payment pipeline under control.",
+    openLeads: "Open leads",
+    searchPlaceholder:
+      "Search by transaction, student, lead, email, provider status, or channel...",
+    noStudent: "Unknown student",
+    noLead: "No linked lead",
+    empty: "No payment transaction matches the current filters.",
+    openCheckout: "Resume checkout",
+    metrics: {
+      total: "Transactions",
+      accepted: "Accepted",
+      pending: "Pending",
+      failed: "Failed or Refused",
+      acceptedAmount: "Accepted Volume",
+      totalDescription:
+        "All tracked payment attempts in the current system.",
+      acceptedDescription: "Transactions confirmed as successful.",
+      pendingDescription:
+        "Transactions still awaiting a final provider confirmation.",
+      failedDescription:
+        "Transactions that ended in failure or refusal.",
+      acceptedAmountDescription:
+        "Total confirmed volume based on accepted transactions.",
+    },
+    filters: {
+      status: "Local Status",
+      channel: "Channel",
+      all: "All",
+    },
+    localStatuses: {
+      initialized: "Initialized",
+      pending: "Pending",
+      accepted: "Accepted",
+      refused: "Refused",
+      failed: "Failed",
+    },
+    channels: {
+      ALL: "All Channels",
+      MOBILE_MONEY: "Mobile Money",
+      CREDIT_CARD: "Credit Card",
+      WALLET: "Wallet",
+    },
+    columns: {
+      transaction: "Transaction",
+      student: "Student",
+      amount: "Amount",
+      status: "Status",
+      context: "Lead Context",
+      createdAt: "Created At",
+      actions: "Actions",
+    },
   },
 
   legal: {
@@ -817,8 +1075,6 @@ type EnCheckoutPaymentExtensions = typeof en.checkout.payment & {
   cardAddressPlaceholder: string;
   cardCityLabel: string;
   cardCityPlaceholder: string;
-  cardStateLabel: string;
-  cardStatePlaceholder: string;
   cardZipCodeLabel: string;
   cardZipCodePlaceholder: string;
   payWithCinetpayCard: string;
@@ -871,12 +1127,14 @@ type EnContactFormExtensions = typeof en.contact.form & {
   passwordMismatchDescription: string;
   passwordRequiredTitle: string;
   passwordRequiredDescription: string;
+  phoneAlreadyUsedTitle: string;
+  phoneAlreadyUsedDescription: string;
 };
 
 en.checkout.packagePrice = "15,625";
 en.checkout.packageCurrency = "XAF";
 en.checkout.packageDescription =
-  "One-time payment in XAF for your initial consultation, approximately equivalent to 25 USD.";
+  "One-time payment in XAF for your initial consultation and tailored guidance package.";
 
 const enCheckoutPayment = en.checkout.payment as EnCheckoutPaymentExtensions;
 enCheckoutPayment.cinetpayCardTitle = "Card via CinetPay";
@@ -894,15 +1152,13 @@ enCheckoutPayment.billingDescription =
   "CinetPay requires these details to open the card checkout. They are used only for this transaction.";
 enCheckoutPayment.cardRequirementsTitle = "Missing card billing details";
 enCheckoutPayment.cardRequirementsDescription =
-  "Enter the phone number, address, city, state or region, and postal code before continuing.";
+  "Enter an international phone number, address, city, and a 5-digit postal code before continuing.";
 enCheckoutPayment.cardPhoneLabel = "Billing phone number";
-enCheckoutPayment.cardPhonePlaceholder = "e.g. 677001122";
+enCheckoutPayment.cardPhonePlaceholder = "e.g. +237677001122";
 enCheckoutPayment.cardAddressLabel = "Address";
 enCheckoutPayment.cardAddressPlaceholder = "Your full billing address";
 enCheckoutPayment.cardCityLabel = "City";
 enCheckoutPayment.cardCityPlaceholder = "e.g. Yaounde";
-enCheckoutPayment.cardStateLabel = "State / Region";
-enCheckoutPayment.cardStatePlaceholder = "e.g. Centre";
 enCheckoutPayment.cardZipCodeLabel = "Postal code";
 enCheckoutPayment.cardZipCodePlaceholder = "e.g. 00237";
 enCheckoutPayment.payWithCinetpayCard = "Continue to card payment";
@@ -965,3 +1221,132 @@ enContactForm.passwordMismatchDescription =
 enContactForm.passwordRequiredTitle = "Password required";
 enContactForm.passwordRequiredDescription =
   "Choose a password so we can create your account automatically.";
+
+const enStartProcedure = en.startProcedure as typeof en.startProcedure & {
+  phoneAlreadyUsedTitle: string;
+  phoneAlreadyUsedDescription: string;
+};
+enStartProcedure.phoneAlreadyUsedTitle = "Phone number already used";
+enStartProcedure.phoneAlreadyUsedDescription =
+  "This phone number is already linked to another account. Use another number or sign in to the correct account.";
+
+enContactForm.phoneAlreadyUsedTitle = "Phone number already used";
+enContactForm.phoneAlreadyUsedDescription =
+  "This phone number is already linked to another account. Use another number or sign in to the correct account.";
+en.adminCRM.openStudent = "Open file";
+en.adminCRM.notesTitle = "Internal notes";
+en.adminCRM.notesDescription = "Private notes for the admin team only.";
+en.adminCRM.notePlaceholder = "Add an internal note about follow-up, risks, or next actions...";
+en.adminCRM.addNote = "Add note";
+en.adminCRM.noteAdded = "Internal note added";
+en.adminCRM.noNotes = "No internal notes yet.";
+en.adminCRM.historyTitle = "Activity history";
+en.adminCRM.historyDescription = "Trace the latest admin actions on this student file.";
+en.adminCRM.noHistory = "No admin activity recorded yet.";
+en.adminCRM.historyActions = {
+  profile_updated: "Profile updated",
+  profile_correction_requested: "Profile correction requested",
+  application_status_updated: "Application status updated",
+  document_updated: "Document updated",
+  internal_note_added: "Internal note added",
+};
+
+const enAdminCRMSheet = en.adminCRM.sheet as typeof en.adminCRM.sheet & {
+  attentionRequired: string;
+  allClear: string;
+  allClearDescription: string;
+  jumpTo: string;
+  sectionOverview: string;
+  sectionProcedure: string;
+  sectionDocuments: string;
+  sectionNotes: string;
+  sectionHistory: string;
+  studentEmail: string;
+  profileStatus: string;
+  noBirthDate: string;
+  latestNote: string;
+  latestActivity: string;
+  pendingActionsTitle: string;
+  profilePendingAction: string;
+  profileCorrectionAction: string;
+  paymentPendingAction: string;
+  paymentMissingAction: string;
+  documentsPendingAction: string;
+  notesMissingAction: string;
+};
+enAdminCRMSheet.attentionRequired = "Attention required";
+enAdminCRMSheet.allClear = "Everything is under control";
+enAdminCRMSheet.allClearDescription =
+  "No blocking issue is currently visible on this file. The team can keep moving without intervention.";
+enAdminCRMSheet.jumpTo = "Jump to";
+enAdminCRMSheet.sectionOverview = "Overview";
+enAdminCRMSheet.sectionProcedure = "Procedure";
+enAdminCRMSheet.sectionDocuments = "Documents";
+enAdminCRMSheet.sectionNotes = "Notes";
+enAdminCRMSheet.sectionHistory = "History";
+enAdminCRMSheet.studentEmail = "Student email";
+enAdminCRMSheet.profileStatus = "Profile status";
+enAdminCRMSheet.noBirthDate = "Birth date not provided";
+enAdminCRMSheet.latestNote = "Latest internal note";
+enAdminCRMSheet.latestActivity = "Latest admin activity";
+enAdminCRMSheet.pendingActionsTitle = "Operational summary";
+enAdminCRMSheet.profilePendingAction =
+  "The profile is still pending validation before the file can move forward cleanly.";
+enAdminCRMSheet.profileCorrectionAction =
+  "A profile correction was requested. Waiting for the student to update the requested fields.";
+enAdminCRMSheet.paymentPendingAction =
+  "The payment is still pending provider confirmation and should be monitored.";
+enAdminCRMSheet.paymentMissingAction =
+  "No confirmed consultation payment is visible yet on this file.";
+enAdminCRMSheet.documentsPendingAction = "{count} document(s) still need an admin review.";
+enAdminCRMSheet.notesMissingAction =
+  "No internal note has been recorded yet for the team follow-up.";
+
+enContactForm.verificationPendingTitle = "Verify your contact details";
+enContactForm.verificationPendingDescription =
+  "Your account was created. Enter the code sent to your email address or phone number before signing in.";
+
+const enLoginVerification = en.login as typeof en.login & {
+  verificationPendingTitle: string;
+  verificationPendingDescription: string;
+  verificationRequiredTitle: string;
+  verificationRequiredDescription: string;
+};
+enLoginVerification.verificationPendingTitle = "Verification required";
+enLoginVerification.verificationPendingDescription =
+  "We sent you a verification code. Confirm your email address before continuing.";
+enLoginVerification.verificationRequiredTitle = "Finish verification first";
+enLoginVerification.verificationRequiredDescription =
+  "This account still needs a verification code before the portal can be opened.";
+
+(en as typeof en & { verification: Record<string, string> }).verification = {
+  title: "Confirm your email and phone",
+  subtitle:
+    "Use the verification codes we send before opening the student portal. The flow stays disabled until the server feature flags are turned on.",
+  intro:
+    "We use this step to secure contact ownership before the procedure continues. Each required channel must be confirmed only once.",
+  invalidLinkTitle: "Verification link unavailable",
+  invalidLinkDescription:
+    "This verification page is missing the required information. Request a new code from the signup flow or sign in again.",
+  loading: "Loading your verification status...",
+  codeLabel: "Verification code",
+  codeHint: "Enter the 6-digit code sent to",
+  verifyButton: "Validate the code",
+  verifyingButton: "Checking the code...",
+  resendButton: "Resend a code",
+  sendingButton: "Sending...",
+  switchChannel: "Current channel",
+  sentTitle: "Code sent",
+  sentDescription: "A verification code was prepared for {channel}.",
+  verifiedTitle: "Verification completed",
+  verifiedDescription: "Your contact details are confirmed. Sign in to continue your procedure.",
+  alreadyVerifiedTitle: "Verification already completed",
+  alreadyVerifiedDescription: "Your contact details are already verified. You can sign in normally.",
+  signInTitle: "Sign in required",
+  signInDescription: "Use your email and password to continue after the verification step.",
+  emailChannelLabel: "Email code",
+  smsChannelLabel: "SMS code",
+  emailChannelDescription: "Confirm the email address linked to your account.",
+  smsChannelDescription: "Confirm the phone number linked to your account.",
+  backToLogin: "Back to login",
+};

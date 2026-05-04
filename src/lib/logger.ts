@@ -48,11 +48,27 @@ export const createLogger = (scope: string) => ({
 
 export const getErrorMessage = (error: unknown, fallback = "Unknown error") => {
   if (error instanceof Error) {
-    return error.message;
+    return error.message || fallback;
   }
 
   if (typeof error === "string" && error.trim().length > 0) {
     return error;
+  }
+
+  if (typeof error === "object" && error !== null) {
+    const obj = error as Record<string, unknown>;
+    if (typeof obj.message === "string" && obj.message.trim().length > 0) {
+      return obj.message;
+    }
+    if (typeof obj.error_description === "string" && obj.error_description.trim().length > 0) {
+      return obj.error_description;
+    }
+    if (typeof obj.error === "string" && obj.error.trim().length > 0) {
+      return obj.error;
+    }
+    if (typeof obj.msg === "string" && obj.msg.trim().length > 0) {
+      return obj.msg;
+    }
   }
 
   return fallback;
