@@ -1,98 +1,116 @@
-# Develop Branch Changes
+# Changements de la Branche `develop`
 
-## Scope
-This document summarizes the corrective work applied on the `develop` branch after the technical audit. It focuses on functional fixes, security hardening, and baseline quality restoration.
+## Périmètre
 
-## 1. Payment Flow Hardening
+Ce document résume le travail correctif appliqué sur la branche `develop` après audit technique. Il couvre les corrections fonctionnelles, le durcissement de sécurité et la remise à niveau de la qualité de base.
 
-### Real Stripe redirect instead of fake card processing
-- Files: `src/pages/Checkout.tsx`, `src/components/checkout/StripePayment.tsx`
-- Change: removed the fake client-side card flow and replaced it with a real redirect to Stripe Checkout.
-- Why: the previous flow simulated a successful payment locally, which could confirm a consultation without any real charge.
+## 1. Durcissement du Parcours Paiement
 
-### Payment success page now verifies the payment
-- Files: `src/pages/PaymentSuccess.tsx`, `supabase/functions/verify-stripe-payment/index.ts`
-- Change: the success page no longer trusts the URL alone. It verifies the Stripe session before showing a confirmed payment state.
-- Why: a user must never see "payment successful" unless the server has confirmed the session as paid.
+### Redirection Stripe réelle au lieu d’un faux traitement carte
 
-### Mobile Money now stays pending until real verification
-- Files: `src/components/checkout/MobileMoneyPayment.tsx`, `supabase/functions/mtn-momo-payment/index.ts`, `supabase/functions/process-mobile-money/index.ts`
-- Change: Orange and MTN manual flows no longer redirect to success immediately; they remain in a pending/manual verification state.
-- Why: a manual payment confirmation is not equivalent to a verified payment.
+- Fichiers : `src/pages/Checkout.tsx`, `src/components/checkout/StripePayment.tsx`
+- Changement : suppression du faux paiement carte côté client et remplacement par une vraie redirection vers Stripe Checkout.
+- Raison : l’ancien parcours simulait localement un paiement réussi, ce qui pouvait confirmer une consultation sans débit réel.
 
-### Account numbers aligned between UI and backend
-- Files: `src/components/checkout/MobileMoneyPayment.tsx`, `supabase/functions/mtn-momo-payment/index.ts`, `supabase/functions/process-mobile-money/index.ts`
-- Change: aligned the MTN and Orange destination numbers shown to users with the numbers used by backend responses.
-- Why: inconsistent account numbers are an operational risk and can send money to the wrong destination.
+### La page succès vérifie maintenant le paiement
 
-### Unsafe local card-entry UI removed
-- Files: `src/components/checkout/CardPaymentModal.tsx`, `src/components/checkout/PaymentMethodSelector.tsx`
-- Change: removed the unused local card collection modal and selector helper.
-- Why: card data must not be collected in custom app UI when Stripe Checkout already handles the secure flow.
+- Fichiers : `src/pages/PaymentSuccess.tsx`, `supabase/functions/verify-stripe-payment/index.ts`
+- Changement : la page succès ne fait plus confiance à l’URL seule. Elle vérifie la session Stripe avant d’afficher un paiement confirmé.
+- Raison : l’utilisateur ne doit jamais voir “paiement réussi” si le serveur n’a pas confirmé que la session est payée.
 
-## 2. Security Hardening
+### Mobile Money reste en attente jusqu’à vérification réelle
 
-### JWT protection restored on sensitive Edge Functions
-- File: `supabase/config.toml`
-- Change: enabled `verify_jwt = true` for payment-related functions.
-- Why: anonymous callers should not be able to trigger lead mutations or payment operations.
+- Fichiers : `src/components/checkout/MobileMoneyPayment.tsx`, `supabase/functions/mtn-momo-payment/index.ts`, `supabase/functions/process-mobile-money/index.ts`
+- Changement : les parcours manuels Orange et MTN ne redirigent plus immédiatement vers le succès ; ils restent en attente de vérification manuelle.
+- Raison : une confirmation manuelle n’est pas équivalente à un paiement vérifié.
 
-### Shared auth and ownership checks added
-- File: `supabase/functions/_shared/auth-utils.ts`
-- Change: introduced reusable helpers to authenticate the current user and verify lead ownership.
-- Why: centralizing these checks reduces duplication and prevents inconsistent security rules across functions.
+### Numéros de compte alignés entre UI et backend
 
-### Lead mutations now require authenticated ownership
-- Files: `supabase/functions/create-checkout/index.ts`, `supabase/functions/process-mobile-money/index.ts`, `supabase/functions/process-bank-transfer/index.ts`, `supabase/functions/mtn-momo-payment/index.ts`
-- Change: the backend now checks that the signed-in user matches the lead email before reading or updating the lead.
-- Why: this blocks IDOR-style abuse where someone could reuse another person’s `leadId`.
+- Fichiers : `src/components/checkout/MobileMoneyPayment.tsx`, `supabase/functions/mtn-momo-payment/index.ts`, `supabase/functions/process-mobile-money/index.ts`
+- Changement : alignement des numéros MTN et Orange affichés aux utilisateurs avec ceux utilisés par les réponses backend.
+- Raison : des numéros incohérents sont un risque opérationnel et peuvent envoyer l’argent au mauvais destinataire.
 
-### Follow-up automation trigger secured
-- File: `supabase/functions/send-follow-ups/index.ts`
-- Change: removed reliance on a forgeable cron header and restricted execution to a trusted secret or service role authorization.
-- Why: a public caller must not be able to start a bulk email/SMS follow-up campaign.
+### Interface locale de saisie carte supprimée
 
-## 3. Lead and Notification Flow
+- Fichiers : `src/components/checkout/CardPaymentModal.tsx`, `src/components/checkout/PaymentMethodSelector.tsx`
+- Changement : suppression du modal inutilisé de collecte carte et du helper de sélection.
+- Raison : les données carte ne doivent pas être collectées dans une UI applicative custom quand Stripe Checkout gère déjà le parcours sécurisé.
 
-### Checkout links now preserve lead identity and email context
-- Files: `src/components/Contact.tsx`, `src/pages/Login.tsx`, `supabase/functions/submit-lead/index.ts`
-- Change: checkout redirects now carry normalized lead context more consistently.
-- Why: this makes login redirects safer and helps the backend confirm ownership reliably.
+## 2. Durcissement Sécurité
 
-### Follow-up campaign logic fixed
-- File: `supabase/functions/send-follow-ups/index.ts`
-- Change: follow-up selection now includes both `pending` and `follow_up` leads.
-- Why: the previous logic stopped the campaign after the first follow-up instead of continuing across the full sequence.
+### Protection JWT restaurée sur les Edge Functions sensibles
 
-### Email normalization tightened
-- File: `supabase/functions/submit-lead/index.ts`
-- Change: emails are normalized before lookup, insert, and outbound messaging.
-- Why: normalization avoids duplicate lead identities caused by casing or formatting differences.
+- Fichier : `supabase/config.toml`
+- Changement : activation de `verify_jwt = true` pour les fonctions liées au paiement.
+- Raison : des appels anonymes ne doivent pas pouvoir déclencher des mutations de lead ou des opérations de paiement.
 
-## 4. Data and Schema Alignment
+### Authentification et contrôle d’appartenance centralisés
 
-### Database constraint updated for bank transfer pending state
-- File: `supabase/migrations/20260330132000_extend_payment_status_constraint.sql`
-- Change: extended the `payment_status` constraint to include `bank_transfer_pending`.
-- Why: the backend was using a status that was not fully represented by the database constraint set.
+- Fichier : `supabase/functions/_shared/auth-utils.ts`
+- Changement : ajout de helpers réutilisables pour authentifier l’utilisateur courant et vérifier la propriété d’un lead.
+- Raison : centraliser ces contrôles réduit la duplication et évite des règles de sécurité incohérentes entre fonctions.
 
-## 5. Quality and Repo Hygiene
+### Les mutations de lead exigent une propriété authentifiée
 
-### Secrets now ignored by Git
-- File: `.gitignore`
-- Change: added `.env` and `.env.*`.
-- Why: environment files should not be tracked in source control.
+- Fichiers : `supabase/functions/create-checkout/index.ts`, `supabase/functions/process-mobile-money/index.ts`, `supabase/functions/process-bank-transfer/index.ts`, `supabase/functions/mtn-momo-payment/index.ts`
+- Changement : le backend vérifie que l’utilisateur connecté correspond à l’email du lead avant lecture ou mise à jour.
+- Raison : cela bloque les abus de type IDOR où quelqu’un pourrait réutiliser le `leadId` d’une autre personne.
 
-### Lint baseline restored
-- Files: `tailwind.config.ts`, `src/components/ui/command.tsx`, `src/components/ui/textarea.tsx`
-- Change: fixed lint-breaking issues that prevented `npm run lint` from passing.
-- Why: a broken quality gate hides real regressions and makes future changes harder to validate.
+### Déclencheur de relance sécurisé
+
+- Fichier : `supabase/functions/send-follow-ups/index.ts`
+- Changement : suppression de la dépendance à un header cron falsifiable et restriction à un secret de confiance ou une autorisation service role.
+- Raison : un appelant public ne doit pas pouvoir lancer une campagne email/SMS en masse.
+
+## 3. Leads et Notifications
+
+### Les liens checkout conservent mieux l’identité du lead
+
+- Fichiers : `src/components/Contact.tsx`, `src/pages/Login.tsx`, `supabase/functions/submit-lead/index.ts`
+- Changement : les redirections checkout transportent le contexte lead/email de manière plus cohérente.
+- Raison : cela rend les redirections après connexion plus sûres et aide le backend à confirmer la propriété.
+
+### Logique de campagne de relance corrigée
+
+- Fichier : `supabase/functions/send-follow-ups/index.ts`
+- Changement : la sélection des relances inclut maintenant les leads `pending` et `follow_up`.
+- Raison : l’ancienne logique arrêtait la campagne après la première relance au lieu de continuer la séquence.
+
+### Normalisation email renforcée
+
+- Fichier : `supabase/functions/submit-lead/index.ts`
+- Changement : les emails sont normalisés avant lookup, insertion et envoi de messages.
+- Raison : cela évite les doublons de leads causés par des différences de casse ou de format.
+
+## 4. Alignement Données et Schéma
+
+### Contrainte de base mise à jour pour le virement en attente
+
+- Fichier : `supabase/migrations/V1__baseline.sql`
+- Changement : extension de la contrainte `payment_status` pour inclure `bank_transfer_pending`.
+- Raison : le backend utilisait un statut qui n’était pas entièrement représenté dans la contrainte SQL.
+
+## 5. Qualité et Hygiène du Dépôt
+
+### Secrets ignorés par Git
+
+- Fichier : `.gitignore`
+- Changement : ajout de `.env` et `.env.*`.
+- Raison : les fichiers d’environnement ne doivent pas être suivis par Git.
+
+### Baseline lint restaurée
+
+- Fichiers : `tailwind.config.ts`, `src/components/ui/command.tsx`, `src/components/ui/textarea.tsx`
+- Changement : correction des erreurs bloquant `npm run lint`.
+- Raison : une barrière qualité cassée masque les vraies régressions et complique les changements futurs.
 
 ## Validation
-- `npm run lint`: passes with warnings only
-- `npm run test`: passes
-- `npm run build`: passes
 
-## Remaining Notes
-- Existing unrelated changes in `package.json`, `package-lock.json`, and `AGENTS.md` were not overwritten.
-- Remaining warnings are mostly existing frontend/tooling items: React Fast Refresh warnings in some shadcn files, CSS import order in `src/index.css`, and bundle size warnings during build.
+- `npm run lint` : passe
+- `npm run test` : passe
+- `npm run build` : passe
+
+## Notes Restantes
+
+- Les changements non liés existants dans `package.json`, `package-lock.json` et `AGENTS.md` n’ont pas été écrasés.
+- Les avertissements restants sont principalement des sujets frontend/outillage existants : Fast Refresh React dans certains fichiers shadcn, ordre d’import CSS dans `src/index.css` et avertissements de taille de bundle pendant le build.

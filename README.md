@@ -1,18 +1,18 @@
 # Power Prestation
 
-Power Prestation is a React + TypeScript web application for academic mobility consulting. It combines a multilingual marketing site, a lead capture flow, an authenticated student journey, a Cameroon-first CinetPay checkout, and a Supabase-backed admin workflow.
+Power Prestation est une application web React + TypeScript dédiée au conseil en mobilité académique. Elle combine un site marketing multilingue, un parcours de capture de leads, un espace étudiant authentifié, un paiement CinetPay pensé d’abord pour le Cameroun et un back-office administrateur basé sur Supabase.
 
-## Main Features
+## Fonctionnalités Principales
 
-- Public landing page for services, testimonials, FAQ, blog, and contact.
-- Bilingual interface with English and French translations.
-- Lead creation and account creation from the public acquisition flow.
-- Student dashboard with profile validation, private procedure submission, and document upload.
-- CinetPay payment flow with server-side verification and webhook reconciliation.
-- Admin CRM and bilingual blog management.
-- Supabase Edge Functions for lead handling, payment processing, and follow-up automation.
+- Page publique pour les services, témoignages, FAQ, blog et contact.
+- Interface bilingue avec traductions françaises et anglaises.
+- Création de lead et création de compte depuis le parcours public d’acquisition.
+- Dashboard étudiant avec validation du profil, soumission privée de procédure et dépôt de documents.
+- Paiement CinetPay avec vérification serveur et réconciliation par webhook.
+- CRM administrateur et gestion du blog bilingue.
+- Edge Functions Supabase pour les leads, paiements, vérifications et automatisations de relance.
 
-## Tech Stack
+## Stack Technique
 
 - Vite
 - React 18
@@ -22,108 +22,147 @@ Power Prestation is a React + TypeScript web application for academic mobility c
 - Supabase
 - Vitest + Testing Library
 
-## Package Manager
+## Gestionnaire de Paquets
 
-Use `npm` only in this repository. `package-lock.json` is the source of truth.
+Utiliser uniquement `npm` dans ce dépôt. `package-lock.json` est la source de vérité.
 
-## Local Setup
+## Installation Locale
 
-1. Install dependencies:
+1. Installer les dépendances :
 
 ```bash
 npm install
 ```
 
-2. Start the local Supabase stack:
+2. Démarrer la stack Supabase locale :
 
 ```bash
 npm run db:supabase:start
 ```
 
-3. Point the frontend to the local Supabase stack:
+3. Appliquer la baseline Flyway :
+
+```bash
+npm run db:flyway:migrate
+```
+
+4. Pointer le frontend vers la stack Supabase locale :
 
 ```bash
 npm run env:supabase:local
 ```
 
-4. Start the app:
+5. Démarrer l’application :
 
 ```bash
 npm run dev
 ```
 
-The Vite dev server runs on `http://localhost:8080`.
+Le serveur Vite tourne sur `http://localhost:8080`.
 
-To go back to the default `.env` values:
+Pour revenir aux valeurs `.env` par défaut :
 
 ```bash
 npm run env:supabase:remote
 ```
 
-## Available Commands
+## Commandes Disponibles
 
-- `npm run dev`: start the local development server.
-- `npm run build`: build the production bundle into `dist/`.
-- `npm run preview`: preview the production build locally.
-- `npm run lint`: run ESLint.
-- `npm run test`: run Vitest once.
-- `npm run test:watch`: run Vitest in watch mode.
-- `npm run db:supabase:start`: start the local Supabase stack.
-- `npm run db:supabase:status`: show local Supabase status and URLs.
-- `npm run db:supabase:reset`: reset local Supabase, replay migrations, and reseed data.
-- `npm run db:supabase:stop`: stop the local Supabase stack.
-- `npm run env:supabase:local`: copy local frontend env values into `.env.local`.
-- `npm run env:supabase:remote`: stop using `.env.local` and fall back to `.env`.
+- `npm run dev` : démarre le serveur local de développement.
+- `npm run build` : génère le bundle de production dans `dist/`.
+- `npm run preview` : prévisualise le build de production localement.
+- `npm run lint` : lance ESLint.
+- `npm run test` : lance Vitest une fois.
+- `npm run test:watch` : lance Vitest en mode watch.
+- `npm run db:supabase:start` : démarre la stack Supabase locale.
+- `npm run db:supabase:status` : affiche le statut et les URLs Supabase locales.
+- `npm run db:supabase:stop` : arrête la stack Supabase locale.
+- `npm run db:supabase:seed` : charge les données de démonstration depuis `supabase/seed.sql`.
+- `npm run db:flyway:migrate` : applique la baseline Flyway sur la base locale.
+- `npm run db:flyway:info` : affiche l’état des migrations Flyway.
+- `npm run db:flyway:validate` : valide l’ensemble des migrations Flyway.
+- `npm run env:supabase:local` : copie les variables frontend locales dans `.env.local`.
+- `npm run env:supabase:remote` : désactive `.env.local` pour revenir à `.env`.
 
-## Official Local Backend
+## Backend Local Officiel
 
-This repository now has one official local backend mode: the Supabase CLI stack.
+Ce dépôt utilise un seul mode backend local officiel : la stack Supabase CLI.
 
-It includes:
+Elle inclut :
 
-- local Auth
-- local REST API
-- local Edge Functions
-- local Studio
-- local Mailpit
-- local Supabase Postgres
+- Auth locale
+- API REST locale
+- Edge Functions locales
+- Studio local
+- Mailpit local
+- Postgres Supabase local
 
-Important:
+Important :
 
-- there is no longer a separate plain PostgreSQL dev stack in this repository
-- if you want to run the project end to end locally, use the Supabase CLI commands above
-- the local stack is configured in `supabase/config.toml`
+- il n’existe plus de stack PostgreSQL simple séparée dans ce dépôt
+- pour exécuter le projet localement de bout en bout, utiliser Supabase CLI avec les commandes Flyway ci-dessus
+- la stack locale est configurée dans `supabase/config.toml`
 
-## Project Structure
+## Structure du Projet
 
-- `src/pages`: route-level screens such as `Index`, `Login`, `Dashboard`, `StartProcedure`, `Checkout`, and `PaymentSuccess`.
-- `src/components`: landing sections, feature components, and shared app blocks.
-- `src/components/ui`: shadcn/ui primitives and local wrappers.
-- `src/components/admin`: admin-only UI such as the blog editor.
-- `src/lib`: shared frontend logic for profiles, procedure state, sanitization, and logging.
-- `src/i18n`: language provider and translation files.
-- `src/integrations/supabase`: frontend Supabase client and generated types.
-- `supabase/functions`: Edge Functions used by lead, payment, and automation flows.
-- `supabase/migrations`: SQL migrations for schema and security rules.
-- `docs`: onboarding, architecture, local environment, and testing guides.
+- `src/pages` : écrans de route comme `Index`, `Login`, `Dashboard`, `StartProcedure`, `Checkout` et `PaymentSuccess`.
+- `src/components` : sections du site, composants métier et blocs applicatifs partagés.
+- `src/components/ui` : primitives shadcn/ui et wrappers locaux.
+- `src/components/admin` : interfaces réservées à l’administration.
+- `src/lib` : logique frontend partagée pour profils, procédures, sanitisation et logs.
+- `src/i18n` : fournisseur de langue et fichiers de traduction.
+- `src/integrations/supabase` : client Supabase frontend et types générés.
+- `supabase/functions` : Edge Functions utilisées par les parcours leads, paiements et automatisations.
+- `supabase/migrations` : migrations SQL Flyway pour le schéma et les règles de sécurité. La baseline actuelle est `V1__baseline.sql`.
+- `docs` : guides d’onboarding, architecture, environnement local, production et tests.
 
-## Supabase Notes
+## Notes Supabase
 
-- frontend credentials come from `.env` or `.env.local` via `VITE_SUPABASE_*`
-- server-side secrets such as `SUPABASE_SERVICE_ROLE_KEY` stay in the Supabase function environment
-- payment-related Edge Functions are configured in `supabase/config.toml`
-- the local Supabase stack is started from the repository root with `npm run db:supabase:start`
-- CinetPay server-side secrets required by the checkout flow:
-  - `CINETPAY_API_KEY`
-  - `CINETPAY_SITE_ID`
-  - `CINETPAY_SECRET_KEY`
-  - `SITE_URL`
-- `cinetpay-webhook` must be reachable from the public internet for real webhook delivery; in local development, use a tunnel if you need end-to-end webhook testing
+- Les identifiants frontend viennent de `.env` ou `.env.local` via `VITE_SUPABASE_*`.
+- Les secrets serveur comme `SUPABASE_SERVICE_ROLE_KEY` restent dans l’environnement des fonctions Supabase.
+- Les Edge Functions liées au paiement sont configurées dans `supabase/config.toml`.
+- La stack Supabase locale démarre depuis la racine du dépôt avec `npm run db:supabase:start`.
+- Le versionnage du schéma est géré par Flyway depuis `supabase/migrations/V1__baseline.sql`.
+- Les commandes Flyway utilisent le binaire local `flyway` s’il est disponible, sinon l’image Docker `flyway/flyway`.
 
-## Additional Documentation
+Secrets CinetPay requis côté serveur :
 
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md): architecture overview and reading order for new contributors.
-- [DEVELOP_CHANGES.md](docs/DEVELOP_CHANGES.md): summary of the hardening work applied on `develop`.
-- [FLOWS.md](docs/FLOWS.md): the real end-to-end product flow from public form to paid student dossier.
-- [LOCAL_DATABASES.md](docs/LOCAL_DATABASES.md): official local Supabase workflow and environment setup.
-- [TESTING.md](docs/TESTING.md): test commands, current coverage status, and recommended validation strategy.
+- `CINETPAY_API_KEY`
+- `CINETPAY_SITE_ID`
+- `CINETPAY_SECRET_KEY`
+- `SITE_URL`
+
+Configuration CinetPay optionnelle :
+
+- `CINETPAY_CONSULTATION_AMOUNT_XAF` : montant de production en XAF, défaut `15625`
+- `CINETPAY_USD_REFERENCE` : référence USD informative, défaut `25`
+- `CINETPAY_TEST_MODE` : mettre `true` pour verrouiller le paiement en mode test
+- `CINETPAY_TEST_AMOUNT_XAF` : requis si le mode test est activé
+- `CINETPAY_TEST_ALLOWED_EMAILS` : liste d’emails autorisés, séparés par des virgules, requise en mode test
+
+Vérification contact Brevo optionnelle :
+
+- `CONTACT_VERIFICATION_ENABLED=false` : interrupteur global de vérification par code
+- `CONTACT_EMAIL_VERIFICATION_ENABLED=false` : exige un code email quand l’interrupteur global est actif
+- `CONTACT_SMS_VERIFICATION_ENABLED=false` : exige un code SMS quand l’interrupteur global est actif
+- `CONTACT_VERIFICATION_CODE_SECRET` : requis dès que la vérification personnalisée est active
+- `CONTACT_VERIFICATION_CODE_TTL_MINUTES=10`
+- `CONTACT_VERIFICATION_MAX_ATTEMPTS=5`
+- `CONTACT_VERIFICATION_RESEND_COOLDOWN_SECONDS=60`
+- `BREVO_API_KEY`
+- `BREVO_EMAIL_SENDER`
+- `BREVO_EMAIL_SENDER_NAME` optionnel
+- `BREVO_SMS_SENDER`
+- `BREVO_SANDBOX_MODE=false` : header sandbox email Brevo optionnel
+
+`cinetpay-webhook` doit être accessible depuis Internet pour recevoir les notifications réelles. En développement local, utiliser un tunnel si un test webhook de bout en bout est nécessaire.
+
+## Documentation Complémentaire
+
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) : vue d’ensemble de l’architecture et ordre de lecture recommandé.
+- [CINETPAY_SETUP.md](docs/CINETPAY_SETUP.md) : configuration des secrets CinetPay en local et à distance.
+- [DEVELOP_CHANGES.md](docs/DEVELOP_CHANGES.md) : résumé des corrections et durcissements appliqués sur `develop`.
+- [FLOWS.md](docs/FLOWS.md) : parcours produit réel, du formulaire public au dossier étudiant payé.
+- [LOCAL_DATABASES.md](docs/LOCAL_DATABASES.md) : workflow Supabase local officiel.
+- [SUPABASE_PRODUCTION.md](docs/SUPABASE_PRODUCTION.md) : configuration production complète Supabase, Flyway, auth, secrets, fonctions et vérifications de mise en ligne.
+- [TESTING.md](docs/TESTING.md) : commandes de test, état de couverture et stratégie de validation recommandée.

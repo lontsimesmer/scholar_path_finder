@@ -1,93 +1,93 @@
-# Architecture Overview
+# Vue d’Ensemble de l’Architecture
 
-This document is the quickest way to understand how the application is organized after `README.md`.
+Ce document est le chemin le plus rapide pour comprendre l’organisation de l’application après `README.md`.
 
-## High-Level Shape
+## Forme Générale
 
-The project has 3 main layers:
+Le projet a 3 couches principales :
 
-- `src/`: the React frontend
-- `supabase/functions/`: server-side business actions and payment/webhook handlers
-- `supabase/migrations/`: database structure and security rules
+- `src/` : frontend React
+- `supabase/functions/` : actions métier serveur et handlers paiement/webhook
+- `supabase/migrations/` : structure de base de données Flyway et règles de sécurité
 
-The app is not a generic dashboard. It is a student-procedure product with a public acquisition flow, an authenticated student flow, and an admin back-office.
+L’application n’est pas un dashboard générique. C’est un produit de gestion de procédure étudiant avec un parcours public d’acquisition, un parcours étudiant authentifié et un back-office administrateur.
 
-## Frontend Structure
+## Structure Frontend
 
-Core frontend folders:
+Dossiers frontend principaux :
 
-- `src/pages`: route-level screens
-- `src/components`: page sections and feature components
-- `src/components/ui`: local shadcn/ui primitives
-- `src/lib`: feature helpers and shared logic
-- `src/i18n`: language provider and translations
-- `src/integrations/supabase`: frontend Supabase client
+- `src/pages` : écrans de route
+- `src/components` : sections de page et composants métier
+- `src/components/ui` : primitives shadcn/ui locales
+- `src/lib` : helpers métier et logique partagée
+- `src/i18n` : fournisseur de langue et traductions
+- `src/integrations/supabase` : client Supabase frontend
 
-Main route entry is [App.tsx](../src/App.tsx). Read it first.
+Le point d’entrée des routes est [App.tsx](../src/App.tsx). Le lire en premier.
 
-## Main User Flows
+## Parcours Utilisateur Principaux
 
-### 1. Public marketing flow
+### 1. Parcours marketing public
 
-- Homepage: [Index.tsx](../src/pages/Index.tsx)
-- Main sections: `Hero`, `Services`, `About`, `HowItWorks`, `Testimonials`, `FAQ`, `Contact`
-- Public contact form: [Contact.tsx](../src/components/Contact.tsx)
+- Page d’accueil : [Index.tsx](../src/pages/Index.tsx)
+- Sections principales : `Hero`, `Services`, `About`, `HowItWorks`, `Testimonials`, `FAQ`, `Contact`
+- Formulaire public de contact : [Contact.tsx](../src/components/Contact.tsx)
 
-This flow creates a lead, can create an account automatically, and redirects the user into the student journey.
+Ce parcours crée un lead, peut créer automatiquement un compte et redirige l’utilisateur vers le parcours étudiant.
 
-### 2. Student account and profile flow
+### 2. Compte étudiant et profil
 
-- Login / signup: [Login.tsx](../src/pages/Login.tsx)
-- Student dashboard: [Dashboard.tsx](../src/pages/Dashboard.tsx)
-- Private submission step: [StartProcedure.tsx](../src/pages/StartProcedure.tsx)
+- Connexion / inscription : [Login.tsx](../src/pages/Login.tsx)
+- Dashboard étudiant : [Dashboard.tsx](../src/pages/Dashboard.tsx)
+- Étape privée de soumission : [StartProcedure.tsx](../src/pages/StartProcedure.tsx)
 
-Important rule:
+Règle importante :
 
-- a student must validate identity fields before the procedure can continue
-- once validated, only admin can modify the profile unless the admin reopens it for correction
+- l’étudiant doit valider ses champs d’identité avant de continuer la procédure
+- une fois validé, seul un administrateur peut modifier le profil, sauf si l’administrateur le rouvre pour correction
 
-Shared profile logic is in [student-profile.ts](../src/lib/student-profile.ts).
+La logique partagée de profil est dans [student-profile.ts](../src/lib/student-profile.ts).
 
-### 3. Payment flow
+### 3. Paiement
 
-- Checkout page: [Checkout.tsx](../src/pages/Checkout.tsx)
-- Payment component: [CinetpayPayment.tsx](../src/components/checkout/CinetpayPayment.tsx)
-- Return page: [PaymentSuccess.tsx](../src/pages/PaymentSuccess.tsx)
+- Page checkout : [Checkout.tsx](../src/pages/Checkout.tsx)
+- Composant paiement : [CinetpayPayment.tsx](../src/components/checkout/CinetpayPayment.tsx)
+- Page de retour : [PaymentSuccess.tsx](../src/pages/PaymentSuccess.tsx)
 
-The current primary payment path is CinetPay. The backend is the source of truth for payment confirmation.
+Le parcours de paiement principal est CinetPay. Le backend est la source de vérité pour confirmer un paiement.
 
-### 4. Admin flow
+### 4. Administration
 
-- Admin landing: [AdminDashboard.tsx](../src/pages/AdminDashboard.tsx)
-- CRM: [AdminCRM.tsx](../src/pages/AdminCRM.tsx)
-- Blog back-office: [AdminBlog.tsx](../src/pages/AdminBlog.tsx)
+- Accueil admin : [AdminDashboard.tsx](../src/pages/AdminDashboard.tsx)
+- CRM : [AdminCRM.tsx](../src/pages/AdminCRM.tsx)
+- Back-office blog : [AdminBlog.tsx](../src/pages/AdminBlog.tsx)
 
-## Backend Structure
+## Structure Backend
 
-Main Edge Functions:
+Edge Functions principales :
 
-- `submit-lead`: creates or reuses leads, handles account creation conflicts
-- `get-student-procedure-status`: resolves current lead/payment state for the signed-in student
-- `create-cinetpay-payment`: initializes CinetPay transactions
-- `cinetpay-webhook`: receives server-side payment notifications
-- `get-cinetpay-payment-status`: reconciles payment status after browser return
-- `send-follow-ups`: lead reactivation / reminder automation
+- `submit-lead` : crée ou réutilise les leads et gère les conflits de création de compte
+- `get-student-procedure-status` : résout l’état lead/paiement actuel de l’étudiant connecté
+- `create-cinetpay-payment` : initialise les transactions CinetPay
+- `cinetpay-webhook` : reçoit les notifications serveur de paiement
+- `get-cinetpay-payment-status` : réconcilie l’état du paiement après le retour navigateur
+- `send-follow-ups` : automatisation de relance et réactivation des leads
 
-Shared backend helpers live in `supabase/functions/_shared`.
+Les helpers backend partagés sont dans `supabase/functions/_shared`.
 
-## Main Data Model
+## Modèle de Données Principal
 
-Key tables:
+Tables clés :
 
-- `leads`: public acquisition + payment intent state
-- `student_profiles`: student identity and academic profile
-- `student_applications`: active student dossier after confirmed payment
-- `student_documents`: uploaded student files
-- `payment_transactions`: CinetPay transaction tracking
-- `admins`: admin access control
-- `blog_categories` / `blog_posts`: public blog content
+- `leads` : acquisition publique et état d’intention de paiement
+- `student_profiles` : identité et profil académique étudiant
+- `student_applications` : dossier étudiant actif après paiement confirmé
+- `student_documents` : fichiers déposés par les étudiants
+- `payment_transactions` : suivi des transactions CinetPay
+- `admins` : contrôle d’accès administrateur
+- `blog_categories` / `blog_posts` : contenu public du blog
 
-## Reading Order for a New Contributor
+## Ordre de Lecture Recommandé
 
 1. [README.md](../README.md)
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)

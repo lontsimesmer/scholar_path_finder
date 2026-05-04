@@ -1,150 +1,150 @@
-# Main Product Flows
+# Parcours Produit Principaux
 
-This document explains the real user journey without requiring a full code read.
+Ce document explique le parcours utilisateur réel sans obliger à lire tout le code.
 
-## 1. Public Acquisition Flow
+## 1. Parcours d’Acquisition Public
 
-Entry point:
+Point d’entrée :
 
-- homepage contact form in [Contact.tsx](../src/components/Contact.tsx)
+- formulaire de contact de la page d’accueil dans [Contact.tsx](../src/components/Contact.tsx)
 
-What happens:
+Ce qui se passe :
 
-1. the visitor fills in name, email, phone, and message
-2. if the visitor is not signed in, the form also asks for a password
-3. the frontend calls `submit-lead`
-4. a `lead` is created or reused in `public.leads`
+1. le visiteur renseigne son nom, email, téléphone et message
+2. si le visiteur n’est pas connecté, le formulaire demande aussi un mot de passe
+3. le frontend appelle `submit-lead`
+4. un `lead` est créé ou réutilisé dans `public.leads`
 
-Possible outcomes:
+Résultats possibles :
 
-- no account yet: the backend creates the account, the frontend signs the user in, then redirects to the dashboard
-- existing account: the form draft is kept, and the user is redirected to login
-- already signed-in account: the same email is reused and the lead is refreshed safely
+- aucun compte existant : le backend crée le compte, le frontend connecte l’utilisateur puis le redirige vers le dashboard
+- compte existant : le brouillon du formulaire est conservé et l’utilisateur est redirigé vers la connexion
+- compte déjà connecté : le même email est réutilisé et le lead est rafraîchi de manière sûre
 
-## 2. Account Conflict Handling
+## 2. Gestion des Conflits de Compte
 
-If a person already has an account and submits the public form again while signed out:
+Si une personne possède déjà un compte et soumet à nouveau le formulaire public sans être connectée :
 
-1. `submit-lead` detects that the auth account already exists
-2. the frontend does not auto-connect that person for security reasons
-3. the user is redirected to `/login?redirect=/start-procedure`
-4. after login, the user continues the private procedure flow
+1. `submit-lead` détecte que le compte Auth existe déjà
+2. le frontend ne connecte pas automatiquement cette personne pour des raisons de sécurité
+3. l’utilisateur est redirigé vers `/login?redirect=/start-procedure`
+4. après connexion, l’utilisateur reprend le parcours privé de procédure
 
-This avoids taking over an existing account from a public form.
+Cela évite de prendre le contrôle d’un compte existant depuis un formulaire public.
 
-## 3. Student Profile Validation Flow
+## 3. Validation du Profil Étudiant
 
-Main page:
+Page principale :
 
 - [Dashboard.tsx](../src/pages/Dashboard.tsx)
 
-Required identity fields:
+Champs d’identité requis :
 
-- first name
-- last name
-- date of birth
+- prénom
+- nom
+- date de naissance
 
-Rules:
+Règles :
 
-- the student must validate these fields before continuing
-- after validation, the profile becomes final for the student
-- only admin can change it unless the admin requests a correction
+- l’étudiant doit valider ces champs avant de continuer
+- après validation, le profil devient définitif côté étudiant
+- seul un administrateur peut le modifier, sauf si une correction est demandée
 
-If admin requests a correction:
+Si l’administrateur demande une correction :
 
-1. admin reopens the profile from [AdminCRM.tsx](../src/pages/AdminCRM.tsx)
-2. a correction comment is stored
-3. the student can edit again
-4. the student must validate the profile again
+1. l’administrateur rouvre le profil depuis [AdminCRM.tsx](../src/pages/AdminCRM.tsx)
+2. un commentaire de correction est stocké
+3. l’étudiant peut modifier à nouveau le profil
+4. l’étudiant doit valider le profil une nouvelle fois
 
-## 4. Private Procedure Submission Flow
+## 4. Soumission Privée de Procédure
 
-Main page:
+Page principale :
 
 - [StartProcedure.tsx](../src/pages/StartProcedure.tsx)
 
-Access rules:
+Règles d’accès :
 
-- the page is private
-- anonymous users are redirected to login
-- users with an incomplete profile are redirected back to the dashboard
+- la page est privée
+- les utilisateurs anonymes sont redirigés vers la connexion
+- les utilisateurs avec un profil incomplet sont redirigés vers le dashboard
 
-What happens on submit:
+Ce qui se passe à la soumission :
 
-1. the page loads the signed-in user profile
-2. it checks whether a current actionable lead already exists
-3. if not, the student submits phone + procedure message
-4. the frontend calls `submit-lead`
-5. the lead is created or reused
-6. the student is redirected to checkout
+1. la page charge le profil de l’utilisateur connecté
+2. elle vérifie si un lead actionnable existe déjà
+3. sinon, l’étudiant soumet téléphone + message de procédure
+4. le frontend appelle `submit-lead`
+5. le lead est créé ou réutilisé
+6. l’étudiant est redirigé vers le checkout
 
-Important:
+Important :
 
-- the phone number is stored both in `leads.phone` and `student_profiles.phone_number`
-- if a lead already exists and payment is still missing, the page does not ask for a new submission; it offers payment continuation directly
+- le numéro de téléphone est stocké dans `leads.phone` et `student_profiles.phone_number`
+- si un lead existe déjà et que le paiement manque encore, la page ne demande pas une nouvelle soumission ; elle propose directement la reprise du paiement
 
-## 5. Checkout and Payment Flow
+## 5. Checkout et Paiement
 
-Main page:
+Page principale :
 
 - [Checkout.tsx](../src/pages/Checkout.tsx)
 
-Rules before payment:
+Règles avant paiement :
 
-- the user must be authenticated
-- the user must have a validated profile
-- a valid `leadId` must be present
+- l’utilisateur doit être authentifié
+- l’utilisateur doit avoir un profil validé
+- un `leadId` valide doit être présent
 
-Payment provider:
+Prestataire de paiement :
 
-- CinetPay is the primary checkout flow
+- CinetPay est le parcours de paiement principal
 
-Backend payment flow:
+Parcours backend :
 
-1. frontend calls `create-cinetpay-payment`
-2. backend creates a `payment_transactions` row
-3. browser is redirected to CinetPay
-4. CinetPay notifies the backend through `cinetpay-webhook`
-5. the backend verifies the transaction server-side
-6. `leads.payment_status` is updated
+1. le frontend appelle `create-cinetpay-payment`
+2. le backend crée une ligne `payment_transactions`
+3. le navigateur est redirigé vers CinetPay
+4. CinetPay notifie le backend via `cinetpay-webhook`
+5. le backend vérifie la transaction côté serveur
+6. `leads.payment_status` est mis à jour
 
-Important:
+Important :
 
-- the browser return page is not the source of truth
-- server-side verification is the source of truth
+- la page de retour navigateur n’est pas la source de vérité
+- la vérification serveur est la source de vérité
 
-## 6. If Payment Is Not Completed
+## 6. Paiement Non Terminé
 
-If the procedure is submitted but payment is not completed:
+Si la procédure est soumise mais que le paiement n’est pas terminé :
 
-1. the lead remains in an actionable unpaid state
-2. the dashboard shows a payment-required state
-3. `/start-procedure` shows a payment continuation state instead of asking for a new submission
-4. the student can resume payment later
+1. le lead reste dans un état actionnable non payé
+2. le dashboard affiche un état “paiement requis”
+3. `/start-procedure` affiche une reprise de paiement au lieu de demander une nouvelle soumission
+4. l’étudiant peut reprendre le paiement plus tard
 
-At this point:
+À ce stade :
 
-- the lead exists
-- the profile exists
-- but the real student dossier is not active yet
+- le lead existe
+- le profil existe
+- mais le dossier étudiant réel n’est pas encore actif
 
-## 7. When the Dossier Becomes Active
+## 7. Activation du Dossier
 
-The real student dossier starts only after payment confirmation.
+Le dossier étudiant réel démarre seulement après confirmation du paiement.
 
-What happens after confirmed payment:
+Après paiement confirmé :
 
-1. the lead is marked as paid
-2. `ensureConsultationApplication` creates `student_applications` if needed
-3. the student becomes visible in the admin CRM as an active case
+1. le lead est marqué payé
+2. `ensureConsultationApplication` crée `student_applications` si nécessaire
+3. l’étudiant apparaît dans le CRM admin comme dossier actif
 
-So the product distinction is:
+Distinction produit :
 
-- `lead`: acquisition and payment intent
-- `student_profile`: identity and academic profile
-- `student_application`: active paid dossier
+- `lead` : acquisition et intention de paiement
+- `student_profile` : identité et profil académique
+- `student_application` : dossier actif payé
 
-## 8. Recommended Reading Order for This Flow
+## 8. Ordre de Lecture Recommandé
 
 1. [README.md](../README.md)
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)

@@ -1,26 +1,26 @@
-# Testing Guide
+# Guide de Test
 
-This document explains how testing works in the repository and what is still missing.
+Ce document explique comment les tests fonctionnent dans le dépôt et ce qui manque encore.
 
-## Current State
+## État Actuel
 
-Automated testing is configured, but current coverage is low.
+Les tests automatisés sont configurés, mais la couverture actuelle reste faible.
 
-What exists today:
+Ce qui existe aujourd’hui :
 
-- Vitest configuration in [vitest.config.ts](../vitest.config.ts)
-- Testing Library setup in [src/test/setup.ts](../src/test/setup.ts)
-- one placeholder example test in [src/test/example.test.ts](../src/test/example.test.ts)
+- configuration Vitest dans [vitest.config.ts](../vitest.config.ts)
+- setup Testing Library dans [src/test/setup.ts](../src/test/setup.ts)
+- quelques tests ciblés dans `src/**/*.test.ts`
 
-Important:
+Important :
 
-- there is no meaningful automated coverage yet for the core business flows
-- there is no enforced coverage threshold
-- `lint` and `build` currently catch more regressions than the test suite
+- les parcours métier critiques ne sont pas encore fortement couverts
+- aucun seuil de couverture n’est imposé
+- `lint` et `build` détectent actuellement plus de régressions que la suite de tests
 
-## Commands
+## Commandes
 
-Main quality commands:
+Commandes qualité principales :
 
 ```bash
 npm run lint
@@ -28,7 +28,7 @@ npm run test
 npm run build
 ```
 
-If the change depends on local Supabase:
+Si le changement dépend de Supabase local :
 
 ```bash
 npm run db:supabase:start
@@ -36,78 +36,82 @@ npm run env:supabase:local
 npm run dev
 ```
 
-## What Should Be Tested First
+## Priorités de Test
 
-Priority order for real coverage:
+Ordre recommandé pour ajouter une couverture utile :
 
 1. `src/lib/student-profile.ts`
-2. `src/lib/procedure-lead.ts`
-3. route guards and redirects in `Dashboard`, `StartProcedure`, `Checkout`, and `Login`
-4. `Contact` conflict handling for existing accounts
-5. `CinetpayPayment` validation and submit states
-6. admin blog required-field behavior
+2. logique de procédure et de lead dans `src/lib`
+3. guards de route et redirections dans `Dashboard`, `StartProcedure`, `Checkout` et `Login`
+4. gestion des conflits de compte dans `Contact`
+5. validation et états de soumission de `CinetpayPayment`
+6. champs obligatoires du blog admin
 
-These areas contain the highest business risk and the most branching logic.
+Ces zones portent le risque métier le plus élevé et la logique conditionnelle la plus importante.
 
-## Manual Regression Checklist
+## Checklist de Régression Manuelle
 
-Until automated coverage improves, validate these flows manually:
+Tant que la couverture automatisée reste limitée, valider manuellement ces parcours :
 
-### Student flow
+### Parcours étudiant
 
-- create an account from the public contact form
-- sign in with an existing account and resume the procedure
-- validate profile fields in the dashboard
-- submit the private procedure page
-- resume checkout when payment is still unpaid
+- créer un compte depuis le formulaire public de contact
+- si la vérification contact est activée, valider la séquence code email puis code SMS avant connexion
+- se connecter avec un compte existant et reprendre la procédure
+- valider les champs du profil dans le dashboard
+- soumettre la page privée de procédure
+- reprendre le checkout quand le paiement est encore non payé
 
-### Payment flow
+### Parcours paiement
 
-- open checkout only with a valid authenticated session
-- confirm that profile validation is required before payment
-- start a CinetPay payment and verify the redirect flow
-- verify the return page state after browser return
+- ouvrir le checkout uniquement avec une session authentifiée valide
+- confirmer que la validation du profil est obligatoire avant paiement
+- si les tests de paiement réel CinetPay sont activés, utiliser un email présent dans `CINETPAY_TEST_ALLOWED_EMAILS`
+- démarrer un paiement CinetPay et vérifier la redirection
+- vérifier l’état de la page de retour après le retour navigateur
+- vérifier qu’un compte non autorisé est bloqué quand `CINETPAY_TEST_MODE=true`
 
-### Admin flow
+### Parcours admin
 
-- open `/admin/crm`
-- edit a student profile
-- request a profile correction
-- create, edit, hide, and validate blog posts
+- ouvrir `/admin/crm`
+- modifier un profil étudiant
+- demander une correction de profil
+- créer, modifier, masquer et valider des articles de blog
+- modifier le prix de consultation et vérifier son affichage dans le checkout
 
-### Platform checks
+### Vérifications plateforme
 
-- switch FR / EN and verify key pages
-- run the app on mobile width for dashboard, checkout, and admin dialogs
+- basculer FR / EN et vérifier les pages clés
+- tester en largeur mobile pour dashboard, checkout et dialogues admin
 
-## Recommended Test Placement
+## Emplacement Recommandé des Tests
 
-- utility tests: next to helpers or in `src/test`
-- page/component tests: next to the page or component being validated
-- naming: `*.test.ts` or `*.test.tsx`
+- tests utilitaires : près des helpers ou dans `src/test`
+- tests page/composant : près de la page ou du composant concerné
+- nommage : `*.test.ts` ou `*.test.tsx`
 
-Examples:
+Exemples :
 
 - `src/lib/student-profile.test.ts`
 - `src/pages/Checkout.test.tsx`
 - `src/components/Contact.test.tsx`
 
-## Recommended Strategy for This Repo
+## Stratégie Recommandée
 
-For now, treat quality as a 3-step gate:
+Pour l’instant, traiter la qualité comme une barrière en 3 étapes :
 
 1. `npm run lint`
 2. `npm run test`
 3. `npm run build`
 
-Then add manual validation for the feature area you changed.
+Ajouter ensuite une validation manuelle ciblée sur la zone modifiée.
 
-## Honest Coverage Assessment
+## Évaluation Honnête de la Couverture
 
-If a new developer asks whether the project has strong automated confidence today, the answer is no.
+Si un nouveau développeur demande si le projet dispose aujourd’hui d’une forte confiance automatisée, la réponse est non.
 
-The project has:
+Le projet possède :
 
-- a working test runner
-- a very small test baseline
-- a real need for business-flow tests before calling coverage mature
+- un runner de tests fonctionnel
+- une base de tests encore limitée
+- un besoin réel de tests de parcours métier avant de considérer la couverture comme mature
