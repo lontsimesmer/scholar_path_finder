@@ -37,6 +37,13 @@ enabled = true
 policy = "per_worker"
 inspector_port = 18083
 
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.image_transformation]
+enabled = false
+
 [analytics]
 enabled = false
 
@@ -58,7 +65,16 @@ verify_jwt = true
 [functions.create-cinetpay-payment]
 verify_jwt = true
 
+[functions.get-checkout-settings]
+verify_jwt = false
+
+[functions.update-checkout-settings]
+verify_jwt = true
+
 [functions.cinetpay-webhook]
+verify_jwt = false
+
+[functions.cinetpay-return]
 verify_jwt = false
 
 [functions.get-cinetpay-payment-status]
@@ -66,3 +82,15 @@ verify_jwt = true
 
 [functions.get-student-procedure-status]
 verify_jwt = true
+
+[functions.create-document-request]
+verify_jwt = true
+
+[functions.send-contact-verification-code]
+verify_jwt = false
+
+[functions.verify-contact-verification-code]
+verify_jwt = false
+
+[functions.get-contact-verification-status]
+verify_jwt = false

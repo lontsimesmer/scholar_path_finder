@@ -7,11 +7,13 @@ import {
 } from "../_shared/auth-utils.ts";
 import {
   buildFunctionsUrl,
-  buildPublicSiteUrl,
   createMerchantTransactionId,
+  getCinetPayCheckoutSettings,
   initializeCinetPayPayment,
+  requireCinetPayTestAccess,
   type CinetPayChannel,
 } from "../_shared/cinetpay.ts";
+import { getCheckoutPricing } from "../_shared/checkout-settings.ts";
 import {
   createPaymentTransaction,
   markTransactionInitializationFailed,
@@ -25,9 +27,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const CONSULTATION_AMOUNT_XAF = 15625;
-const CONSULTATION_REFERENCE_USD = 25;
 const CAMEROON_COUNTRY_CODE = "CM";
+const CAMEROON_STATE_CODE = "CM";
 
 const logger = createLogger("CREATE-CINETPAY-PAYMENT");
 
@@ -35,7 +36,6 @@ type BillingDetails = {
   phoneNumber: string;
   address: string;
   city: string;
-  state: string;
   zipCode: string;
 };
 
@@ -48,13 +48,57 @@ type CreatePaymentRequest = {
 
 const normalizeText = (value: string | null | undefined) => value?.trim() ?? "";
 
+const getErrorStatus = (message: string) => {
+  if (
+    message === "This payment is currently restricted to test accounts"
+  ) {
+    return 403;
+  }
+
+  if (
+    message.startsWith("Missing required card billing fields:") ||
+    message.startsWith("Billing phone number must contain") ||
+    message.startsWith("Billing postal code must contain") ||
+    message === "leadId is required" ||
+    message === "A valid CinetPay channel is required"
+  ) {
+    return 400;
+  }
+
+  if (message === "Complete and validate your profile before starting the payment") {
+    return 409;
+  }
+
+  return 500;
+};
+
+const normalizePhoneNumber = (value: string) => {
+  const trimmed = value.trim();
+  const hasLeadingPlus = trimmed.startsWith("+");
+  const digitsOnly = trimmed.replace(/\D/g, "");
+
+  if (digitsOnly.length < 8 || digitsOnly.length > 15) {
+    throw new Error("Billing phone number must contain between 8 and 15 digits");
+  }
+
+  return hasLeadingPlus ? `+${digitsOnly}` : `+${digitsOnly}`;
+};
+
+const requirePostalCode = (value: string) => {
+  const normalized = value.trim();
+  if (!/^\d{5}$/.test(normalized)) {
+    throw new Error("Billing postal code must contain exactly 5 digits");
+  }
+
+  return normalized;
+};
+
 const requireCardBillingDetails = (billingDetails: Partial<BillingDetails> | undefined) => {
   const normalized = {
-    phoneNumber: normalizeText(billingDetails?.phoneNumber),
+    phoneNumber: normalizePhoneNumber(normalizeText(billingDetails?.phoneNumber)),
     address: normalizeText(billingDetails?.address),
     city: normalizeText(billingDetails?.city),
-    state: normalizeText(billingDetails?.state),
-    zipCode: normalizeText(billingDetails?.zipCode),
+    zipCode: requirePostalCode(normalizeText(billingDetails?.zipCode)),
   };
 
   const missingFields = Object.entries(normalized)
@@ -94,7 +138,13 @@ serve(async (req) => {
     }
 
     const user = await requireAuthenticatedUser(req);
+    const checkoutSettings = getCinetPayCheckoutSettings();
+    requireCinetPayTestAccess(user.email, checkoutSettings);
     const supabase = createServiceRoleClient();
+    const checkoutPricing = await getCheckoutPricing(supabase, checkoutSettings);
+    const checkoutAmountXaf = checkoutSettings.isTestMode
+      ? checkoutSettings.testAmountXaf ?? checkoutPricing.amountXaf
+      : checkoutPricing.amountXaf;
     const lead = await requireOwnedLead(supabase, leadId, user.email);
     const { data: leadRecord, error: leadError } = await supabase
       .from("leads")
@@ -138,15 +188,16 @@ serve(async (req) => {
     const billingDetails =
       channel === "CREDIT_CARD" ? requireCardBillingDetails(body.billingDetails) : null;
     const transactionId = createMerchantTransactionId();
-    const siteUrl = buildPublicSiteUrl(req);
     const notifyUrl = buildFunctionsUrl("cinetpay-webhook");
     const returnUrl =
-      `${siteUrl}/payment-success?provider=cinetpay&leadId=${encodeURIComponent(lead.id)}`;
+      `${buildFunctionsUrl("cinetpay-return")}?leadId=${encodeURIComponent(lead.id)}`;
 
     logger.info("Initializing CinetPay payment", {
       channel,
       leadId: lead.id,
       studentId: user.id,
+      isTestMode: checkoutSettings.isTestMode,
+      amountXaf: checkoutAmountXaf,
     });
 
     await createPaymentTransaction(supabase, {
@@ -154,7 +205,7 @@ serve(async (req) => {
       studentId: user.id,
       transactionId,
       channel,
-      amount: CONSULTATION_AMOUNT_XAF,
+      amount: checkoutAmountXaf,
       currency: "XAF",
       customerEmail: user.email,
       customerPhoneNumber: billingDetails?.phoneNumber ?? null,
@@ -163,7 +214,7 @@ serve(async (req) => {
       customerAddress: billingDetails?.address ?? null,
       customerCity: billingDetails?.city ?? null,
       customerCountry: CAMEROON_COUNTRY_CODE,
-      customerState: billingDetails?.state ?? null,
+      customerState: CAMEROON_STATE_CODE,
       customerZipCode: billingDetails?.zipCode ?? null,
       metadata: {
         leadId: lead.id,
@@ -175,9 +226,11 @@ serve(async (req) => {
     try {
       const initializationResponse = await initializeCinetPayPayment({
         transactionId,
-        amount: CONSULTATION_AMOUNT_XAF,
+        amount: checkoutAmountXaf,
         currency: "XAF",
-        description: "Power Prestation consultation payment",
+        description: checkoutSettings.isTestMode
+          ? "Power Prestation consultation payment TEST MODE"
+          : "Power Prestation consultation payment",
         notifyUrl,
         returnUrl,
         channels: channel,
@@ -195,7 +248,7 @@ serve(async (req) => {
         customerAddress: billingDetails?.address,
         customerCity: billingDetails?.city,
         customerCountry: CAMEROON_COUNTRY_CODE,
-        customerState: billingDetails?.state,
+        customerState: CAMEROON_STATE_CODE,
         customerZipCode: billingDetails?.zipCode,
       });
 
@@ -225,9 +278,10 @@ serve(async (req) => {
           paymentUrl: initializationResponse.data?.payment_url,
           paymentToken: initializationResponse.data?.payment_token,
           transactionId,
-          amount: CONSULTATION_AMOUNT_XAF,
+          amount: checkoutAmountXaf,
           currency: "XAF",
-          usdReference: CONSULTATION_REFERENCE_USD,
+          usdReference: checkoutPricing.usdReference,
+          isTestMode: checkoutSettings.isTestMode,
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -244,7 +298,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: getErrorStatus(message),
     });
   }
 });

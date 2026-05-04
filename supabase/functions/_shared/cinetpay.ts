@@ -51,10 +51,48 @@ export type CinetPayVerificationResponse = {
   };
 };
 
+export type CinetPayCheckoutSettings = {
+  isTestMode: boolean;
+  consultationAmountXaf: number;
+  usdReference: number;
+  testAmountXaf: number | null;
+  allowedTestEmails: string[];
+};
+
 const CINETPAY_INITIALIZATION_URL = "https://api-checkout.cinetpay.com/v2/payment";
 const CINETPAY_VERIFICATION_URL = "https://api-checkout.cinetpay.com/v2/payment/check";
 
 const normalizeValue = (value: string | null | undefined) => value?.trim() ?? "";
+
+const normalizeEmailValue = (value: string | null | undefined) => normalizeValue(value).toLowerCase();
+
+const parseBooleanFlag = (value: string | null | undefined) => {
+  const normalized = normalizeValue(value).toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
+};
+
+const parsePositiveInteger = (value: string | null | undefined, envName: string) => {
+  const normalized = normalizeValue(value);
+  if (!/^\d+$/.test(normalized)) {
+    throw new Error(`${envName} must be a positive integer`);
+  }
+
+  const parsed = Number.parseInt(normalized, 10);
+  if (!Number.isSafeInteger(parsed) || parsed <= 0) {
+    throw new Error(`${envName} must be a positive integer`);
+  }
+
+  return parsed;
+};
+
+const parseAmountXaf = (value: string | null | undefined, envName: string) => {
+  const parsed = parsePositiveInteger(value, envName);
+  if (parsed % 5 !== 0) {
+    throw new Error(`${envName} must be a multiple of 5`);
+  }
+
+  return parsed;
+};
 
 const sanitizeDescription = (value: string) =>
   value
@@ -121,6 +159,63 @@ export const getCinetPayConfig = () => {
 
   return { apiKey, siteId, secretKey };
 };
+
+export const getCinetPayCheckoutSettings = (): CinetPayCheckoutSettings => {
+  const isTestMode = parseBooleanFlag(Deno.env.get("CINETPAY_TEST_MODE"));
+  const consultationAmountXaf = parseAmountXaf(
+    Deno.env.get("CINETPAY_CONSULTATION_AMOUNT_XAF") ?? "15625",
+    "CINETPAY_CONSULTATION_AMOUNT_XAF",
+  );
+  const usdReference = parsePositiveInteger(
+    Deno.env.get("CINETPAY_USD_REFERENCE") ?? "25",
+    "CINETPAY_USD_REFERENCE",
+  );
+
+  if (!isTestMode) {
+    return {
+      isTestMode,
+      consultationAmountXaf,
+      usdReference,
+      testAmountXaf: null,
+      allowedTestEmails: [],
+    };
+  }
+
+  const testAmountXaf = parseAmountXaf(Deno.env.get("CINETPAY_TEST_AMOUNT_XAF"), "CINETPAY_TEST_AMOUNT_XAF");
+  const allowedTestEmails = normalizeValue(Deno.env.get("CINETPAY_TEST_ALLOWED_EMAILS"))
+    .split(",")
+    .map((value) => normalizeEmailValue(value))
+    .filter((value) => value.length > 0);
+
+  if (allowedTestEmails.length === 0) {
+    throw new Error("CINETPAY_TEST_ALLOWED_EMAILS must contain at least one email when CINETPAY_TEST_MODE is enabled");
+  }
+
+  return {
+    isTestMode,
+    consultationAmountXaf,
+    usdReference,
+    testAmountXaf,
+    allowedTestEmails,
+  };
+};
+
+export const requireCinetPayTestAccess = (
+  email: string,
+  settings: CinetPayCheckoutSettings,
+) => {
+  if (!settings.isTestMode) {
+    return;
+  }
+
+  const normalizedEmail = normalizeEmailValue(email);
+  if (!settings.allowedTestEmails.includes(normalizedEmail)) {
+    throw new Error("This payment is currently restricted to test accounts");
+  }
+};
+
+export const resolveCinetPayCheckoutAmount = (settings: CinetPayCheckoutSettings) =>
+  settings.isTestMode ? settings.testAmountXaf ?? settings.consultationAmountXaf : settings.consultationAmountXaf;
 
 export const createMerchantTransactionId = () =>
   `PP-${Date.now()}-${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
