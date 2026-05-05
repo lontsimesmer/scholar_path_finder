@@ -1,6 +1,9 @@
 -- Flyway baseline migration for Power Prestation.
 -- This file replaces the former timestamped Supabase migrations with a single source of truth.
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -85,10 +88,11 @@ BEFORE UPDATE ON public.leads
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE TABLE IF NOT EXISTS public.admins (
-  email TEXT PRIMARY KEY,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
+CREATE INDEX IF NOT EXISTS leads_email_idx
+  ON public.leads (lower(email));
+
+CREATE INDEX IF NOT EXISTS leads_payment_status_updated_at_idx
+  ON public.leads (payment_status, updated_at DESC);
 
 INSERT INTO public.admins (email) VALUES ('toubi.prestation@gmail.com') ON CONFLICT DO NOTHING;
 INSERT INTO public.admins (email) VALUES ('powerprestationint@gmail.com') ON CONFLICT DO NOTHING;
@@ -171,6 +175,12 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS blog_posts_slug_fr_unique_idx
+  ON public.blog_posts (slug_fr);
+
+CREATE UNIQUE INDEX IF NOT EXISTS blog_posts_slug_en_unique_idx
+  ON public.blog_posts (slug_en);
+
 ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Public can read published posts" ON public.blog_posts;
@@ -186,6 +196,13 @@ CREATE POLICY "Admins can manage all posts" ON public.blog_posts
   WITH CHECK (
     EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
   );
+
+DROP TRIGGER IF EXISTS update_blog_posts_updated_at ON public.blog_posts;
+
+CREATE TRIGGER update_blog_posts_updated_at
+BEFORE UPDATE ON public.blog_posts
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
 
 DO $$
 BEGIN
@@ -317,6 +334,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS student_profiles_phone_number_unique_idx
 ON public.student_profiles ((regexp_replace(phone_number, '[^0-9]+', '', 'g')))
 WHERE phone_number IS NOT NULL AND btrim(phone_number) <> '';
 
+CREATE INDEX IF NOT EXISTS student_profiles_email_idx
+  ON public.student_profiles (lower(email))
+  WHERE email IS NOT NULL AND btrim(email) <> '';
+
 CREATE TABLE IF NOT EXISTS public.student_applications (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   student_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -337,8 +358,15 @@ CREATE TABLE IF NOT EXISTS public.student_documents (
   file_type TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   admin_feedback TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+ALTER TABLE public.student_documents
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL;
+
+CREATE INDEX IF NOT EXISTS student_documents_student_id_status_updated_at_idx
+  ON public.student_documents (student_id, status, updated_at DESC);
 
 CREATE TABLE IF NOT EXISTS public.student_document_requests (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -372,9 +400,11 @@ DROP POLICY IF EXISTS "Students can view their own applications" ON public.stude
 DROP POLICY IF EXISTS "Admins can view and update all applications" ON public.student_applications;
 DROP POLICY IF EXISTS "Students can view their own documents" ON public.student_documents;
 DROP POLICY IF EXISTS "Students can upload their own documents" ON public.student_documents;
+DROP POLICY IF EXISTS "Students can replace their own rejected documents" ON public.student_documents;
 DROP POLICY IF EXISTS "Admins can view and update all documents" ON public.student_documents;
 DROP POLICY IF EXISTS "Students can view their own document requests" ON public.student_document_requests;
 DROP POLICY IF EXISTS "Students can update their own document requests" ON public.student_document_requests;
+DROP POLICY IF EXISTS "Students can fulfill their own pending document requests" ON public.student_document_requests;
 DROP POLICY IF EXISTS "Admins can manage all document requests" ON public.student_document_requests;
 
 CREATE POLICY "Students can view their own profile" ON public.student_profiles
@@ -425,6 +455,11 @@ CREATE POLICY "Students can view their own documents" ON public.student_document
 CREATE POLICY "Students can upload their own documents" ON public.student_documents
   FOR INSERT WITH CHECK (auth.uid() = student_id);
 
+CREATE POLICY "Students can replace their own rejected documents" ON public.student_documents
+  FOR UPDATE
+  USING (auth.uid() = student_id AND status = 'rejected')
+  WITH CHECK (auth.uid() = student_id AND status = 'pending');
+
 CREATE POLICY "Admins can view and update all documents" ON public.student_documents
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
@@ -436,10 +471,15 @@ CREATE POLICY "Admins can view and update all documents" ON public.student_docum
 CREATE POLICY "Students can view their own document requests" ON public.student_document_requests
   FOR SELECT USING (auth.uid() = student_id);
 
-CREATE POLICY "Students can update their own document requests" ON public.student_document_requests
+CREATE POLICY "Students can fulfill their own pending document requests" ON public.student_document_requests
   FOR UPDATE
-  USING (auth.uid() = student_id)
-  WITH CHECK (auth.uid() = student_id);
+  USING (auth.uid() = student_id AND status = 'pending')
+  WITH CHECK (
+    auth.uid() = student_id
+    AND status = 'fulfilled'
+    AND fulfilled_document_id IS NOT NULL
+    AND fulfilled_at IS NOT NULL
+  );
 
 CREATE POLICY "Admins can manage all document requests" ON public.student_document_requests
   FOR ALL USING (
@@ -449,12 +489,132 @@ CREATE POLICY "Admins can manage all document requests" ON public.student_docume
     EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
   );
 
+CREATE OR REPLACE FUNCTION public.prevent_unsafe_student_document_update()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email') THEN
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() <> OLD.student_id THEN
+    RAISE EXCEPTION 'Student document update is not allowed for this user.';
+  END IF;
+
+  IF OLD.status <> 'rejected' OR NEW.status <> 'pending' THEN
+    RAISE EXCEPTION 'Students can only replace rejected documents.';
+  END IF;
+
+  IF NEW.id <> OLD.id
+    OR NEW.student_id <> OLD.student_id
+    OR NEW.application_id IS DISTINCT FROM OLD.application_id
+    OR NEW.created_at IS DISTINCT FROM OLD.created_at
+  THEN
+    RAISE EXCEPTION 'Document ownership fields are immutable for students.';
+  END IF;
+
+  IF NEW.admin_feedback IS NOT NULL THEN
+    RAISE EXCEPTION 'Admin feedback must be cleared when replacing a rejected document.';
+  END IF;
+
+  IF btrim(NEW.title) = '' OR btrim(NEW.file_path) = '' THEN
+    RAISE EXCEPTION 'Document title and file path are required.';
+  END IF;
+
+  IF NEW.file_path NOT LIKE OLD.student_id::text || '/%' THEN
+    RAISE EXCEPTION 'Document file path must belong to the student.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+CREATE OR REPLACE FUNCTION public.prevent_unsafe_student_document_request_update()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email') THEN
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() <> OLD.student_id THEN
+    RAISE EXCEPTION 'Student document request update is not allowed for this user.';
+  END IF;
+
+  IF OLD.status <> 'pending' OR NEW.status <> 'fulfilled' THEN
+    RAISE EXCEPTION 'Students can only fulfill pending document requests.';
+  END IF;
+
+  IF NEW.id <> OLD.id
+    OR NEW.student_id <> OLD.student_id
+    OR NEW.application_id IS DISTINCT FROM OLD.application_id
+    OR NEW.title IS DISTINCT FROM OLD.title
+    OR NEW.description IS DISTINCT FROM OLD.description
+    OR NEW.requested_by IS DISTINCT FROM OLD.requested_by
+    OR NEW.created_at IS DISTINCT FROM OLD.created_at
+  THEN
+    RAISE EXCEPTION 'Document request fields are immutable for students.';
+  END IF;
+
+  IF NEW.fulfilled_document_id IS NULL OR NEW.fulfilled_at IS NULL THEN
+    RAISE EXCEPTION 'Fulfilled document details are required.';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.student_documents
+    WHERE student_documents.id = NEW.fulfilled_document_id
+      AND student_documents.student_id = OLD.student_id
+  ) THEN
+    RAISE EXCEPTION 'Fulfilled document must belong to the student.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS update_student_profiles_updated_at ON public.student_profiles;
+DROP TRIGGER IF EXISTS update_student_applications_updated_at ON public.student_applications;
+DROP TRIGGER IF EXISTS update_student_documents_updated_at ON public.student_documents;
+DROP TRIGGER IF EXISTS prevent_unsafe_student_document_update ON public.student_documents;
 DROP TRIGGER IF EXISTS update_student_document_requests_updated_at ON public.student_document_requests;
+DROP TRIGGER IF EXISTS prevent_unsafe_student_document_request_update ON public.student_document_requests;
+
+CREATE TRIGGER update_student_profiles_updated_at
+BEFORE UPDATE ON public.student_profiles
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_student_applications_updated_at
+BEFORE UPDATE ON public.student_applications
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_student_documents_updated_at
+BEFORE UPDATE ON public.student_documents
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER prevent_unsafe_student_document_update
+BEFORE UPDATE ON public.student_documents
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_unsafe_student_document_update();
 
 CREATE TRIGGER update_student_document_requests_updated_at
 BEFORE UPDATE ON public.student_document_requests
 FOR EACH ROW
 EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER prevent_unsafe_student_document_request_update
+BEFORE UPDATE ON public.student_document_requests
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_unsafe_student_document_request_update();
 
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('student-documents', 'student-documents', false)
@@ -645,6 +805,13 @@ CREATE POLICY "Admins can view all payment transactions"
       WHERE admins.email = auth.jwt() ->> 'email'
     )
   );
+
+DROP TRIGGER IF EXISTS update_payment_transactions_updated_at ON public.payment_transactions;
+
+CREATE TRIGGER update_payment_transactions_updated_at
+BEFORE UPDATE ON public.payment_transactions
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS public.student_admin_notes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
