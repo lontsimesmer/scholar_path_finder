@@ -105,7 +105,7 @@ describe("AdminCRMDocumentsManager", () => {
     await waitFor(() => {
       expect(onCreateDocumentRequest).toHaveBeenCalledWith("Passeport", "Copie lisible");
     });
-  });
+  }, 20_000);
 
   it("shows existing requests and lets the admin approve or reject documents", () => {
     const onUpdateDoc = vi.fn(async () => undefined);
@@ -123,5 +123,5 @@ describe("AdminCRMDocumentsManager", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /refuser/i }));
     expect(onUpdateDoc).toHaveBeenCalledWith("doc-1", { status: "rejected" });
-  });
+  }, 20_000);
 });

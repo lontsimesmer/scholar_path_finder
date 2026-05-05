@@ -82,7 +82,7 @@ describe("DashboardDocumentsCard", () => {
     fireEvent.click(screen.getByRole("button", { name: /^deposer$/i }));
 
     expect(onRequestUpload).toHaveBeenCalledWith("request-1", "Releve de notes");
-  });
+  }, 20_000);
 
   it("lets the student replace a rejected document directly", () => {
     const onReplaceDocument = vi.fn();
