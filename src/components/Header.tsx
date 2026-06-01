@@ -4,6 +4,7 @@ import { Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import BrandMark from "@/components/BrandMark";
+import NotificationsBell from "@/components/notifications/NotificationsBell";
 import { useLanguage } from "@/i18n/language";
 import { createLogger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,7 @@ const logger = createLogger("Header");
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -33,13 +34,13 @@ const Header = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         logger.info("Header session found", { userId: session.user.id });
-        setUser({ email: session.user.email });
+        setUser({ id: session.user.id, email: session.user.email });
         const { data: admin } = await supabase
           .from("admins")
           .select("email")
           .eq("email", session.user.email)
           .maybeSingle();
-        
+
         logger.info("Header admin status resolved", { isAdmin: Boolean(admin) });
         setIsAdmin(!!admin);
       } else {
@@ -59,7 +60,7 @@ const Header = () => {
       }
 
       if (session) {
-        setUser({ email: session.user.email });
+        setUser({ id: session.user.id, email: session.user.email });
         void checkAuth();
       } else {
         setUser(null);
@@ -80,6 +81,7 @@ const Header = () => {
     { href: isHomePage ? "#services" : "/#services", label: t.nav.services },
     { href: isHomePage ? "#about" : "/#about", label: t.nav.aboutUs },
     { href: isHomePage ? "#how-it-works" : "/#how-it-works", label: t.nav.howItWorks },
+    { href: isHomePage ? "#faq" : "/#faq", label: t.nav.faq },
     { href: "/blog", label: t.nav.blog, isInternal: true },
   ];
 
@@ -110,14 +112,14 @@ const Header = () => {
               </div>
             </Link>
 
-            <div className="hidden xl:flex flex-1 justify-center px-4">
-              <nav className="flex items-center rounded-full border border-border/40 bg-secondary/40 px-1.5 py-1.5 shadow-sm min-w-max">
+            <div className="hidden xl:flex flex-1 justify-center px-2">
+              <nav className="flex items-center rounded-full border border-border/40 bg-secondary/40 px-1 py-1 shadow-sm min-w-max">
                 {navLinks.map((link) => (
                   link.isInternal ? (
                     <Link
                       key={link.href}
                       to={link.href}
-                      className="rounded-full px-5 py-2 text-[13px] font-bold uppercase tracking-widest text-foreground/60 transition-all duration-200 hover:text-primary hover:bg-white/50 text-center"
+                      className="rounded-full px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground/60 transition-all duration-200 hover:text-primary hover:bg-white/50 text-center"
                     >
                       {link.label}
                     </Link>
@@ -125,7 +127,7 @@ const Header = () => {
                     <a
                       key={link.href}
                       href={link.href}
-                      className="rounded-full px-5 py-2 text-[13px] font-bold uppercase tracking-widest text-foreground/60 transition-all duration-200 hover:text-primary hover:bg-white/50 text-center"
+                      className="rounded-full px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground/60 transition-all duration-200 hover:text-primary hover:bg-white/50 text-center"
                     >
                       {link.label}
                     </a>
@@ -134,21 +136,30 @@ const Header = () => {
               </nav>
             </div>
 
-            <div className="flex items-center gap-3 md:gap-4 shrink-0">
-              <div className="hidden md:flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="hidden md:flex items-center gap-2">
                 <LanguageSwitcher />
-                
+
                 {user ? (
-                  <Link 
+                  <NotificationsBell
+                    userId={isAdmin ? null : user.id}
+                    adminEmail={isAdmin ? user.email ?? null : null}
+                  />
+                ) : null}
+
+                {user ? (
+                  <Link
                     to={isAdmin ? "/admin" : "/dashboard"}
-                    className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2.5 text-[11px] font-bold uppercase tracking-widest text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 h-10 text-[11px] font-bold uppercase tracking-wider text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
                   >
                     <User size={14} />
-                    {isAdmin ? "Admin Hub" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                    <span className="hidden xl:inline">
+                      {isAdmin ? "Admin Hub" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                    </span>
                   </Link>
                 ) : (
-                  <Link 
-                    to="/login" 
+                  <Link
+                    to="/login"
                     className="h-10 w-10 flex items-center justify-center rounded-full border border-border/40 text-foreground/60 hover:text-primary hover:border-primary/30 transition-all text-center"
                     title={t.login.signInTab}
                   >
@@ -156,7 +167,7 @@ const Header = () => {
                   </Link>
                 )}
               </div>
-              <Button size="lg" asChild className="hidden sm:flex px-6 h-11 rounded-full text-[13px] font-bold uppercase tracking-widest text-center">
+              <Button asChild className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center">
                 <a href={isHomePage ? "#contact" : "/#contact"}>{t.nav.contactUs}</a>
               </Button>
               

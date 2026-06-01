@@ -29,7 +29,9 @@ const AdminDashboard = () => {
     { href: "/admin/crm", label: t.adminCRM.breadcrumbCurrent },
     { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
     { href: "/admin/payments", label: t.adminPayments.breadcrumbCurrent },
+    { href: "/admin/manual-payments", label: t.adminManualPayments.breadcrumbCurrent },
     { href: "/admin/blog", label: t.adminBlog.breadcrumbCurrent },
+    { href: "/admin/faq", label: t.adminFaq.breadcrumbCurrent },
   ];
   const highlights = [
     {

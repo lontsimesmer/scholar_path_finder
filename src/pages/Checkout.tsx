@@ -9,6 +9,10 @@ import { useCheckout } from "@/hooks/use-checkout";
 import { useCheckoutSettings } from "@/hooks/use-checkout-settings";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
+import {
+  DEFAULT_MANUAL_ORANGE_MONEY,
+  type CheckoutPaymentMode,
+} from "@/lib/checkout-settings";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -69,6 +73,12 @@ const Checkout = () => {
             identity={viewModel.identity}
             leadId={viewModel.leadId}
             paymentMethod={viewModel.paymentMethod}
+            paymentMode={
+              (checkoutSettings?.paymentMode ?? "manual_orange_money") as CheckoutPaymentMode
+            }
+            manualOrangeMoney={
+              checkoutSettings?.manualOrangeMoney ?? DEFAULT_MANUAL_ORANGE_MONEY
+            }
             text={{
               methods: t.checkout.methods,
               paymentDetails: t.checkout.paymentDetails,

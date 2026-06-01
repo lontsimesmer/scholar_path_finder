@@ -3,6 +3,10 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createServiceRoleClient, requireAdminUser } from "../_shared/auth-utils.ts";
 import { getCinetPayCheckoutSettings } from "../_shared/cinetpay.ts";
 import { saveCheckoutPricing } from "../_shared/checkout-settings.ts";
+import {
+  loadCheckoutPaymentMode,
+  loadManualPaymentInstructions,
+} from "../_shared/manual-payments.ts";
 import { createLogger, getErrorMessage } from "../_shared/logger.ts";
 
 const corsHeaders = {
@@ -44,16 +48,23 @@ serve(async (req) => {
     const admin = await requireAdminUser(supabase, req);
     const fallback = getCinetPayCheckoutSettings();
     const pricing = await saveCheckoutPricing(supabase, body.amountXaf, fallback, admin.email);
+    const [paymentMode, manualOrangeMoney] = await Promise.all([
+      loadCheckoutPaymentMode(supabase),
+      loadManualPaymentInstructions(supabase),
+    ]);
 
     logger.info("Consultation price updated", {
       amountXaf: pricing.amountXaf,
       adminEmail: admin.email,
     });
 
-    return new Response(JSON.stringify(pricing), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ ...pricing, paymentMode, manualOrangeMoney }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
   } catch (error: unknown) {
     const message = getErrorMessage(error);
     logger.error("Failed to update checkout settings", { message });

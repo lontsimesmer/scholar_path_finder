@@ -125,6 +125,45 @@ export type Database = {
         }
         Relationships: []
       }
+      faq_entries: {
+        Row: {
+          answer_en: string
+          answer_fr: string
+          category: string | null
+          created_at: string
+          id: string
+          is_published: boolean
+          position: number
+          question_en: string
+          question_fr: string
+          updated_at: string
+        }
+        Insert: {
+          answer_en: string
+          answer_fr: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          position?: number
+          question_en: string
+          question_fr: string
+          updated_at?: string
+        }
+        Update: {
+          answer_en?: string
+          answer_fr?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          position?: number
+          question_en?: string
+          question_fr?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       flyway_schema_history: {
         Row: {
           checksum: number | null
@@ -171,6 +210,9 @@ export type Database = {
           follow_up_count: number | null
           id: string
           last_follow_up_at: string | null
+          manual_payment_blocked_at: string | null
+          manual_payment_blocked_by: string | null
+          manual_payment_blocked_reason: string | null
           message: string
           name: string
           next_follow_up_at: string | null
@@ -186,6 +228,9 @@ export type Database = {
           follow_up_count?: number | null
           id?: string
           last_follow_up_at?: string | null
+          manual_payment_blocked_at?: string | null
+          manual_payment_blocked_by?: string | null
+          manual_payment_blocked_reason?: string | null
           message: string
           name: string
           next_follow_up_at?: string | null
@@ -201,6 +246,9 @@ export type Database = {
           follow_up_count?: number | null
           id?: string
           last_follow_up_at?: string | null
+          manual_payment_blocked_at?: string | null
+          manual_payment_blocked_by?: string | null
+          manual_payment_blocked_reason?: string | null
           message?: string
           name?: string
           next_follow_up_at?: string | null
@@ -209,6 +257,124 @@ export type Database = {
           phone?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      manual_payment_submissions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          lead_id: string
+          metadata: Json
+          notes: string | null
+          payment_transaction_id: string | null
+          provider_reference: string | null
+          receipt_mime_type: string | null
+          receipt_path: string
+          reviewed_at: string | null
+          reviewer_comment: string | null
+          reviewer_email: string | null
+          sender_name: string | null
+          sender_phone: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency: string
+          id?: string
+          lead_id: string
+          metadata?: Json
+          notes?: string | null
+          payment_transaction_id?: string | null
+          provider_reference?: string | null
+          receipt_mime_type?: string | null
+          receipt_path: string
+          reviewed_at?: string | null
+          reviewer_comment?: string | null
+          reviewer_email?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json
+          notes?: string | null
+          payment_transaction_id?: string | null
+          provider_reference?: string | null
+          receipt_mime_type?: string | null
+          receipt_path?: string
+          reviewed_at?: string | null
+          reviewer_comment?: string | null
+          reviewer_email?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manual_payment_submissions_lead_id_fkey"
+            columns: ["lead_id"]
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manual_payment_submissions_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link_path: string | null
+          payload: Json
+          read_at: string | null
+          recipient_admin_email: string | null
+          recipient_user_id: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link_path?: string | null
+          payload?: Json
+          read_at?: string | null
+          recipient_admin_email?: string | null
+          recipient_user_id?: string | null
+          title: string
+          type: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link_path?: string | null
+          payload?: Json
+          read_at?: string | null
+          recipient_admin_email?: string | null
+          recipient_user_id?: string | null
+          title?: string
+          type?: string
         }
         Relationships: []
       }

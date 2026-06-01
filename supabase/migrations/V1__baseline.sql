@@ -742,7 +742,7 @@ CREATE TABLE IF NOT EXISTS public.payment_transactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   lead_id UUID NOT NULL REFERENCES public.leads(id) ON DELETE CASCADE,
   student_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  provider TEXT NOT NULL CHECK (provider IN ('cinetpay')),
+  provider TEXT NOT NULL CHECK (provider IN ('cinetpay', 'manual_orange_money')),
   transaction_id TEXT NOT NULL UNIQUE,
   provider_response_id TEXT,
   payment_token TEXT,
@@ -898,3 +898,422 @@ CREATE POLICY "Admins can manage student admin activity logs"
       WHERE admins.email = auth.jwt() ->> 'email'
     )
   );
+
+-- =============================================================================
+-- Manual Orange Money payment workflow
+-- =============================================================================
+
+-- Extend payment_transactions.provider CHECK to allow manual_orange_money entries
+-- when the table already exists from a prior baseline run.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'payment_transactions_provider_check'
+      AND conrelid = 'public.payment_transactions'::regclass
+  ) THEN
+    ALTER TABLE public.payment_transactions
+      DROP CONSTRAINT payment_transactions_provider_check;
+  END IF;
+
+  ALTER TABLE public.payment_transactions
+    ADD CONSTRAINT payment_transactions_provider_check
+    CHECK (provider IN ('cinetpay', 'manual_orange_money'));
+END $$;
+
+-- Lead-level block flag preventing further manual payment submissions.
+ALTER TABLE public.leads
+  ADD COLUMN IF NOT EXISTS manual_payment_blocked_at TIMESTAMP WITH TIME ZONE,
+  ADD COLUMN IF NOT EXISTS manual_payment_blocked_by TEXT,
+  ADD COLUMN IF NOT EXISTS manual_payment_blocked_reason TEXT;
+
+CREATE INDEX IF NOT EXISTS leads_manual_payment_blocked_idx
+  ON public.leads (manual_payment_blocked_at)
+  WHERE manual_payment_blocked_at IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS public.manual_payment_submissions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lead_id UUID NOT NULL REFERENCES public.leads(id) ON DELETE CASCADE,
+  student_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  amount INTEGER NOT NULL CHECK (amount > 0 AND amount % 5 = 0),
+  currency TEXT NOT NULL CHECK (char_length(currency) = 3),
+  receipt_path TEXT NOT NULL CHECK (btrim(receipt_path) <> ''),
+  receipt_mime_type TEXT,
+  sender_name TEXT,
+  sender_phone TEXT,
+  provider_reference TEXT,
+  notes TEXT,
+  status TEXT NOT NULL DEFAULT 'pending_review' CHECK (
+    status IN ('pending_review', 'approved', 'rejected', 'cancelled')
+  ),
+  reviewer_email TEXT,
+  reviewer_comment TEXT,
+  reviewed_at TIMESTAMP WITH TIME ZONE,
+  payment_transaction_id UUID REFERENCES public.payment_transactions(id) ON DELETE SET NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS manual_payment_submissions_lead_id_idx
+  ON public.manual_payment_submissions (lead_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS manual_payment_submissions_student_id_idx
+  ON public.manual_payment_submissions (student_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS manual_payment_submissions_status_idx
+  ON public.manual_payment_submissions (status, created_at DESC);
+
+-- Only one pending submission per lead at a time (prevents concurrent uploads).
+CREATE UNIQUE INDEX IF NOT EXISTS manual_payment_submissions_one_pending_per_lead_idx
+  ON public.manual_payment_submissions (lead_id)
+  WHERE status = 'pending_review';
+
+ALTER TABLE public.manual_payment_submissions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Students can view their own manual payment submissions" ON public.manual_payment_submissions;
+DROP POLICY IF EXISTS "Admins can view all manual payment submissions" ON public.manual_payment_submissions;
+
+CREATE POLICY "Students can view their own manual payment submissions"
+  ON public.manual_payment_submissions
+  FOR SELECT
+  USING (auth.uid() = student_id);
+
+CREATE POLICY "Admins can view all manual payment submissions"
+  ON public.manual_payment_submissions
+  FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM public.admins
+      WHERE admins.email = auth.jwt() ->> 'email'
+    )
+  );
+
+CREATE OR REPLACE FUNCTION public.prevent_unsafe_manual_payment_submission_update()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email') THEN
+    RETURN NEW;
+  END IF;
+
+  IF auth.uid() IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  RAISE EXCEPTION 'Manual payment submissions can only be modified by admins.';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS update_manual_payment_submissions_updated_at ON public.manual_payment_submissions;
+DROP TRIGGER IF EXISTS prevent_unsafe_manual_payment_submission_update ON public.manual_payment_submissions;
+
+CREATE TRIGGER update_manual_payment_submissions_updated_at
+BEFORE UPDATE ON public.manual_payment_submissions
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER prevent_unsafe_manual_payment_submission_update
+BEFORE UPDATE ON public.manual_payment_submissions
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_unsafe_manual_payment_submission_update();
+
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  recipient_user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  recipient_admin_email TEXT,
+  type TEXT NOT NULL CHECK (
+    type IN (
+      'manual_payment.submitted',
+      'manual_payment.approved',
+      'manual_payment.rejected',
+      'manual_payment.lead_blocked'
+    )
+  ),
+  title TEXT NOT NULL CHECK (btrim(title) <> ''),
+  body TEXT,
+  link_path TEXT,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  read_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  CONSTRAINT notifications_recipient_xor_check CHECK (
+    (recipient_user_id IS NOT NULL AND recipient_admin_email IS NULL)
+    OR (recipient_user_id IS NULL AND recipient_admin_email IS NOT NULL)
+  )
+);
+
+CREATE INDEX IF NOT EXISTS notifications_recipient_user_id_idx
+  ON public.notifications (recipient_user_id, created_at DESC)
+  WHERE recipient_user_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS notifications_recipient_admin_email_idx
+  ON public.notifications (recipient_admin_email, created_at DESC)
+  WHERE recipient_admin_email IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS notifications_unread_user_idx
+  ON public.notifications (recipient_user_id)
+  WHERE read_at IS NULL AND recipient_user_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS notifications_unread_admin_idx
+  ON public.notifications (recipient_admin_email)
+  WHERE read_at IS NULL AND recipient_admin_email IS NOT NULL;
+
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Students can view their notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Students can mark their notifications as read" ON public.notifications;
+DROP POLICY IF EXISTS "Students can delete their notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Admins can view their admin notifications" ON public.notifications;
+DROP POLICY IF EXISTS "Admins can mark their admin notifications as read" ON public.notifications;
+DROP POLICY IF EXISTS "Admins can delete their admin notifications" ON public.notifications;
+
+CREATE POLICY "Students can view their notifications"
+  ON public.notifications
+  FOR SELECT
+  USING (auth.uid() IS NOT NULL AND recipient_user_id = auth.uid());
+
+CREATE POLICY "Students can mark their notifications as read"
+  ON public.notifications
+  FOR UPDATE
+  USING (auth.uid() IS NOT NULL AND recipient_user_id = auth.uid())
+  WITH CHECK (auth.uid() IS NOT NULL AND recipient_user_id = auth.uid());
+
+CREATE POLICY "Admins can view their admin notifications"
+  ON public.notifications
+  FOR SELECT
+  USING (
+    recipient_admin_email IS NOT NULL
+    AND recipient_admin_email = auth.jwt() ->> 'email'
+    AND EXISTS (
+      SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email'
+    )
+  );
+
+CREATE POLICY "Admins can mark their admin notifications as read"
+  ON public.notifications
+  FOR UPDATE
+  USING (
+    recipient_admin_email IS NOT NULL
+    AND recipient_admin_email = auth.jwt() ->> 'email'
+    AND EXISTS (
+      SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email'
+    )
+  )
+  WITH CHECK (
+    recipient_admin_email IS NOT NULL
+    AND recipient_admin_email = auth.jwt() ->> 'email'
+  );
+
+CREATE POLICY "Students can delete their notifications"
+  ON public.notifications
+  FOR DELETE
+  USING (auth.uid() IS NOT NULL AND recipient_user_id = auth.uid());
+
+CREATE POLICY "Admins can delete their admin notifications"
+  ON public.notifications
+  FOR DELETE
+  USING (
+    recipient_admin_email IS NOT NULL
+    AND recipient_admin_email = auth.jwt() ->> 'email'
+    AND EXISTS (
+      SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email'
+    )
+  );
+
+CREATE OR REPLACE FUNCTION public.prevent_unsafe_notification_update()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.id <> OLD.id
+    OR NEW.recipient_user_id IS DISTINCT FROM OLD.recipient_user_id
+    OR NEW.recipient_admin_email IS DISTINCT FROM OLD.recipient_admin_email
+    OR NEW.type IS DISTINCT FROM OLD.type
+    OR NEW.title IS DISTINCT FROM OLD.title
+    OR NEW.body IS DISTINCT FROM OLD.body
+    OR NEW.link_path IS DISTINCT FROM OLD.link_path
+    OR NEW.payload IS DISTINCT FROM OLD.payload
+    OR NEW.created_at IS DISTINCT FROM OLD.created_at
+  THEN
+    RAISE EXCEPTION 'Notification fields are immutable; only read_at can be updated.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS prevent_unsafe_notification_update ON public.notifications;
+
+CREATE TRIGGER prevent_unsafe_notification_update
+BEFORE UPDATE ON public.notifications
+FOR EACH ROW
+EXECUTE FUNCTION public.prevent_unsafe_notification_update();
+
+-- Storage bucket for manual payment receipts (private).
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('payment-receipts', 'payment-receipts', false)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Students can upload their own payment receipts" ON storage.objects;
+DROP POLICY IF EXISTS "Students can view their own payment receipts" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can view all payment receipts" ON storage.objects;
+
+CREATE POLICY "Students can upload their own payment receipts"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'payment-receipts' AND
+  (storage.foldername(name))[1] = auth.uid()::text
+);
+
+CREATE POLICY "Students can view their own payment receipts"
+ON storage.objects FOR SELECT
+USING (
+  bucket_id = 'payment-receipts' AND
+  (storage.foldername(name))[1] = auth.uid()::text
+);
+
+CREATE POLICY "Admins can view all payment receipts"
+ON storage.objects FOR SELECT
+USING (
+  bucket_id = 'payment-receipts' AND
+  EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
+);
+
+-- Seeds for the manual Orange Money payment mode.
+INSERT INTO public.app_settings (key, value, description)
+VALUES (
+  'checkout.payment_mode',
+  '{"mode": "manual_orange_money"}'::jsonb,
+  'Active payment mode used by the checkout page (cinetpay | manual_orange_money).'
+)
+ON CONFLICT (key) DO NOTHING;
+
+INSERT INTO public.app_settings (key, value, description)
+VALUES (
+  'checkout.manual_orange_money',
+  '{
+    "account_name": "PETNJI",
+    "account_number": "+237 698 090 6123",
+    "currency": "XAF",
+    "amount": 15625,
+    "instructions_fr": "Composez #150# ou ouvrez l'application Orange Money, envoyez 15 625 XAF au +237 698 090 6123 (PETNJI), puis téléversez la capture du SMS de confirmation.",
+    "instructions_en": "Dial #150# or open the Orange Money app, send 15,625 XAF to +237 698 090 6123 (PETNJI), then upload the confirmation SMS screenshot."
+  }'::jsonb,
+  'Manual Orange Money payment instructions displayed on checkout when payment_mode = manual_orange_money.'
+)
+ON CONFLICT (key) DO NOTHING;
+
+-- =============================================================================
+-- FAQ entries (public, managed via admin CRM)
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS public.faq_entries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  question_fr TEXT NOT NULL CHECK (btrim(question_fr) <> ''),
+  answer_fr TEXT NOT NULL CHECK (btrim(answer_fr) <> ''),
+  question_en TEXT NOT NULL CHECK (btrim(question_en) <> ''),
+  answer_en TEXT NOT NULL CHECK (btrim(answer_en) <> ''),
+  category TEXT,
+  position INTEGER NOT NULL DEFAULT 0,
+  is_published BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS faq_entries_position_idx
+  ON public.faq_entries (position ASC, created_at ASC)
+  WHERE is_published = true;
+
+CREATE INDEX IF NOT EXISTS faq_entries_category_idx
+  ON public.faq_entries (category)
+  WHERE category IS NOT NULL;
+
+ALTER TABLE public.faq_entries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can read published faq entries" ON public.faq_entries;
+DROP POLICY IF EXISTS "Admins can manage faq entries" ON public.faq_entries;
+
+CREATE POLICY "Public can read published faq entries"
+  ON public.faq_entries
+  FOR SELECT
+  USING (is_published = true);
+
+CREATE POLICY "Admins can manage faq entries"
+  ON public.faq_entries
+  FOR ALL
+  USING (
+    EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
+  )
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM public.admins WHERE admins.email = auth.jwt() ->> 'email')
+  );
+
+DROP TRIGGER IF EXISTS update_faq_entries_updated_at ON public.faq_entries;
+
+CREATE TRIGGER update_faq_entries_updated_at
+BEFORE UPDATE ON public.faq_entries
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Seed initial FAQ entries (idempotent via question_fr uniqueness check).
+DO $$
+DECLARE
+  seed_entries JSONB := $seed$[
+    {
+      "question_fr": "Combien coûtent vos services ?",
+      "answer_fr": "Nous proposons différents forfaits adaptés à différents besoins et budgets. La consultation initiale coûte 15 625 XAF (environ 25 USD), et nous fournirons une tarification transparente basée sur les services dont vous avez besoin. Contactez-nous pour un devis personnalisé.",
+      "question_en": "How much do your services cost?",
+      "answer_en": "We offer various packages tailored to different needs and budgets. The initial consultation costs 15,625 XAF (around 25 USD), and we'll provide transparent pricing based on the services you require. Contact us for a personalized quote.",
+      "position": 10
+    },
+    {
+      "question_fr": "Dans quels pays aidez-vous les étudiants à postuler ?",
+      "answer_fr": "Nous aidons les étudiants à postuler dans plusieurs pays du monde, y compris des destinations populaires comme la France, l'Allemagne, le Canada, les États-Unis, le Royaume-Uni, l'Australie et bien d'autres. Notre expertise s'étend à travers l'Europe, l'Amérique du Nord et au-delà.",
+      "question_en": "Which countries do you help students apply to?",
+      "answer_en": "We assist students in applying to universities in multiple countries worldwide, including popular destinations like France, Germany, Canada, USA, UK, Australia, and many more. Our expertise spans across Europe, North America, and beyond.",
+      "position": 20
+    },
+    {
+      "question_fr": "Combien de temps prend le processus de candidature ?",
+      "answer_fr": "Le processus de candidature prend généralement 6 à 12 mois en fonction de votre pays cible et de votre programme. Nous recommandons de commencer tôt pour assurer la meilleure préparation et maximiser vos chances de succès.",
+      "question_en": "How long does the application process take?",
+      "answer_en": "The application process typically takes 6-12 months depending on your target country and program. We recommend starting early to ensure the best preparation and maximize your chances of success.",
+      "position": 30
+    },
+    {
+      "question_fr": "Garantissez-vous l'admission ?",
+      "answer_fr": "Bien que nous ne puissions pas garantir l'admission car les décisions finales appartiennent aux universités, notre taux de réussite témoigne de notre expertise. Nous travaillons avec diligence pour présenter votre candidature la plus forte et vous associer à des programmes où vous avez les meilleures chances.",
+      "question_en": "Do you guarantee admission?",
+      "answer_en": "While we cannot guarantee admission as final decisions rest with universities, our success rate speaks to our expertise. We work diligently to present your strongest application and match you with programs where you have the best chances.",
+      "position": 40
+    },
+    {
+      "question_fr": "Pouvez-vous aider avec les demandes de bourses ?",
+      "answer_fr": "Absolument ! L'assistance aux bourses est l'un de nos services principaux. Nous aidons à identifier les bourses qui correspondent à votre profil, vous guidons à travers les exigences de candidature et examinons vos essais et documents de bourse.",
+      "question_en": "Can you help with scholarship applications?",
+      "answer_en": "Absolutely! Scholarship assistance is one of our core services. We help identify scholarships that match your profile, guide you through application requirements, and review your scholarship essays and documents.",
+      "position": 50
+    },
+    {
+      "question_fr": "Et si je ne sais pas quel programme ou pays choisir ?",
+      "answer_fr": "C'est exactement là où nous intervenons ! Notre évaluation complète du profil vous aidera à identifier les programmes et destinations qui correspondent à votre parcours académique, vos objectifs de carrière, vos préférences personnelles et votre budget.",
+      "question_en": "What if I don't know which program or country to choose?",
+      "answer_en": "That's exactly where we come in! Our comprehensive profile assessment will help identify programs and destinations that align with your academic background, career goals, personal preferences, and budget.",
+      "position": 60
+    }
+  ]$seed$::jsonb;
+  entry JSONB;
+BEGIN
+  FOR entry IN SELECT * FROM jsonb_array_elements(seed_entries) LOOP
+    INSERT INTO public.faq_entries (question_fr, answer_fr, question_en, answer_en, position, is_published)
+    SELECT
+      entry->>'question_fr',
+      entry->>'answer_fr',
+      entry->>'question_en',
+      entry->>'answer_en',
+      (entry->>'position')::integer,
+      true
+    WHERE NOT EXISTS (
+      SELECT 1 FROM public.faq_entries WHERE question_fr = entry->>'question_fr'
+    );
+  END LOOP;
+END $$;

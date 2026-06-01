@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import {
   Accordion,
   AccordionContent,
@@ -5,11 +7,25 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { useFaqEntries } from "@/hooks/use-faq-entries";
 import { useLanguage } from "@/i18n/language";
+import { localizeFaqEntries } from "@/lib/faq";
 import SectionHeading from "@/components/SectionHeading";
 
 const FAQ = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { entries, isLoading } = useFaqEntries();
+
+  const items = useMemo(() => {
+    if (entries.length > 0) {
+      return localizeFaqEntries(entries, language);
+    }
+    return t.faq.items.map((item, index) => ({
+      id: `static-${index}`,
+      question: item.question,
+      answer: item.answer,
+    }));
+  }, [entries, language, t.faq.items]);
 
   return (
     <section id="faq" className="section-padding">
@@ -31,22 +47,38 @@ const FAQ = () => {
           </div>
         </div>
 
-        <Accordion type="single" collapsible className="space-y-4">
-          {t.faq.items.map((faq, index) => (
-            <AccordionItem
-              key={faq.question}
-              value={`item-${index}`}
-              className="surface-card px-6 data-[state=open]:shadow-strong transition-shadow"
-            >
-              <AccordionTrigger className="text-left font-semibold text-foreground hover:text-primary py-6 [&>svg]:text-primary">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="pb-6 leading-7 text-muted-foreground">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        {isLoading && items.length === 0 ? (
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="surface-card h-20 animate-pulse bg-secondary/40"
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="surface-card p-6 text-sm text-muted-foreground">
+            {t.faq.empty}
+          </div>
+        ) : (
+          <Accordion type="single" collapsible className="space-y-4">
+            {items.map((item, index) => (
+              <AccordionItem
+                key={item.id}
+                value={`item-${index}`}
+                className="surface-card px-6 data-[state=open]:shadow-strong transition-shadow"
+              >
+                <AccordionTrigger className="text-left font-semibold text-foreground hover:text-primary py-6 [&>svg]:text-primary">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="pb-6 leading-7 text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
       </div>
     </section>
   );
