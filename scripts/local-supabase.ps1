@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 switch ($Command) {
   "start" {
-    npx supabase start
+    npx supabase start --ignore-health-check
     break
   }
 

@@ -94,3 +94,15 @@ verify_jwt = false
 
 [functions.get-contact-verification-status]
 verify_jwt = false
+
+[functions.submit-manual-payment]
+verify_jwt = true
+
+[functions.validate-manual-payment]
+verify_jwt = true
+
+[functions.block-lead-manual-payment]
+verify_jwt = true
+
+[functions.get-manual-payment-status]
+verify_jwt = true
