@@ -10,7 +10,21 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+coverage
+.env
+.env.*
 *.local
+.supabase/
+supabase/.temp/
+supabase/.branches/
+.tmp-supabase-config/
+.local-skills/
+.gemini/
+.claude/
+.agents/
+AGENTS.md
+claude.md
+security_best_practices_report.md
 
 # Editor directories and files
 .vscode/*

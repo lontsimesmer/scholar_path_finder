@@ -1,6 +1,9 @@
-import { GraduationCap, BookOpen, Award, Briefcase, FileCheck, Globe } from "lucide-react";
+import { ArrowRight, Award, BookOpen, Briefcase, FileCheck, Globe, GraduationCap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useLanguage } from "@/i18n/language";
+import SectionHeading from "@/components/SectionHeading";
+import { cn } from "@/lib/utils";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const Services = () => {
   const { t } = useLanguage();
@@ -39,41 +42,55 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="section-padding bg-background">
-      <div className="section-container">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-sm font-semibold mb-4">
-            {t.services.badge}
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            {t.services.title}
-            <span className="text-primary"> {t.services.titleHighlight}</span>
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            {t.services.subtitle}
-          </p>
-        </div>
+    <section id="services" className="section-padding bg-white relative">
+      <div className="section-container space-y-16">
+        <ScrollReveal animation="fade-in">
+          <SectionHeading
+            badge={t.services.badge}
+            title={t.services.title}
+            highlight={t.services.titleHighlight}
+            subtitle={t.services.subtitle}
+          />
+        </ScrollReveal>
 
-        {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {services.map((service, index) => (
-            <Card 
-              key={index}
-              className="group card-hover bg-card border-border/50 overflow-hidden"
+            <ScrollReveal 
+              key={service.title} 
+              animation="slide-up" 
+              delay={index * 100}
+              className={cn(index === 0 && "xl:col-span-2")}
             >
-              <CardContent className="p-6 lg:p-8">
-                <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
-                  <service.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
-                </div>
-                <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-                  {service.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {service.description}
-                </p>
-              </CardContent>
-            </Card>
+              <Card
+                className={cn(
+                  "group h-full relative overflow-hidden border-border/40 bg-secondary/10 shadow-none hover:shadow-medium transition-all duration-500",
+                  index === 0 && "xl:min-h-[20rem]",
+                )}
+              >
+                <CardContent className="relative flex h-full flex-col p-8 pt-8 lg:p-10 lg:pt-10">
+                  <div className="mb-12 flex items-start justify-between">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                      <service.icon className="h-7 w-7" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/40">
+                      0{index + 1}
+                    </span>
+                  </div>
+
+                  <div className="mt-auto space-y-4">
+                    <h3 className="font-display text-2xl font-bold text-foreground">
+                      {service.title}
+                    </h3>
+                    <p className="leading-relaxed text-muted-foreground/80">{service.description}</p>
+                  </div>
+
+                  <a href="#contact" className="mt-10 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary group-hover:translate-x-1 transition-transform">
+                    <span>{t.nav.contactUs}</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
           ))}
         </div>
       </div>

@@ -1,10 +1,108 @@
 project_id = "pdphzddlfgdpngangnjx"
 
+[api]
+enabled = true
+port = 15421
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+port = 15422
+shadow_port = 15420
+major_version = 17
+
+[db.migrations]
+enabled = true
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+port = 15423
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 15424
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:8080"
+additional_redirect_urls = ["http://127.0.0.1:8080", "http://localhost:8080"]
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+inspector_port = 18083
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.image_transformation]
+enabled = false
+
+[analytics]
+enabled = false
+
 [functions.create-checkout]
-verify_jwt = false
+verify_jwt = true
 
 [functions.mtn-momo-payment]
-verify_jwt = false
+verify_jwt = true
 
 [functions.process-mobile-money]
+verify_jwt = true
+
+[functions.process-bank-transfer]
+verify_jwt = true
+
+[functions.verify-stripe-payment]
+verify_jwt = true
+
+[functions.create-cinetpay-payment]
+verify_jwt = true
+
+[functions.get-checkout-settings]
 verify_jwt = false
+
+[functions.update-checkout-settings]
+verify_jwt = true
+
+[functions.cinetpay-webhook]
+verify_jwt = false
+
+[functions.cinetpay-return]
+verify_jwt = false
+
+[functions.get-cinetpay-payment-status]
+verify_jwt = true
+
+[functions.get-student-procedure-status]
+verify_jwt = true
+
+[functions.create-document-request]
+verify_jwt = true
+
+[functions.send-contact-verification-code]
+verify_jwt = false
+
+[functions.verify-contact-verification-code]
+verify_jwt = false
+
+[functions.get-contact-verification-status]
+verify_jwt = false
+
+[functions.submit-manual-payment]
+verify_jwt = true
+
+[functions.validate-manual-payment]
+verify_jwt = true
+
+[functions.block-lead-manual-payment]
+verify_jwt = true
+
+[functions.get-manual-payment-status]
+verify_jwt = true
