@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Header from "@/components/Header";
-import { AdminWorkspaceHeader } from "@/components/admin/AdminWorkspaceHeader";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminCRMEditDialog } from "@/components/admin/crm/AdminCRMEditDialog";
 import { AdminCRMFilters } from "@/components/admin/crm/AdminCRMFilters";
 import { AdminCRMMetrics } from "@/components/admin/crm/AdminCRMMetrics";
@@ -11,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAdminCRM } from "@/hooks/use-admin-crm";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
-import { ADMIN_DASHBOARD_PATH, getAdminSession } from "@/lib/admin-session";
+import { getAdminSession } from "@/lib/admin-session";
 import {
   AdminCRMText,
   buildAdminCRMMetrics,
@@ -117,85 +116,46 @@ const AdminCRM = () => {
 
   const targetCountries = useMemo(() => getTargetCountries(students), [students]);
   const metrics = useMemo(() => buildAdminCRMMetrics(students), [students]);
-  const navItems = [
-    { href: "/admin", label: adminCRMText.breadcrumbDashboard },
-    { href: "/admin/crm", label: adminCRMText.breadcrumbCurrent },
-    { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
-    { href: "/admin/payments", label: t.adminPayments.breadcrumbCurrent },
-    { href: "/admin/manual-payments", label: t.adminManualPayments.breadcrumbCurrent },
-    { href: "/admin/blog", label: t.adminBlog.breadcrumbCurrent },
-    { href: "/admin/faq", label: t.adminFaq.breadcrumbCurrent },
-  ];
-  const highlights = [
-    {
-      label: adminCRMText.metrics.totalStudents,
-      value: metrics.totalStudents,
-    },
-    {
-      label: adminCRMText.metrics.validatedProfiles,
-      value: metrics.validatedProfiles,
-      tone: "success" as const,
-    },
-    {
-      label: adminCRMText.metrics.pendingDocuments,
-      value: metrics.pendingDocuments,
-      tone: "warning" as const,
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <Header />
+    <AdminLayout title={adminCRMText.title} subtitle={adminCRMText.subtitle}>
+      <div className="space-y-6">
+        <AdminCRMMetrics metrics={metrics} text={adminCRMText} />
 
-      <main className="pb-20 pt-32">
-        <div className="section-container space-y-8">
-          <AdminWorkspaceHeader
-            dashboardHref={ADMIN_DASHBOARD_PATH}
-            dashboardLabel={adminCRMText.breadcrumbDashboard}
-            currentLabel={adminCRMText.breadcrumbCurrent}
-            title={adminCRMText.title}
-            subtitle={adminCRMText.subtitle}
-            navItems={navItems}
-            highlights={highlights}
-          />
+        <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+          <CardContent className="space-y-6 p-6 pt-6 md:p-7 md:pt-7">
+            <AdminCRMFilters
+              applicationStatusLabels={applicationStatusLabels}
+              applicationStatuses={applicationStatuses}
+              countryFilter={countryFilter}
+              documentFilter={documentFilter}
+              paymentFilter={paymentFilter}
+              profileFilter={profileFilter}
+              searchQuery={searchQuery}
+              setCountryFilter={setCountryFilter}
+              setDocumentFilter={setDocumentFilter}
+              setPaymentFilter={setPaymentFilter}
+              setProfileFilter={setProfileFilter}
+              setSearchQuery={setSearchQuery}
+              setStatusFilter={setStatusFilter}
+              statusFilter={statusFilter}
+              targetCountries={targetCountries}
+              text={adminCRMText}
+            />
 
-          <AdminCRMMetrics metrics={metrics} text={adminCRMText} />
-
-          <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-            <CardContent className="space-y-6 p-6 pt-6 md:pt-6">
-              <AdminCRMFilters
-                applicationStatusLabels={applicationStatusLabels}
-                applicationStatuses={applicationStatuses}
-                countryFilter={countryFilter}
-                documentFilter={documentFilter}
-                paymentFilter={paymentFilter}
-                profileFilter={profileFilter}
-                searchQuery={searchQuery}
-                setCountryFilter={setCountryFilter}
-                setDocumentFilter={setDocumentFilter}
-                setPaymentFilter={setPaymentFilter}
-                setProfileFilter={setProfileFilter}
-                setSearchQuery={setSearchQuery}
-                setStatusFilter={setStatusFilter}
-                statusFilter={statusFilter}
-                targetCountries={targetCountries}
-                text={adminCRMText}
-              />
-
-              <AdminCRMTable
-                applicationStatusLabels={applicationStatusLabels}
-                applicationStatuses={applicationStatuses}
-                isLoading={isLoading}
-                onEdit={handleEditStudent}
-                onOpenStudent={(student) => navigate(`/admin/students/${encodeURIComponent(student.id)}`)}
-                onUpdateStatus={updateStatus}
-                students={filteredStudents}
-                text={adminCRMText}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            <AdminCRMTable
+              applicationStatusLabels={applicationStatusLabels}
+              applicationStatuses={applicationStatuses}
+              isLoading={isLoading}
+              onEdit={handleEditStudent}
+              onOpenStudent={(student) => navigate(`/admin/students/${encodeURIComponent(student.id)}`)}
+              onUpdateStatus={updateStatus}
+              students={filteredStudents}
+              text={adminCRMText}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       <AdminCRMEditDialog
         formData={formData}
@@ -208,7 +168,7 @@ const AdminCRM = () => {
         student={editingStudent}
         text={adminCRMText}
       />
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -9,7 +9,7 @@ interface AdminCRMMetricsProps {
 }
 
 export const AdminCRMMetrics = ({ metrics, text }: AdminCRMMetricsProps) => (
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
     <AdminMetricCard
       title={text.metrics.totalStudents}
       value={metrics.totalStudents}

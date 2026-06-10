@@ -1,16 +1,15 @@
 import { useCallback, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
 
-import Header from "@/components/Header";
-import { AdminWorkspaceHeader } from "@/components/admin/AdminWorkspaceHeader";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminBlogEditorDialog } from "@/components/admin/blog/AdminBlogEditorDialog";
 import { AdminBlogPostsTable } from "@/components/admin/blog/AdminBlogPostsTable";
 import { Button } from "@/components/ui/button";
 import { useAdminBlog } from "@/hooks/use-admin-blog";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
-import { ADMIN_DASHBOARD_PATH, getAdminSession } from "@/lib/admin-session";
+import { getAdminSession } from "@/lib/admin-session";
 import { AdminBlogText } from "@/lib/admin-blog";
 
 const AdminBlog = () => {
@@ -83,61 +82,27 @@ const AdminBlog = () => {
     }
   }, [checkUser, fetchPosts, openNewPostDialog, searchParams]);
 
-  const navItems = [
-    { href: "/admin", label: blogText.breadcrumbDashboard },
-    { href: "/admin/crm", label: t.adminCRM.breadcrumbCurrent },
-    { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
-    { href: "/admin/payments", label: t.adminPayments.breadcrumbCurrent },
-    { href: "/admin/manual-payments", label: t.adminManualPayments.breadcrumbCurrent },
-    { href: "/admin/blog", label: blogText.breadcrumbCurrent },
-    { href: "/admin/faq", label: t.adminFaq.breadcrumbCurrent },
-  ];
-  const highlights = [
-    {
-      label: blogText.publishedTitle,
-      value: posts.filter((post) => post.status === "published").length,
-      tone: "success" as const,
-    },
-    {
-      label: blogText.hiddenTitle,
-      value: posts.filter((post) => post.status === "draft").length,
-      tone: "warning" as const,
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <Header />
-      <main className="pb-20 pt-32">
-        <div className="section-container space-y-8">
-          <AdminWorkspaceHeader
-            dashboardHref={ADMIN_DASHBOARD_PATH}
-            dashboardLabel={blogText.breadcrumbDashboard}
-            currentLabel={blogText.breadcrumbCurrent}
-            title={blogText.title}
-            subtitle={blogText.subtitle}
-            navItems={navItems}
-            highlights={highlights}
-            actions={
-              <Button className="gap-2 rounded-xl px-6" onClick={openNewPostDialog}>
-                <Plus size={18} />
-                {blogText.newArticle}
-              </Button>
-            }
-          />
-
-          <AdminBlogPostsTable
-            currentLanguage={language}
-            isLoading={isLoading}
-            onDelete={handleDelete}
-            onEdit={editPost}
-            onOpenPreview={(slug) => window.open(`/blog/${slug}`, "_blank")}
-            onToggleStatus={toggleStatus}
-            posts={posts}
-            text={blogText}
-          />
-        </div>
-      </main>
+    <AdminLayout
+      title={blogText.title}
+      subtitle={blogText.subtitle}
+      actions={
+        <Button size="sm" className="h-8 gap-1.5" onClick={openNewPostDialog}>
+          <Plus className="h-3.5 w-3.5" />
+          {blogText.newArticle}
+        </Button>
+      }
+    >
+      <AdminBlogPostsTable
+        currentLanguage={language}
+        isLoading={isLoading}
+        onDelete={handleDelete}
+        onEdit={editPost}
+        onOpenPreview={(slug) => window.open(`/blog/${slug}`, "_blank")}
+        onToggleStatus={toggleStatus}
+        posts={posts}
+        text={blogText}
+      />
 
       <AdminBlogEditorDialog
         editorLabels={blogText.editor}
@@ -150,7 +115,7 @@ const AdminBlog = () => {
         post={normalizedEditingPost}
         text={blogText}
       />
-    </div>
+    </AdminLayout>
   );
 };
 

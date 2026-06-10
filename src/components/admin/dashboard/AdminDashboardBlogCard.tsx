@@ -24,7 +24,7 @@ export function AdminDashboardBlogCard({
 }: AdminDashboardBlogCardProps) {
   return (
     <ScrollReveal animation="slide-up" delay={100}>
-      <Card className="group overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
+      <Card className="group overflow-hidden rounded-2xl border-border/30 shadow-soft">
         <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-7 pt-10 md:px-8 md:pb-7 md:pt-10">
           <CardTitle className="font-display text-2xl tracking-tight">{title}</CardTitle>
           <CardDescription className="text-base text-muted-foreground/80">{description}</CardDescription>

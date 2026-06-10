@@ -124,7 +124,7 @@ export const RichTextEditor = ({
   const toolbarButtonClassName = "h-9 rounded-xl px-3 shadow-none";
 
   return (
-    <div className="overflow-hidden rounded-[1.4rem] border border-border/70 bg-white shadow-soft">
+    <div className="overflow-hidden rounded-xl border border-border/70 bg-white shadow-soft">
       <div className="flex flex-wrap gap-2 border-b border-border/70 bg-secondary/20 p-3">
         <Button
           type="button"

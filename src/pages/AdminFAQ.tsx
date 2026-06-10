@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-import Header from "@/components/Header";
 import { AdminMetricCard } from "@/components/admin/AdminMetricCard";
-import { AdminWorkspaceHeader } from "@/components/admin/AdminWorkspaceHeader";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminFaqDialog } from "@/components/admin/faq/AdminFaqDialog";
 import { AdminFaqTable } from "@/components/admin/faq/AdminFaqTable";
 import {
@@ -30,7 +29,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAdminFaq } from "@/hooks/use-admin-faq";
 import { useLanguage } from "@/i18n/language";
-import { ADMIN_DASHBOARD_PATH, getAdminSession } from "@/lib/admin-session";
+import { getAdminSession } from "@/lib/admin-session";
 import {
   type AdminFaqInput,
   type AdminFaqText,
@@ -42,6 +41,7 @@ import { CheckCircle2, EyeOff, ListChecks } from "lucide-react";
 
 const AdminFAQ = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t, language } = useLanguage();
   const text = t.adminFaq as AdminFaqText;
   const { toast } = useToast();
@@ -82,6 +82,15 @@ const AdminFAQ = () => {
     };
   }, [loadEntries, navigate]);
 
+  useEffect(() => {
+    if (searchParams.get("action") === "new") {
+      setEditing(null);
+      setDialogOpen(true);
+      searchParams.delete("action");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const dateFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(language === "fr" ? "fr-FR" : "en-US", {
@@ -97,26 +106,6 @@ const AdminFAQ = () => {
   );
 
   const stats = useMemo(() => buildFaqStats(entries), [entries]);
-
-  const navItems = [
-    { href: "/admin", label: text.breadcrumbDashboard },
-    { href: "/admin/crm", label: t.adminCRM.breadcrumbCurrent },
-    { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
-    { href: "/admin/payments", label: t.adminPayments.breadcrumbCurrent },
-    { href: "/admin/manual-payments", label: t.adminManualPayments.breadcrumbCurrent },
-    { href: "/admin/blog", label: t.adminBlog.breadcrumbCurrent },
-    { href: "/admin/faq", label: text.breadcrumbCurrent },
-  ];
-
-  const highlights = [
-    { label: text.metrics.total, value: stats.total },
-    { label: text.metrics.published, value: stats.published, tone: "success" as const },
-    {
-      label: text.metrics.unpublished,
-      value: stats.unpublished,
-      tone: "neutral" as const,
-    },
-  ];
 
   const handleSave = useCallback(
     async (input: AdminFaqInput) => {
@@ -192,104 +181,92 @@ const AdminFAQ = () => {
   );
 
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <Header />
-      <main className="pb-20 pt-32">
-        <div className="section-container space-y-8">
-          <AdminWorkspaceHeader
-            dashboardHref={ADMIN_DASHBOARD_PATH}
-            dashboardLabel={text.breadcrumbDashboard}
-            currentLabel={text.breadcrumbCurrent}
-            title={text.title}
-            subtitle={text.subtitle}
-            navItems={navItems}
-            highlights={highlights}
-            actions={
-              <Button
-                className="rounded-xl"
-                onClick={() => {
-                  setEditing(null);
-                  setDialogOpen(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {text.actions.create}
-              </Button>
-            }
+    <AdminLayout
+      title={text.title}
+      subtitle={text.subtitle}
+      actions={
+        <Button
+          size="sm"
+          className="h-8 gap-1.5"
+          onClick={() => {
+            setEditing(null);
+            setDialogOpen(true);
+          }}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {text.actions.create}
+        </Button>
+      }
+    >
+      <div className="space-y-6">
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+          <AdminMetricCard
+            title={text.metrics.total}
+            value={stats.total}
+            description={text.metrics.totalDescription}
+            icon={ListChecks}
           />
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <AdminMetricCard
-              title={text.metrics.total}
-              value={stats.total}
-              description={text.metrics.totalDescription}
-              icon={ListChecks}
-              index={0}
-            />
-            <AdminMetricCard
-              title={text.metrics.published}
-              value={stats.published}
-              description={text.metrics.publishedDescription}
-              icon={CheckCircle2}
-              tone="success"
-              index={1}
-            />
-            <AdminMetricCard
-              title={text.metrics.unpublished}
-              value={stats.unpublished}
-              description={text.metrics.unpublishedDescription}
-              icon={EyeOff}
-              tone="neutral"
-              index={2}
-            />
-          </div>
-
-          <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-            <CardContent className="space-y-6 p-6 pt-6 md:pt-6">
-              <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-                <div className="relative">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder={text.filters.searchPlaceholder}
-                    className="pl-9"
-                  />
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={text.filters.status} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{text.filters.all}</SelectItem>
-                    <SelectItem value="published">{text.filters.published}</SelectItem>
-                    <SelectItem value="unpublished">{text.filters.unpublished}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <AdminFaqTable
-                entries={filtered}
-                isLoading={isLoading}
-                dateFormatter={dateFormatter}
-                language={language}
-                text={text}
-                onEdit={(entry) => {
-                  setEditing(entry);
-                  setDialogOpen(true);
-                }}
-                onDelete={(entry) => setDeleting(entry)}
-                onTogglePublish={handleTogglePublish}
-                onMoveUp={(entry) => void handleMove(entry, "up")}
-                onMoveDown={(entry) => void handleMove(entry, "down")}
-              />
-            </CardContent>
-          </Card>
+          <AdminMetricCard
+            title={text.metrics.published}
+            value={stats.published}
+            description={text.metrics.publishedDescription}
+            icon={CheckCircle2}
+            tone="success"
+          />
+          <AdminMetricCard
+            title={text.metrics.unpublished}
+            value={stats.unpublished}
+            description={text.metrics.unpublishedDescription}
+            icon={EyeOff}
+            tone="neutral"
+          />
         </div>
-      </main>
+
+        <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+          <CardContent className="space-y-6 p-6 pt-6 md:p-7 md:pt-7">
+            <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+              <div className="relative">
+                <Search
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={text.filters.searchPlaceholder}
+                  className="pl-9"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder={text.filters.status} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{text.filters.all}</SelectItem>
+                  <SelectItem value="published">{text.filters.published}</SelectItem>
+                  <SelectItem value="unpublished">{text.filters.unpublished}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <AdminFaqTable
+              entries={filtered}
+              isLoading={isLoading}
+              dateFormatter={dateFormatter}
+              language={language}
+              text={text}
+              onEdit={(entry) => {
+                setEditing(entry);
+                setDialogOpen(true);
+              }}
+              onDelete={(entry) => setDeleting(entry)}
+              onTogglePublish={handleTogglePublish}
+              onMoveUp={(entry) => void handleMove(entry, "up")}
+              onMoveDown={(entry) => void handleMove(entry, "down")}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       <AdminFaqDialog
         open={dialogOpen}
@@ -324,7 +301,7 @@ const AdminFAQ = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </AdminLayout>
   );
 };
 

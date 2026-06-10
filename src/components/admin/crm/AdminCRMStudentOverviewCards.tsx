@@ -24,7 +24,7 @@ export const AdminCRMStudentOverviewCards = ({
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <div className="rounded-[1.75rem] border border-border/40 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-border/40 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
@@ -47,7 +47,7 @@ export const AdminCRMStudentOverviewCards = ({
             "mt-4 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest",
             profileReviewStatus === "validated"
               ? "border-success/20 bg-success/5 text-success"
-              : "border-amber-200 bg-amber-50 text-amber-700",
+              : "border-warning/30 bg-warning/10 text-warning",
           )}
         >
           {profileReviewStatus === "validated"
@@ -58,7 +58,7 @@ export const AdminCRMStudentOverviewCards = ({
         </Badge>
       </div>
 
-      <div className="rounded-[1.75rem] border border-border/40 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-border/40 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
@@ -80,7 +80,7 @@ export const AdminCRMStudentOverviewCards = ({
         </p>
       </div>
 
-      <div className="rounded-[1.75rem] border border-border/40 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-border/40 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
@@ -109,7 +109,7 @@ export const AdminCRMStudentOverviewCards = ({
         )}
       </div>
 
-      <div className="rounded-[1.75rem] border border-border/40 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-border/40 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">

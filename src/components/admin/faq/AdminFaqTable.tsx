@@ -38,9 +38,9 @@ export const AdminFaqTable = ({
   onMoveUp,
   onMoveDown,
 }: AdminFaqTableProps) => (
-  <div className="overflow-hidden rounded-[1.5rem] border border-border/40">
+  <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
     <Table>
-      <TableHeader className="bg-secondary/30">
+      <TableHeader>
         <TableRow>
           <TableHead className="w-20">{text.columns.position}</TableHead>
           <TableHead>{text.columns.question}</TableHead>

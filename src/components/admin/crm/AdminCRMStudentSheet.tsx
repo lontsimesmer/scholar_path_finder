@@ -36,7 +36,7 @@ export const AdminCRMStudentSheet = ({
   text,
 }: AdminCRMStudentSheetProps) => (
   <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-    <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-[2rem]">
+    <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-2xl">
       <DialogHeader>
         <DialogTitle>
           {text.sheet.title} {student ? getStudentDisplayName(student.profile, student.email) : ""}

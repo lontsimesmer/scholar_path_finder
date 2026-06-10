@@ -33,9 +33,9 @@ export const AdminBlogPostsTable = ({
   posts,
   text,
 }: AdminBlogPostsTableProps) => (
-  <div className="overflow-hidden rounded-[2rem] border border-border/40 bg-white shadow-strong">
+  <div className="admin-table overflow-hidden rounded-2xl border border-border/40 bg-white shadow-soft">
     <Table>
-      <TableHeader className="bg-secondary/30">
+      <TableHeader>
         <TableRow>
           <TableHead className="w-[400px]">{text.articleColumn}</TableHead>
           <TableHead>{text.statusColumn}</TableHead>
@@ -81,7 +81,7 @@ export const AdminBlogPostsTable = ({
                     "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest",
                     post.status === "published"
                       ? "border-success/20 bg-success/5 text-success"
-                      : "border-amber-200 bg-amber-50 text-amber-600",
+                      : "border-warning/30 bg-warning/10 text-warning",
                   )}
                 >
                   {post.status === "published" ? text.visible : text.hidden}
@@ -92,7 +92,7 @@ export const AdminBlogPostsTable = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={cn(post.status === "published" ? "text-amber-600" : "text-success")}
+                    className={cn(post.status === "published" ? "text-warning" : "text-success")}
                     onClick={() => void onToggleStatus(post)}
                   >
                     {post.status === "published" ? <EyeOff size={16} /> : <Eye size={16} />}

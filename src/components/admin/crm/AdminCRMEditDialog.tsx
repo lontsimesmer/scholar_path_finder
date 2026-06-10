@@ -36,7 +36,7 @@ export const AdminCRMEditDialog = ({
   text,
 }: AdminCRMEditDialogProps) => (
   <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-    <DialogContent className="max-h-[90vh] max-w-md overflow-hidden rounded-[2rem] p-0">
+    <DialogContent className="max-h-[90vh] max-w-md overflow-hidden rounded-2xl p-0">
       <DialogHeader className="border-b border-border/40 px-6 py-5 pr-14">
         <DialogTitle>{text.editDialogTitle}</DialogTitle>
       </DialogHeader>

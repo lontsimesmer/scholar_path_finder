@@ -19,7 +19,7 @@ export function AdminDashboardOperationsCard({
 }: AdminDashboardOperationsCardProps) {
   return (
     <ScrollReveal animation="slide-up">
-      <Card className="overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
+      <Card className="overflow-hidden rounded-2xl border-border/30 shadow-soft">
         <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-7 pt-10 md:px-8 md:pb-7 md:pt-10">
           <CardTitle className="font-display text-2xl tracking-tight">{title}</CardTitle>
           <CardDescription className="text-base text-muted-foreground/80">{description}</CardDescription>
@@ -28,7 +28,7 @@ export function AdminDashboardOperationsCard({
           {operations.map((operation, index) => (
             <div
               key={operation.title}
-              className="group relative overflow-hidden rounded-[1.75rem] border border-border/30 bg-white p-6 transition-all duration-500 hover:border-primary/15 hover:shadow-medium"
+              className="group relative overflow-hidden rounded-xl border border-border/30 bg-white p-6 transition-all duration-500 hover:border-primary/15 hover:shadow-medium"
               style={{ animationDelay: `${index * 80}ms` }}
             >
               {/* Hover gradient overlay */}

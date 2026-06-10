@@ -22,14 +22,13 @@ export const AdminManualPaymentsMetrics = ({
   pendingAmountLabel,
   text,
 }: AdminManualPaymentsMetricsProps) => (
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
     <AdminMetricCard
       title={text.metrics.pending}
       value={`${stats.pending} · ${pendingAmountLabel}`}
       description={text.metrics.pendingDescription}
       icon={Clock}
       tone="warning"
-      index={0}
     />
     <AdminMetricCard
       title={text.metrics.approved}
@@ -37,7 +36,6 @@ export const AdminManualPaymentsMetrics = ({
       description={text.metrics.approvedDescription}
       icon={CheckCircle2}
       tone="success"
-      index={1}
     />
     <AdminMetricCard
       title={text.metrics.rejected}
@@ -45,7 +43,6 @@ export const AdminManualPaymentsMetrics = ({
       description={text.metrics.rejectedDescription}
       icon={XCircle}
       tone="neutral"
-      index={2}
     />
     <AdminMetricCard
       title={text.metrics.blocked}
@@ -53,7 +50,6 @@ export const AdminManualPaymentsMetrics = ({
       description={text.metrics.blockedDescription}
       icon={ShieldOff}
       tone="neutral"
-      index={3}
     />
   </div>
 );

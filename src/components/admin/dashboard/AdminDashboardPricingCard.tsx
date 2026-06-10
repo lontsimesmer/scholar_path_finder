@@ -38,7 +38,7 @@ export function AdminDashboardPricingCard({ text }: AdminDashboardPricingCardPro
   } = useAdminCheckoutSettings(text);
 
   return (
-    <Card className="overflow-hidden rounded-[2.25rem] border-primary/10 bg-white shadow-strong">
+    <Card className="overflow-hidden rounded-2xl border-primary/10 bg-white shadow-soft">
       <CardHeader className="border-b border-border/30 bg-gradient-to-r from-primary/10 via-white to-emerald-500/10 px-8 pb-6 pt-8 md:px-8 md:pb-6 md:pt-8">
         <div className="flex items-start justify-between gap-4">
           <div>

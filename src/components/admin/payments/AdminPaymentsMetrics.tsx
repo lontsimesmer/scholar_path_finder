@@ -25,7 +25,7 @@ export const AdminPaymentsMetrics = ({
   stats,
   text,
 }: AdminPaymentsMetricsProps) => (
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
     <AdminMetricCard
       title={text.metrics.total}
       value={stats.total}

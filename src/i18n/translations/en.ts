@@ -276,13 +276,13 @@ export const en = {
       },
       card: {
         title: "Card",
-        description: "Secure Stripe checkout with major international cards.",
+        description: "Secure CinetPay checkout with major international cards.",
       },
     },
     paymentDetails: {
       card: {
         title: "Card Payment",
-        description: "Pay securely through Stripe checkout with Visa, Mastercard, Amex, or any major card.",
+        description: "Pay securely through CinetPay with Visa, Mastercard, or any major card.",
       },
       mobileMoney: {
         title: "Mobile Money Payment",
@@ -357,11 +357,6 @@ export const en = {
       missingPhoneDescription: "Enter the phone number to use for this payment.",
       errorTitle: "Payment error",
       errorDescription: "The payment request could not be completed. Please try again.",
-      stripeTitle: "Pay by card",
-      stripeSubtitle: "Secure Stripe checkout with major international cards.",
-      stripeHelper: "You will be redirected to Stripe to finalize the payment securely.",
-      payWithCard: "Pay with card",
-      redirecting: "Redirecting to Stripe...",
       providerLabel: "Payment provider",
       currencyLabel: "Payment currency",
       selectCurrency: "Select a currency",
@@ -566,7 +561,6 @@ export const en = {
     loadingTitle: "Checking payment status...",
     loadingDescription: "Please wait while we verify your payment.",
     missingDetails: "Missing payment verification details.",
-    stripePendingDetails: "Stripe returned to the app, but the payment is not marked as paid yet.",
     verificationFailedDetails: "Payment verification failed.",
     contactPrompt: "Have questions? Contact us:",
     returnToCheckout: "Return to Checkout",
@@ -676,6 +670,40 @@ export const en = {
     nextStepsPayment: "Pay the consultation fee to activate your file.",
     supportHint:
       "Need help before submitting? Contact the team on WhatsApp or by phone at +(237) 674 819 411.",
+  },
+
+  adminSidebar: {
+    brand: "Power Prestation",
+    sections: {
+      overview: "Overview",
+      operations: "Operations",
+      payments: "Payments",
+      content: "Content",
+    },
+    items: {
+      dashboard: "Dashboard",
+      students: "Students",
+      leads: "Leads",
+      payments: "Payments",
+      manualPayments: "Manual payments",
+      blog: "Blog",
+      faq: "FAQ",
+    },
+    signOut: "Sign out",
+  },
+
+  adminCommandPalette: {
+    triggerHint: "Search...",
+    placeholder: "Type a command or search...",
+    empty: "No results found.",
+    groups: {
+      navigation: "Navigation",
+      actions: "Quick actions",
+    },
+    actions: {
+      newArticle: "New article",
+      newFaq: "New FAQ entry",
+    },
   },
 
   adminDashboard: {

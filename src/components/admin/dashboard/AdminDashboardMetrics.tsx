@@ -7,8 +7,8 @@ type AdminDashboardMetricsProps = {
 
 export function AdminDashboardMetrics({ metrics }: AdminDashboardMetricsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {metrics.map((metric, index) => (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {metrics.map((metric) => (
         <AdminMetricCard
           key={metric.title}
           title={metric.title}
@@ -16,7 +16,6 @@ export function AdminDashboardMetrics({ metrics }: AdminDashboardMetricsProps) {
           description={metric.description}
           icon={metric.icon}
           tone={metric.tone}
-          index={index}
         />
       ))}
     </div>

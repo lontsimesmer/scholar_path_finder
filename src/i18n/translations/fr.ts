@@ -277,13 +277,13 @@ export const fr = {
       },
       card: {
         title: "Carte Bancaire",
-        description: "Paiement sécurisé via Stripe avec les cartes internationales.",
+        description: "Paiement sécurisé via CinetPay avec les cartes internationales.",
       },
     },
     paymentDetails: {
       card: {
         title: "Paiement par Carte",
-        description: "Payez en toute sécurité via Stripe avec Visa, Mastercard, Amex ou toute autre carte majeure.",
+        description: "Payez en toute sécurité via CinetPay avec Visa, Mastercard ou toute autre carte majeure.",
       },
       mobileMoney: {
         title: "Paiement Mobile Money",
@@ -358,11 +358,6 @@ export const fr = {
       missingPhoneDescription: "Saisissez le numéro à utiliser pour ce paiement.",
       errorTitle: "Erreur de paiement",
       errorDescription: "La demande de paiement n'a pas pu aboutir. Veuillez réessayer.",
-      stripeTitle: "Payer par carte",
-      stripeSubtitle: "Paiement Stripe sécurisé avec les principales cartes internationales.",
-      stripeHelper: "Vous serez redirigé vers Stripe pour finaliser le paiement en toute sécurité.",
-      payWithCard: "Payer par carte",
-      redirecting: "Redirection vers Stripe...",
       providerLabel: "Opérateur de paiement",
       currencyLabel: "Devise de paiement",
       selectCurrency: "Sélectionnez une devise",
@@ -567,7 +562,6 @@ export const fr = {
     loadingTitle: "Verification du paiement...",
     loadingDescription: "Veuillez patienter pendant que nous verifions votre paiement.",
     missingDetails: "Informations de verification du paiement manquantes.",
-    stripePendingDetails: "Stripe a renvoye vers l'application, mais le paiement n'est pas encore marque comme paye.",
     verificationFailedDetails: "La verification du paiement a ?chou?.",
     contactPrompt: "Des questions Contactez-nous :",
     returnToCheckout: "Retour au paiement",
@@ -677,6 +671,40 @@ export const fr = {
     nextStepsPayment: "R?glez les frais de consultation pour activer votre dossier.",
     supportHint:
       "Besoin d'aide avant la soumission ? Contactez l'equipe sur WhatsApp ou par t?l?phone au +(237) 674 819 411.",
+  },
+
+  adminSidebar: {
+    brand: "Power Prestation",
+    sections: {
+      overview: "Vue d'ensemble",
+      operations: "Opérations",
+      payments: "Paiements",
+      content: "Contenu",
+    },
+    items: {
+      dashboard: "Tableau de bord",
+      students: "Étudiants",
+      leads: "Leads",
+      payments: "Paiements",
+      manualPayments: "Paiements manuels",
+      blog: "Blog",
+      faq: "FAQ",
+    },
+    signOut: "Déconnexion",
+  },
+
+  adminCommandPalette: {
+    triggerHint: "Rechercher...",
+    placeholder: "Tapez une commande ou recherchez...",
+    empty: "Aucun résultat.",
+    groups: {
+      navigation: "Navigation",
+      actions: "Actions rapides",
+    },
+    actions: {
+      newArticle: "Nouvel article",
+      newFaq: "Nouvelle FAQ",
+    },
   },
 
   adminDashboard: {
@@ -1556,8 +1584,6 @@ fr.blogPost.ctaButton = "Réserver maintenant";
 fr.paymentSuccess.loadingTitle = "Vérification du paiement...";
 fr.paymentSuccess.loadingDescription = "Veuillez patienter pendant que nous vérifions votre paiement.";
 fr.paymentSuccess.missingDetails = "Informations de vérification du paiement manquantes.";
-fr.paymentSuccess.stripePendingDetails =
-  "Stripe a renvoyé vers l'application, mais le paiement n'est pas encore marqué comme payé.";
 fr.paymentSuccess.verificationFailedDetails = "La vérification du paiement a échoué.";
 fr.paymentSuccess.backHome = "Retour à l'accueil";
 fr.paymentSuccess.success.title = "Paiement confirmé";
@@ -1715,10 +1741,6 @@ frCheckoutPayment.missingPhoneDescription =
   "Saisissez le numéro à utiliser pour ce paiement.";
 frCheckoutPayment.errorDescription =
   "La demande de paiement n'a pas pu aboutir. Veuillez réessayer.";
-frCheckoutPayment.stripeSubtitle =
-  "Paiement Stripe sécurisé avec les principales cartes internationales.";
-frCheckoutPayment.stripeHelper =
-  "Vous serez redirigé vers Stripe pour finaliser le paiement en toute sécurité.";
 frCheckoutPayment.providerLabel = "Opérateur de paiement";
 frCheckoutPayment.selectCurrency = "Sélectionnez une devise";
 frCheckoutPayment.sendTo = "Envoyer au numéro";

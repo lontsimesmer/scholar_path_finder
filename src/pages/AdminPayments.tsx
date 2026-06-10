@@ -2,15 +2,14 @@ import { useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 
-import Header from "@/components/Header";
-import { AdminWorkspaceHeader } from "@/components/admin/AdminWorkspaceHeader";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminPaymentsFilters } from "@/components/admin/payments/AdminPaymentsFilters";
 import { AdminPaymentsMetrics } from "@/components/admin/payments/AdminPaymentsMetrics";
 import { AdminPaymentsTable } from "@/components/admin/payments/AdminPaymentsTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/language";
-import { ADMIN_DASHBOARD_PATH, getAdminSession } from "@/lib/admin-session";
+import { getAdminSession } from "@/lib/admin-session";
 import {
   AdminPaymentsText,
   buildPaymentStats,
@@ -91,95 +90,54 @@ const AdminPayments = () => {
   );
 
   const stats = useMemo(() => buildPaymentStats(transactions), [transactions]);
-  const navItems = [
-    { href: "/admin", label: adminPaymentsText.breadcrumbDashboard },
-    { href: "/admin/crm", label: t.adminCRM.breadcrumbCurrent },
-    { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
-    { href: "/admin/payments", label: adminPaymentsText.breadcrumbCurrent },
-    { href: "/admin/manual-payments", label: t.adminManualPayments.breadcrumbCurrent },
-    { href: "/admin/blog", label: t.adminBlog.breadcrumbCurrent },
-    { href: "/admin/faq", label: t.adminFaq.breadcrumbCurrent },
-  ];
-  const highlights = [
-    {
-      label: adminPaymentsText.metrics.total,
-      value: stats.total,
-    },
-    {
-      label: adminPaymentsText.metrics.pending,
-      value: stats.pending,
-      tone: "warning" as const,
-    },
-    {
-      label: adminPaymentsText.metrics.failed,
-      value: stats.failed,
-      tone: "neutral" as const,
-    },
-    {
-      label: adminPaymentsText.metrics.acceptedAmount,
-      value: amountFormatter.format(stats.acceptedAmount),
-      tone: "success" as const,
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <Header />
+    <AdminLayout
+      title={adminPaymentsText.title}
+      subtitle={adminPaymentsText.subtitle}
+      actions={
+        <Button asChild size="sm" variant="outline" className="h-8 gap-2">
+          <Link to="/admin/leads">
+            <ReceiptText className="h-3.5 w-3.5" />
+            {adminPaymentsText.openLeads}
+          </Link>
+        </Button>
+      }
+    >
+      <div className="space-y-6">
+        <AdminPaymentsMetrics
+          acceptedAmountLabel={amountFormatter.format(stats.acceptedAmount)}
+          stats={stats}
+          text={adminPaymentsText}
+        />
 
-      <main className="pb-20 pt-32">
-        <div className="section-container space-y-8">
-          <AdminWorkspaceHeader
-            dashboardHref={ADMIN_DASHBOARD_PATH}
-            dashboardLabel={adminPaymentsText.breadcrumbDashboard}
-            currentLabel={adminPaymentsText.breadcrumbCurrent}
-            title={adminPaymentsText.title}
-            subtitle={adminPaymentsText.subtitle}
-            navItems={navItems}
-            highlights={highlights}
-            actions={
-              <Button asChild variant="outline" className="rounded-xl">
-                <Link to="/admin/leads">
-                  <ReceiptText className="mr-2 h-4 w-4" />
-                  {adminPaymentsText.openLeads}
-                </Link>
-              </Button>
-            }
-          />
+        <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+          <CardContent className="space-y-6 p-6 pt-6 md:p-7 md:pt-7">
+            <AdminPaymentsFilters
+              channelFilter={channelFilter}
+              onChannelFilterChange={setChannelFilter}
+              onSearchQueryChange={setSearchQuery}
+              onStatusFilterChange={setStatusFilter}
+              searchQuery={searchQuery}
+              statusFilter={statusFilter}
+              text={adminPaymentsText}
+            />
 
-          <AdminPaymentsMetrics
-            acceptedAmountLabel={amountFormatter.format(stats.acceptedAmount)}
-            stats={stats}
-            text={adminPaymentsText}
-          />
-
-          <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-            <CardContent className="space-y-6 p-6 pt-6 md:pt-6">
-              <AdminPaymentsFilters
-                channelFilter={channelFilter}
-                onChannelFilterChange={setChannelFilter}
-                onSearchQueryChange={setSearchQuery}
-                onStatusFilterChange={setStatusFilter}
-                searchQuery={searchQuery}
-                statusFilter={statusFilter}
-                text={adminPaymentsText}
-              />
-
-              <AdminPaymentsTable
-                amountFormatter={amountFormatter}
-                dateFormatter={dateFormatter}
-                filteredTransactions={filteredTransactions}
-                isLoading={isLoading}
-                leadById={leadById}
-                noStudentLabel={adminPaymentsText.noStudent}
-                onOpenPaymentUrl={(url) => window.open(url, "_blank", "noopener,noreferrer")}
-                profileById={profileById}
-                text={adminPaymentsText}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
+            <AdminPaymentsTable
+              amountFormatter={amountFormatter}
+              dateFormatter={dateFormatter}
+              filteredTransactions={filteredTransactions}
+              isLoading={isLoading}
+              leadById={leadById}
+              noStudentLabel={adminPaymentsText.noStudent}
+              onOpenPaymentUrl={(url) => window.open(url, "_blank", "noopener,noreferrer")}
+              profileById={profileById}
+              text={adminPaymentsText}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
   );
 };
 

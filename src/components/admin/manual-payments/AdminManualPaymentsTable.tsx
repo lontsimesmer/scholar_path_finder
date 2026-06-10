@@ -35,7 +35,7 @@ const statusToneClass = (status: ManualPaymentSubmissionStatus) => {
     case "approved":
       return "border-success/20 bg-success/5 text-success";
     case "pending_review":
-      return "border-amber-200 bg-amber-50 text-amber-700";
+      return "border-warning/30 bg-warning/10 text-warning";
     case "rejected":
       return "border-destructive/20 bg-destructive/5 text-destructive";
     case "cancelled":
@@ -55,9 +55,9 @@ export const AdminManualPaymentsTable = ({
   text,
   onReview,
 }: AdminManualPaymentsTableProps) => (
-  <div className="overflow-hidden rounded-[1.5rem] border border-border/40">
+  <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
     <Table>
-      <TableHeader className="bg-secondary/30">
+      <TableHeader>
         <TableRow>
           <TableHead>{text.columns.lead}</TableHead>
           <TableHead>{text.columns.student}</TableHead>

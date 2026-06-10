@@ -45,7 +45,7 @@ export const AdminBlogEditorDialog = ({
   text,
 }: AdminBlogEditorDialogProps) => (
   <Dialog open={isOpen} onOpenChange={onOpenChange}>
-    <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto rounded-[2rem]">
+    <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto rounded-2xl">
       <DialogHeader>
         <DialogTitle>{post.id ? text.editArticle : text.createArticle}</DialogTitle>
       </DialogHeader>

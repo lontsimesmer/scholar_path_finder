@@ -79,7 +79,10 @@ const Hero = () => {
 
             <div className="mt-16 grid gap-8 sm:grid-cols-3 animate-in fade-in duration-1000 delay-500">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col gap-2">
+                <div
+                  key={stat.label}
+                  className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left"
+                >
                   <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                   <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
                     {stat.label}

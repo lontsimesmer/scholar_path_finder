@@ -13,6 +13,8 @@ dist-ssr
 coverage
 .env
 .env.*
+!.env.supabase.local.example
+!supabase/functions/.env.example
 *.local
 .supabase/
 supabase/.temp/

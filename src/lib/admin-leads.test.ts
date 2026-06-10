@@ -88,7 +88,7 @@ describe("admin leads helpers", () => {
     expect(getAdminLeadPaymentLabel(text, "unknown")).toBe("unknown");
     expect(getAdminLeadPipelineLabel(text, "pending")).toBe("Nouveau");
     expect(getAdminLeadPaymentBadgeClassName("paid")).toContain("text-success");
-    expect(getAdminLeadPaymentBadgeClassName("pending")).toContain("amber");
+    expect(getAdminLeadPaymentBadgeClassName("pending")).toContain("warning");
     expect(getAdminLeadPaymentBadgeClassName(null)).toContain("muted");
   });
 });

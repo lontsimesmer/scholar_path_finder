@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import Header from "@/components/Header";
-import { AdminWorkspaceHeader } from "@/components/admin/AdminWorkspaceHeader";
+import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminManualPaymentValidationDialog } from "@/components/admin/manual-payments/AdminManualPaymentValidationDialog";
 import { AdminManualPaymentsFilters } from "@/components/admin/manual-payments/AdminManualPaymentsFilters";
 import { AdminManualPaymentsMetrics } from "@/components/admin/manual-payments/AdminManualPaymentsMetrics";
@@ -10,7 +9,7 @@ import { AdminManualPaymentsTable } from "@/components/admin/manual-payments/Adm
 import { Card, CardContent } from "@/components/ui/card";
 import { useAdminManualPayments } from "@/hooks/use-admin-manual-payments";
 import { useLanguage } from "@/i18n/language";
-import { ADMIN_DASHBOARD_PATH, getAdminSession } from "@/lib/admin-session";
+import { getAdminSession } from "@/lib/admin-session";
 import {
   type AdminManualPaymentsText,
   buildManualPaymentStats,
@@ -104,23 +103,6 @@ const AdminManualPayments = () => {
     [leadById, submissions],
   );
 
-  const navItems = [
-    { href: "/admin", label: text.breadcrumbDashboard },
-    { href: "/admin/crm", label: t.adminCRM.breadcrumbCurrent },
-    { href: "/admin/leads", label: t.adminLeads.breadcrumbCurrent },
-    { href: "/admin/payments", label: t.adminPayments.breadcrumbCurrent },
-    { href: "/admin/manual-payments", label: text.breadcrumbCurrent },
-    { href: "/admin/blog", label: t.adminBlog.breadcrumbCurrent },
-    { href: "/admin/faq", label: t.adminFaq.breadcrumbCurrent },
-  ];
-
-  const highlights = [
-    { label: text.metrics.pending, value: stats.pending, tone: "warning" as const },
-    { label: text.metrics.approved, value: stats.approved, tone: "success" as const },
-    { label: text.metrics.rejected, value: stats.rejected, tone: "neutral" as const },
-    { label: text.metrics.blocked, value: stats.blocked, tone: "neutral" as const },
-  ];
-
   const closeDialog = () => {
     setActiveSubmission(null);
     if (searchParams.has("submissionId")) {
@@ -130,50 +112,37 @@ const AdminManualPayments = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/10">
-      <Header />
-      <main className="pb-20 pt-32">
-        <div className="section-container space-y-8">
-          <AdminWorkspaceHeader
-            dashboardHref={ADMIN_DASHBOARD_PATH}
-            dashboardLabel={text.breadcrumbDashboard}
-            currentLabel={text.breadcrumbCurrent}
-            title={text.title}
-            subtitle={text.subtitle}
-            navItems={navItems}
-            highlights={highlights}
-          />
+    <AdminLayout title={text.title} subtitle={text.subtitle}>
+      <div className="space-y-6">
+        <AdminManualPaymentsMetrics
+          stats={stats}
+          pendingAmountLabel={amountFormatter.format(stats.pendingAmount)}
+          text={text}
+        />
 
-          <AdminManualPaymentsMetrics
-            stats={stats}
-            pendingAmountLabel={amountFormatter.format(stats.pendingAmount)}
-            text={text}
-          />
+        <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+          <CardContent className="space-y-6 p-6 pt-6 md:p-7 md:pt-7">
+            <AdminManualPaymentsFilters
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              text={text}
+            />
 
-          <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-            <CardContent className="space-y-6 p-6 pt-6 md:pt-6">
-              <AdminManualPaymentsFilters
-                searchQuery={searchQuery}
-                onSearchQueryChange={setSearchQuery}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                text={text}
-              />
-
-              <AdminManualPaymentsTable
-                amountFormatter={amountFormatter}
-                dateFormatter={dateFormatter}
-                isLoading={isLoading}
-                submissions={filtered}
-                leadById={leadById}
-                profileById={profileById}
-                text={text}
-                onReview={(submission) => setActiveSubmission(submission)}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            <AdminManualPaymentsTable
+              amountFormatter={amountFormatter}
+              dateFormatter={dateFormatter}
+              isLoading={isLoading}
+              submissions={filtered}
+              leadById={leadById}
+              profileById={profileById}
+              text={text}
+              onReview={(submission) => setActiveSubmission(submission)}
+            />
+          </CardContent>
+        </Card>
+      </div>
 
       <AdminManualPaymentValidationDialog
         open={Boolean(activeSubmission)}
@@ -187,7 +156,7 @@ const AdminManualPayments = () => {
         onValidate={validateSubmission}
         onBlockLead={blockLead}
       />
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -44,9 +44,9 @@ export const AdminPaymentsTable = ({
   profileById,
   text,
 }: AdminPaymentsTableProps) => (
-  <div className="overflow-hidden rounded-[1.5rem] border border-border/40">
+  <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
     <Table>
-      <TableHeader className="bg-secondary/30">
+      <TableHeader>
         <TableRow>
           <TableHead>{text.columns.transaction}</TableHead>
           <TableHead>{text.columns.student}</TableHead>
@@ -109,7 +109,7 @@ export const AdminPaymentsTable = ({
                         transaction.local_status === "accepted"
                           ? "border-success/20 bg-success/5 text-success"
                           : pendingLocalStatuses.includes(transaction.local_status)
-                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                            ? "border-warning/30 bg-warning/10 text-warning"
                             : failedLocalStatuses.includes(transaction.local_status)
                               ? "border-destructive/20 bg-destructive/5 text-destructive"
                               : "border-border/50 bg-secondary/40 text-muted-foreground",

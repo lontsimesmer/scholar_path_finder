@@ -41,7 +41,11 @@
     /* Success Green */
     --success: 158 64% 42%;
     --success-foreground: 0 0% 100%;
-    
+
+    /* Warning Amber (admin attention states) */
+    --warning: 38 92% 50%;
+    --warning-foreground: 26 60% 18%;
+
     /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
@@ -91,6 +95,8 @@
     --muted-foreground: 220 15% 60%;
     --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
+    --warning: 38 95% 60%;
+    --warning-foreground: 26 80% 12%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 40% 98%;
     --border: 220 20% 20%;
@@ -162,6 +168,32 @@
   
   .glass-effect {
     @apply border border-white/55 backdrop-blur-xl bg-white/72 shadow-medium;
+  }
+
+  /* Admin data tables: density, sticky header, hover row.
+     Applied on the wrapper around <Table> in admin pages. */
+  .admin-table thead {
+    @apply sticky top-0 z-10 bg-secondary/40 backdrop-blur;
+  }
+
+  .admin-table thead tr {
+    @apply border-b border-border/50;
+  }
+
+  .admin-table th {
+    @apply h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .admin-table tbody td {
+    @apply px-4 py-3 align-middle text-sm;
+  }
+
+  .admin-table tbody tr {
+    @apply border-b border-border/30 transition-colors hover:bg-secondary/30;
+  }
+
+  .admin-table tbody tr:last-child {
+    @apply border-b-0;
   }
 
   .page-shell {

@@ -27,8 +27,8 @@ export const AdminStudentNotesCard = ({
   onNoteDraftChange,
   text,
 }: AdminStudentNotesCardProps) => (
-  <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-    <CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+  <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+    <CardHeader className="flex flex-col gap-4 pt-8 md:flex-row md:items-start md:justify-between md:pt-8">
       <div className="space-y-1">
         <CardTitle>{text.notesTitle}</CardTitle>
         <CardDescription>{text.notesDescription}</CardDescription>
@@ -38,7 +38,7 @@ export const AdminStudentNotesCard = ({
       </Badge>
     </CardHeader>
     <CardContent className="space-y-6">
-      <div className="rounded-[1.75rem] border border-border/40 bg-secondary/10 p-4">
+      <div className="rounded-xl border border-border/40 bg-secondary/10 p-4">
         <div className="space-y-3">
           <Textarea
             value={noteDraft}
@@ -68,13 +68,13 @@ export const AdminStudentNotesCard = ({
           <Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" />
         </div>
       ) : notes.length === 0 ? (
-        <p className="rounded-[1.5rem] border border-dashed border-border/50 py-8 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-border/50 py-8 text-center text-sm text-muted-foreground">
           {text.noNotes}
         </p>
       ) : (
         <div className="space-y-4">
           {notes.map((note) => (
-            <div key={note.id} className="rounded-[1.5rem] border border-border/40 bg-white p-4 shadow-sm">
+            <div key={note.id} className="rounded-xl border border-border/40 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{note.admin_email}</p>
                 <p className="text-xs text-muted-foreground">{dateFormatter.format(new Date(note.created_at))}</p>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Calendar, Check, Clock, Loader2, Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,15 +22,10 @@ type PaymentContent = {
   }>;
 };
 
-interface PaymentSuccessState {
-  paymentVerified?: boolean;
-}
-
 const logger = createLogger("PaymentSuccess");
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { t } = useLanguage();
   const paymentSuccessText = t.paymentSuccess as typeof t.paymentSuccess & {
@@ -38,9 +33,7 @@ const PaymentSuccess = () => {
   };
   const [paymentState, setPaymentState] = useState<PaymentState>("loading");
   const [details, setDetails] = useState<string | null>(null);
-  const sessionId = searchParams.get("session_id");
   const leadId = searchParams.get("leadId");
-  const paymentProvider = searchParams.get("provider");
   const transactionId = searchParams.get("transaction_id");
 
   const paymentContent: Record<Exclude<PaymentState, "loading">, PaymentContent> = {
@@ -126,62 +119,6 @@ const PaymentSuccess = () => {
   useEffect(() => {
     let isCancelled = false;
     let retryTimeout: number | null = null;
-    const navigationState = location.state as PaymentSuccessState | null;
-
-    const verifyStripePayment = async () => {
-      logger.info("Verifying payment status", {
-        hasNavigationState: Boolean(navigationState?.paymentVerified),
-        hasSessionId: Boolean(sessionId),
-        hasLeadId: Boolean(leadId),
-        hasTransactionId: Boolean(transactionId),
-        provider: paymentProvider,
-      });
-
-      if (navigationState?.paymentVerified) {
-        logger.info("Payment marked as verified from navigation state");
-        setPaymentState("success");
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.functions.invoke("verify-stripe-payment", {
-          body: { sessionId, leadId },
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        if (isCancelled) {
-          return;
-        }
-
-        if (data?.paymentStatus === "paid") {
-          logger.info("Stripe payment verified successfully", { leadId });
-          setPaymentState("success");
-          return;
-        }
-
-        logger.warn("Stripe payment returned without a paid status", {
-          leadId,
-          paymentStatus: data?.paymentStatus,
-        });
-        setPaymentState("pending");
-        setDetails(t.paymentSuccess.stripePendingDetails);
-      } catch (error: unknown) {
-        if (isCancelled) {
-          return;
-        }
-
-        logger.error("Payment verification failed", {
-          leadId,
-          sessionId,
-          message: getErrorMessage(error),
-        });
-        setPaymentState("error");
-        setDetails(error instanceof Error ? error.message : t.paymentSuccess.verificationFailedDetails);
-      }
-    };
 
     const verifyCinetpayPayment = async (attempt = 1) => {
       if (!leadId) {
@@ -254,10 +191,8 @@ const PaymentSuccess = () => {
       }
     };
 
-    if (paymentProvider === "cinetpay" || transactionId) {
+    if (leadId || transactionId) {
       void verifyCinetpayPayment();
-    } else if (sessionId && leadId) {
-      void verifyStripePayment();
     } else {
       logger.warn("Payment success page is missing verification parameters");
       setPaymentState("error");
@@ -270,7 +205,7 @@ const PaymentSuccess = () => {
         window.clearTimeout(retryTimeout);
       }
     };
-  }, [leadId, location.state, paymentProvider, paymentSuccessText, sessionId, t, transactionId]);
+  }, [leadId, paymentSuccessText, t, transactionId]);
 
   const content = paymentState === "loading" ? null : paymentContent[paymentState];
 

@@ -10,7 +10,7 @@ type AdminLeadsMetricsProps = {
 
 export function AdminLeadsMetrics({ stats, text }: AdminLeadsMetricsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <AdminMetricCard
         title={text.metrics.total}
         value={stats.total}

@@ -64,7 +64,7 @@ export const AdminCRMDocumentsManager = ({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-[1.75rem] border border-primary/10 bg-primary/5 p-5">
+      <div className="rounded-xl border border-primary/10 bg-primary/5 p-5">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
           <div className="space-y-2">
             <p className="text-sm font-semibold text-foreground">{text.documentRequestNameLabel}</p>
@@ -97,7 +97,7 @@ export const AdminCRMDocumentsManager = ({
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{text.documentRequestDescription}</p>
       </div>
 
-      <div className="rounded-[1.75rem] border border-border/40 bg-white p-5">
+      <div className="rounded-xl border border-border/40 bg-white p-5">
         <p className="mb-4 text-sm font-semibold text-foreground">{text.documentRequestTitle}</p>
         {documentRequests.length === 0 ? (
           <p className="text-sm italic text-muted-foreground">{text.documentRequestsEmpty}</p>
@@ -123,8 +123,8 @@ export const AdminCRMDocumentsManager = ({
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-amber-700">
+        <div className="rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-warning">
             {text.sheet.documentsPending}
           </p>
           <p className="mt-2 text-2xl font-semibold text-foreground">
@@ -156,9 +156,9 @@ export const AdminCRMDocumentsManager = ({
           <div
             key={doc.id}
             className={cn(
-              "space-y-4 rounded-[1.75rem] border p-5",
+              "space-y-4 rounded-xl border p-5",
               doc.status === "pending"
-                ? "border-amber-200 bg-amber-50/50"
+                ? "border-warning/30 bg-warning/5"
                 : doc.status === "approved"
                   ? "border-success/20 bg-success/5"
                   : "border-destructive/20 bg-destructive/5",
@@ -189,7 +189,7 @@ export const AdminCRMDocumentsManager = ({
                         className={cn(
                           "rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest",
                           doc.status === "pending"
-                            ? "border-amber-200 bg-white text-amber-700"
+                            ? "border-warning/30 bg-white text-warning"
                             : doc.status === "approved"
                               ? "border-success/20 bg-white text-success"
                               : "border-destructive/20 bg-white text-destructive",

@@ -23,8 +23,8 @@ export const AdminStudentHistoryCard = ({
   isLoading,
   text,
 }: AdminStudentHistoryCardProps) => (
-  <Card className="rounded-[2rem] border-border/40 bg-white shadow-strong">
-    <CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+  <Card className="rounded-2xl border-border/40 bg-white shadow-soft">
+    <CardHeader className="flex flex-col gap-4 pt-8 md:flex-row md:items-start md:justify-between md:pt-8">
       <div className="space-y-1">
         <CardTitle>{text.historyTitle}</CardTitle>
         <CardDescription>{text.historyDescription}</CardDescription>
@@ -39,7 +39,7 @@ export const AdminStudentHistoryCard = ({
           <Loader2 className="mx-auto h-5 w-5 animate-spin text-primary" />
         </div>
       ) : activityLogs.length === 0 ? (
-        <p className="rounded-[1.5rem] border border-dashed border-border/50 py-8 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-border/50 py-8 text-center text-sm text-muted-foreground">
           {text.noHistory}
         </p>
       ) : (
@@ -56,7 +56,7 @@ export const AdminStudentHistoryCard = ({
               activity.action_type;
 
             return (
-              <div key={activity.id} className="rounded-[1.5rem] border border-border/40 bg-white p-4 shadow-sm">
+              <div key={activity.id} className="rounded-xl border border-border/40 bg-white p-4 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">

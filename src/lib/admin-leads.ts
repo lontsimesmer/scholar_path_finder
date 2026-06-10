@@ -118,7 +118,7 @@ export function getAdminLeadPaymentBadgeClassName(paymentStatus: string | null) 
   }
 
   if (pendingLeadPaymentStatuses.includes(paymentStatus ?? "")) {
-    return "border-amber-200 bg-amber-50 text-amber-700";
+    return "border-warning/30 bg-warning/10 text-warning";
   }
 
   return "border-border/50 bg-secondary/40 text-muted-foreground";

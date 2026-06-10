@@ -28,9 +28,9 @@ type AdminLeadsTableProps = {
 
 export function AdminLeadsTable({ isLoading, leads, text, dateFormatter }: AdminLeadsTableProps) {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] border border-border/40">
+    <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
       <Table>
-        <TableHeader className="bg-secondary/30">
+        <TableHeader>
           <TableRow>
             <TableHead>{text.columns.contact}</TableHead>
             <TableHead>{text.columns.message}</TableHead>

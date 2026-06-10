@@ -207,7 +207,7 @@ export const buildAdminDashboardOperations = (
     cta: text.openPayments,
     value: formatAdminMetricValue(isLoading, stats.pendingPayments),
     icon: CreditCard,
-    iconClassName: "bg-amber-500/10 text-amber-600",
+    iconClassName: "bg-warning/10 text-warning",
     buttonVariant: "outline",
   },
 ];
