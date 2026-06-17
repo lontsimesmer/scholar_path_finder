@@ -1,5 +1,7 @@
-import { MessageCircle, Search, FileText, Plane } from "lucide-react";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { FileText, MessageCircle, Plane, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/language";
+import SectionHeading from "@/components/SectionHeading";
 
 const HowItWorks = () => {
   const { t } = useLanguage();
@@ -33,48 +35,53 @@ const HowItWorks = () => {
 
   return (
     <section id="how-it-works" className="section-padding bg-navy text-navy-foreground">
-      <div className="section-container">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-sm font-semibold mb-4">
-            {t.howItWorks.badge}
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-navy-foreground mb-6">
-            {t.howItWorks.title}
-            <span className="text-accent"> {t.howItWorks.titleHighlight}</span>
-          </h2>
-          <p className="text-lg text-navy-foreground/70">
-            {t.howItWorks.subtitle}
-          </p>
+      <div className="section-container grid gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-start">
+        <div className="space-y-8 xl:sticky xl:top-28">
+          <SectionHeading
+            badge={t.howItWorks.badge}
+            title={t.howItWorks.title}
+            highlight={t.howItWorks.titleHighlight}
+            subtitle={t.howItWorks.subtitle}
+            align="left"
+            inverse
+          />
+
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-6 shadow-medium">
+            <div className="space-y-3">
+              {steps.slice(0, 3).map((step) => (
+                <div key={step.step} className="flex items-center gap-3 rounded-[1rem] bg-white/7 px-4 py-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/18 text-xs font-semibold text-accent">
+                    {step.step}
+                  </span>
+                  <span className="text-sm text-navy-foreground/80">{step.title}</span>
+                </div>
+              ))}
+            </div>
+            <Button variant="heroOutline" size="lg" asChild className="mt-6">
+              <a href="#contact">{t.nav.contactUs}</a>
+            </Button>
+          </div>
         </div>
 
-        {/* Steps */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="space-y-5">
           {steps.map((step, index) => (
-            <div 
-              key={index}
-              className="relative group"
-            >
-              {/* Connector Line */}
+            <div key={step.step} className="relative">
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-10 left-[60%] w-full h-0.5 bg-primary/30" />
+                <div className="absolute left-10 top-[5.6rem] hidden h-[calc(100%+1.25rem)] w-px bg-white/12 xl:block" />
               )}
-              
-              <div className="relative z-10 text-center">
-                {/* Icon */}
-                <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 border-2 border-primary/30 mb-6 group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                  <step.icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
-                  <span className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-accent text-accent-foreground text-sm font-bold flex items-center justify-center">
+              <div className="surface-panel-dark relative flex flex-col gap-5 p-6 md:flex-row md:items-start md:p-7">
+                <div className="flex items-center gap-4 md:w-52 md:flex-col md:items-start">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-white/10">
+                    <step.icon className="text-accent" size={28} />
+                  </div>
+                  <span className="text-sm font-semibold uppercase tracking-[0.26em] text-primary-foreground/62">
                     {step.step}
                   </span>
                 </div>
-                
-                <h3 className="font-display text-xl font-semibold text-navy-foreground mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-navy-foreground/70 leading-relaxed">
-                  {step.description}
-                </p>
+                <div className="space-y-3">
+                  <h3 className="font-display text-2xl font-semibold text-navy-foreground">{step.title}</h3>
+                  <p className="leading-7 text-navy-foreground/72">{step.description}</p>
+                </div>
               </div>
             </div>
           ))}

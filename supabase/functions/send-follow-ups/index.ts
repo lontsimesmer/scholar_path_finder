@@ -1,11 +1,26 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { generateNurturingEmail, nurturingSubjects } from "../_shared/email-templates.ts";
+import { createServiceRoleClient } from "../_shared/auth-utils.ts";
+import { createLogger, getErrorMessage } from "../_shared/logger.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+};
+
+const logger = createLogger("SEND-FOLLOW-UPS");
+
+const isAuthorizedRequest = (req: Request) => {
+  const authHeader = req.headers.get("authorization");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  const providedCronSecret = req.headers.get("x-cron-secret");
+
+  const isServiceRole = Boolean(serviceRoleKey) && authHeader === `Bearer ${serviceRoleKey}`;
+  const isCronSecretValid = Boolean(cronSecret) && providedCronSecret === cronSecret;
+
+  return isServiceRole || isCronSecretValid;
 };
 
 const handler = async (req: Request): Promise<Response> => {
@@ -14,52 +29,46 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // SECURITY: Verify this is a cron job or service role request
-    // Check for Authorization header with service role key or cron signature
-    const authHeader = req.headers.get("authorization");
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
-    // Only allow requests with service role key in Authorization header
-    const isServiceRole = authHeader === `Bearer ${supabaseServiceKey}`;
-    
-    if (!isServiceRole) {
-      console.error("Unauthorized access attempt to send-follow-ups");
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!isAuthorizedRequest(req)) {
+      logger.warn("Unauthorized access attempt");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get leads that need follow-up
+    const supabase = createServiceRoleClient();
     const now = new Date().toISOString();
+
     const { data: leads, error: fetchError } = await supabase
       .from("leads")
       .select("*")
-      .eq("status", "pending")
+      .in("status", ["pending", "follow_up"])
       .eq("payment_status", "unpaid")
       .lt("next_follow_up_at", now)
-      .lt("follow_up_count", 14) // Max 14 follow-ups (2 weeks)
+      .lt("follow_up_count", 14)
       .order("next_follow_up_at", { ascending: true })
       .limit(100);
 
     if (fetchError) {
-      console.error("Error fetching leads:", fetchError);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch leads" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      logger.error("Failed to fetch leads for follow-ups", {
+        message: fetchError.message,
+      });
+      return new Response(JSON.stringify({ error: "Failed to fetch leads" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     if (!leads || leads.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, message: "No follow-ups needed", processed: 0 }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      logger.info("No leads require a follow-up");
+      return new Response(JSON.stringify({ success: true, message: "No follow-ups needed", processed: 0 }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    logger.info("Processing follow-up batch", { leadCount: leads.length });
 
     const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
     const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
@@ -71,26 +80,25 @@ const handler = async (req: Request): Promise<Response> => {
 
     for (const lead of leads) {
       try {
-        const dayNumber = lead.follow_up_count + 1;
+        const dayNumber = (lead.follow_up_count ?? 0) + 1;
+        logger.info("Processing follow-up for lead", { leadId: lead.id, dayNumber });
         const subjectIndex = (dayNumber - 1) % nurturingSubjects.length;
         const subject = nurturingSubjects[subjectIndex];
         const origin = "https://power-prestation.lovable.app";
-        const checkoutUrl = `${origin}/checkout?leadId=${lead.id}`;
+        const checkoutUrl = `${origin}/checkout?leadId=${lead.id}&email=${encodeURIComponent(lead.email)}`;
 
-        // Send styled nurturing email
         await resend.emails.send({
           from: "Power Prestation <noreply@powerprestation.ca>",
           replyTo: "powerprestationint@gmail.com",
           to: [lead.email],
-          subject: subject,
+          subject,
           html: generateNurturingEmail(lead.name, checkoutUrl, dayNumber),
         });
 
-        // Send SMS if phone exists
         if (lead.phone && twilioAccountSid && twilioAuthToken && twilioPhone) {
           try {
             const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-            const smsBody = `Hi ${lead.name}! Your academic dreams await. Book your $25 consultation now: ${checkoutUrl} - Power Prestation`; // SMS is plain text, no escaping needed
+            const smsBody = `Hi ${lead.name}! Your academic dreams await. Book your 15 625 XAF consultation now: ${checkoutUrl} - Power Prestation`;
 
             await fetch(twilioUrl, {
               method: "POST",
@@ -105,18 +113,20 @@ const handler = async (req: Request): Promise<Response> => {
               }),
             });
           } catch (smsError) {
-            console.error("SMS failed for lead:", lead.id, smsError);
+            logger.error("SMS follow-up failed", {
+              leadId: lead.id,
+              message: getErrorMessage(smsError),
+            });
           }
         }
 
-        // Update lead follow-up count and next follow-up time
         const nextFollowUp = new Date();
         nextFollowUp.setHours(nextFollowUp.getHours() + 24);
 
-        const newFollowUpCount = lead.follow_up_count + 1;
+        const newFollowUpCount = (lead.follow_up_count ?? 0) + 1;
         const newStatus = newFollowUpCount >= 14 ? "expired" : "follow_up";
 
-        await supabase
+        const { error: updateError } = await supabase
           .from("leads")
           .update({
             follow_up_count: newFollowUpCount,
@@ -126,29 +136,49 @@ const handler = async (req: Request): Promise<Response> => {
           })
           .eq("id", lead.id);
 
-        processed++;
+        if (updateError) {
+          throw updateError;
+        }
+
+        logger.info("Follow-up processed successfully", {
+          leadId: lead.id,
+          followUpCount: newFollowUpCount,
+          status: newStatus,
+        });
+        processed += 1;
       } catch (leadError) {
-        console.error("Error processing lead:", lead.id, leadError);
-        errors++;
+        logger.error("Failed to process follow-up for lead", {
+          leadId: lead.id,
+          message: getErrorMessage(leadError),
+        });
+        errors += 1;
       }
     }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: `Processed ${processed} follow-ups`,
-        processed,
-        errors,
-        total: leads.length 
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    logger.info("Follow-up batch completed", {
+      processed,
+      errors,
+      total: leads.length,
+    });
+
+    return new Response(JSON.stringify({
+      success: true,
+      message: `Processed ${processed} follow-ups`,
+      processed,
+      errors,
+      total: leads.length,
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error: unknown) {
-    console.error("Error in send-follow-ups:", error instanceof Error ? error.message : "Unknown error");
-    return new Response(
-      JSON.stringify({ error: "An error occurred" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    logger.error("Unhandled send-follow-ups error", {
+      message: getErrorMessage(error),
+    });
+    return new Response(JSON.stringify({ error: "An error occurred" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 };
 

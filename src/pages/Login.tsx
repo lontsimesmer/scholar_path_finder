@@ -1,255 +1,385 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Loader2, Lock, Mail, ShieldCheck, Sparkles, UserRoundCheck, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BrandMark from "@/components/BrandMark";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
-import logoImage from "@/assets/logo.png";
+import { useLanguage } from "@/i18n/language";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ADMIN_DASHBOARD_PATH, isAdminEmail } from "@/lib/admin-session";
+import {
+  buildVerifyContactUrl,
+  type ContactVerificationStatus,
+} from "@/lib/contact-verification";
+import { createLogger, getErrorMessage } from "@/lib/logger";
+import type { User } from "@supabase/supabase-js";
+
+const sanitizeRedirect = (value: string | null) => {
+  if (!value || !value.startsWith("/")) {
+    return "/dashboard";
+  }
+  return value;
+};
+
+const logger = createLogger("Login");
+
+type LoginTextExtensions = typeof import("@/i18n/translations/en").en.login & {
+  verificationPendingTitle: string;
+  verificationPendingDescription: string;
+  verificationRequiredTitle: string;
+  verificationRequiredDescription: string;
+};
 
 const Login = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useLanguage();
+  const loginText = t.login as LoginTextExtensions;
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const redirectTo = searchParams.get("redirect") || "/checkout";
+  const redirectTo = sanitizeRedirect(searchParams.get("redirect"));
 
   useEffect(() => {
-    // Listen for auth state changes (handles OAuth callback)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate(redirectTo, { replace: true });
+    const resolveVerificationStatus = async (user: User) => {
+      if (!user.id) {
+        return null;
       }
-    });
 
-    // Check if user is already logged in
+      const { data, error } = await supabase.functions.invoke("get-contact-verification-status", {
+        body: {},
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      return (data as ContactVerificationStatus | null) ?? null;
+    };
+
+    const redirectToVerification = async (user: User, channels: Array<"email" | "sms">) => {
+      navigate(
+        buildVerifyContactUrl({
+          email: user.email ?? email,
+          channels,
+          redirect: redirectTo,
+        }),
+        { replace: true },
+      );
+    };
+
+    const redirectAuthenticatedUser = async (user: User) => {
+      logger.info("Resolving post-auth redirect", {
+        userId: user.id,
+        redirectTo,
+      });
+
+      try {
+        const verificationStatus = await resolveVerificationStatus(user);
+        if (
+          verificationStatus?.enabled &&
+          verificationStatus.verificationRequired &&
+          verificationStatus.pendingChannels.length > 0
+        ) {
+          logger.info("Authenticated user still has pending contact verification", {
+            userId: user.id,
+            pendingChannels: verificationStatus.pendingChannels,
+          });
+          toast({
+            title: loginText.verificationRequiredTitle,
+            description: loginText.verificationRequiredDescription,
+          });
+          await redirectToVerification(user, verificationStatus.pendingChannels);
+          return;
+        }
+      } catch (verificationError: unknown) {
+        logger.error("Failed to resolve contact verification status after authentication", {
+          userId: user.id,
+          message: getErrorMessage(verificationError),
+        });
+      }
+
+      let admin = false;
+      try {
+        admin = await isAdminEmail(user.email);
+      } catch (adminError: unknown) {
+        logger.error("Failed to check admin status after authentication", {
+          userId: user.id,
+          message: getErrorMessage(adminError),
+        });
+      }
+
+      if (admin) {
+        logger.info("Authenticated user is an admin, redirecting to the admin dashboard", {
+          userId: user.id,
+        });
+        navigate(ADMIN_DASHBOARD_PATH, { replace: true });
+        return;
+      }
+
+      logger.info("Authenticated user is not an admin, redirecting", {
+        userId: user.id,
+        redirectTo,
+      });
+      navigate(redirectTo, { replace: true });
+    };
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(redirectTo, { replace: true });
+        logger.info("Existing session found on login page, redirecting", {
+          userId: session.user.id,
+          redirectTo,
+        });
+        await redirectAuthenticatedUser(session.user);
       }
     };
-    checkAuth();
+    void checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      logger.info("Login auth state changed", { event, hasSession: Boolean(session) });
+
+      if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") {
+        return;
+      }
+
+      if (session) {
+        void redirectAuthenticatedUser(session.user);
+      }
+    });
 
     return () => subscription.unsubscribe();
-  }, [navigate, redirectTo]);
+  }, [email, loginText.verificationRequiredDescription, loginText.verificationRequiredTitle, navigate, redirectTo, toast]);
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEmailSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
     setIsLoading(true);
+    logger.info("Attempting email sign in", {
+      hasEmail: Boolean(email.trim()),
+      redirectTo,
+    });
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate(redirectTo);
+
+      logger.info("Sign in successful", { userId: data.user?.id });
+
+      if (data.user) {
+        logger.info("Delegating post-sign-in routing", { userId: data.user.id });
+      }
     } catch (error: unknown) {
-      toast({
-        title: "Sign In Failed",
-        description: error instanceof Error ? error.message : "Failed to sign in",
-        variant: "destructive",
-      });
+      const message = getErrorMessage(error);
+      logger.error("Email sign in failed", { message });
+      toast({ title: t.login.errorTitle, description: message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEmailSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEmailSignUp = async (event: React.FormEvent) => {
+    event.preventDefault();
     setIsLoading(true);
+    logger.info("Attempting email sign up", { hasEmail: Boolean(email.trim()) });
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin + redirectTo,
-        },
-      });
+      const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
-      toast({
-        title: "Account Created",
-        description: "You can now sign in with your credentials.",
-      });
+      logger.info("Sign up succeeded", { userId: data.user?.id });
+
+      logger.info("Sign up completed without custom verification");
+      toast({ title: t.login.signUpTab, description: t.login.signUpSuccessDescription });
     } catch (error: unknown) {
-      toast({
-        title: "Sign Up Failed",
-        description: error instanceof Error ? error.message : "Failed to create account",
-        variant: "destructive",
-      });
+      const message = getErrorMessage(error);
+      logger.error("Email sign up failed", { message });
+      toast({ title: t.login.errorTitle, description: message, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
-    try {
-      const { error } = await (lovable.auth.signInWithOAuth as any)("google", {
-        redirect_uri: window.location.origin + redirectTo,
-        extraParams: { prompt: "select_account" },
-      });
-      if (error) throw error;
-    } catch (error: unknown) {
-      toast({
-        title: "Google Sign In Failed",
-        description: error instanceof Error ? error.message : "Failed to sign in with Google",
-        variant: "destructive",
-      });
-      setIsGoogleLoading(false);
-    }
-  };
+  const highlights = [
+    { icon: ShieldCheck, ...t.login.highlights.secure },
+    { icon: UserRoundCheck, ...t.login.highlights.followup },
+    { icon: Sparkles, ...t.login.highlights.journey },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <img src={logoImage} alt="Power Prestation" className="h-12 mx-auto mb-4" />
-          <CardTitle className="font-display text-2xl">Sign In Required</CardTitle>
-          <CardDescription>
-            Please sign in to continue to checkout
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Google Sign In */}
-          <Button
-            onClick={handleGoogleSignIn}
-            disabled={isGoogleLoading}
-            variant="outline"
-            className="w-full"
-            size="lg"
-          >
-            {isGoogleLoading ? (
-              <Loader2 className="animate-spin mr-2" size={18} />
-            ) : (
-              <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  fill="#EA4335"
-                />
-              </svg>
-            )}
-            Continue with Google
-          </Button>
+    <div className="min-h-screen bg-secondary/5 flex items-center justify-center px-4 py-20">
+      <div className="section-container max-w-6xl">
+        <div className="grid gap-12 lg:grid-cols-[1fr_0.8fr] items-center">
+          
+          {/* Info Side */}
+          <div className="hidden lg:block space-y-12">
+            <ScrollReveal animation="fade-in">
+              <div className="flex items-center gap-4 mb-8">
+                <BrandMark size="lg" />
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/40">Power Prestation</p>
+                  <p className="text-xs text-muted-foreground">{t.login.brandSubtitle}</p>
+                </div>
+              </div>
+              <h1 className="font-display text-5xl font-bold text-foreground leading-[1.1] tracking-tight">
+                {t.login.subtitle.split('.')[0]}.
+              </h1>
+            </ScrollReveal>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+            <div className="grid gap-6">
+              {highlights.map((item, index) => (
+                <ScrollReveal key={item.title} animation="slide-up" delay={index * 100}>
+                  <div className="flex items-start gap-6 group">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm">
+                      <item.icon size={22} />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-foreground">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
             </div>
           </div>
 
-          {/* Email Sign In/Sign Up */}
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            <TabsContent value="signin">
-              <form onSubmit={handleEmailSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-12"
-                      required
-                    />
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 h-12"
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" disabled={isLoading} className="w-full" size="lg">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="animate-spin mr-2" size={18} />
-                      Signing In...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup">
-              <form onSubmit={handleEmailSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-12"
-                      required
-                    />
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="password"
-                      placeholder="Password (min 6 characters)"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 h-12"
-                      minLength={6}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" disabled={isLoading} className="w-full" size="lg">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="animate-spin mr-2" size={18} />
-                      Creating Account...
-                    </>
-                  ) : (
-                    "Create Account"
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          {/* Form Side */}
+          <ScrollReveal animation="scale-in">
+            <Card className="border-none bg-white shadow-strong rounded-[3rem] overflow-hidden">
+              <CardHeader className="p-10 lg:p-14 pb-0 text-center space-y-4">
+                <div className="lg:hidden flex justify-center mb-4"><BrandMark size="lg" /></div>
+                <CardTitle className="font-display text-3xl font-bold tracking-tight">{t.login.title}</CardTitle>
+                <p className="text-muted-foreground text-sm">{t.login.subtitle}</p>
+              </CardHeader>
+              
+              <CardContent className="p-10 lg:p-14 pt-8 space-y-8">
+                <Tabs defaultValue="signin" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary/20 p-1 rounded-2xl h-12 mb-10">
+                    <TabsTrigger value="signin" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest">{t.login.signInTab}</TabsTrigger>
+                    <TabsTrigger value="signup" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest">{t.login.signUpTab}</TabsTrigger>
+                  </TabsList>
 
-          <Button variant="ghost" className="w-full" onClick={() => navigate("/")}>
-            ← Back to Home
-          </Button>
-        </CardContent>
-      </Card>
+                  <TabsContent value="signin" className="space-y-8">
+                    <form onSubmit={handleEmailSignIn} className="space-y-8">
+                      <div className="space-y-6">
+                        <div className="group relative space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 transition-colors group-focus-within:text-primary">
+                            {t.login.emailLabel}
+                          </label>
+                          <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
+                            <Mail size={18} className="text-muted-foreground/30" />
+                            <Input 
+                              type="email" 
+                              required 
+                              value={email}
+                              onChange={e => setEmail(e.target.value)}
+                              placeholder={t.login.emailPlaceholder}
+                              className="border-0 rounded-none px-0 focus-visible:ring-0 h-10 bg-transparent w-full"
+                            />
+                          </div>
+                        </div>
+                        <div className="group relative space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 transition-colors group-focus-within:text-primary">
+                            {t.login.passwordLabel}
+                          </label>
+                          <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
+                            <Lock size={18} className="text-muted-foreground/30" />
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              required 
+                              value={password}
+                              onChange={e => setPassword(e.target.value)}
+                              className="border-0 rounded-none px-0 focus-visible:ring-0 h-10 bg-transparent w-full"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="text-muted-foreground/30 hover:text-primary transition-colors"
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <Button type="submit" size="xl" className="w-full group bg-primary py-7 rounded-2xl shadow-none hover:bg-navy transition-all duration-500" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
+                          <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em]">
+                            {t.login.signInButton}
+                            <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
+                          </span>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+
+                  <TabsContent value="signup" className="space-y-8">
+                    <form onSubmit={handleEmailSignUp} className="space-y-8">
+                      <div className="space-y-6">
+                        <div className="group relative space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 transition-colors group-focus-within:text-primary">
+                            {t.login.emailLabel}
+                          </label>
+                          <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
+                            <Mail size={18} className="text-muted-foreground/30" />
+                            <Input 
+                              type="email" 
+                              required 
+                              value={email}
+                              onChange={e => setEmail(e.target.value)}
+                              placeholder={t.login.emailPlaceholder}
+                              className="border-0 rounded-none px-0 focus-visible:ring-0 h-10 bg-transparent w-full"
+                            />
+                          </div>
+                        </div>
+                        <div className="group relative space-y-2">
+                          <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50 transition-colors group-focus-within:text-primary">
+                            {t.login.passwordLabel}
+                          </label>
+                          <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
+                            <Lock size={18} className="text-muted-foreground/30" />
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              required 
+                              value={password}
+                              onChange={e => setPassword(e.target.value)}
+                              minLength={6}
+                              className="border-0 rounded-none px-0 focus-visible:ring-0 h-10 bg-transparent w-full"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="text-muted-foreground/30 hover:text-primary transition-colors"
+                            >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <Button type="submit" size="xl" className="w-full group bg-primary py-7 rounded-2xl shadow-none hover:bg-navy transition-all duration-500" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
+                          <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em]">
+                            {t.login.signUpButton}
+                            <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
+                          </span>
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
+
+                <div className="text-center pt-4">
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+                    {t.login.backHome}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </ScrollReveal>
+        </div>
+      </div>
     </div>
   );
 };

@@ -283,8 +283,8 @@ export function generateWelcomeEmail(name: string, checkoutUrl: string): string 
           
           <div class="pricing-box">
             <h2>Initial Consultation</h2>
-            <div class="price">$25</div>
-            <p class="price-note">One-time investment to start your journey</p>
+            <div class="price">15 625 XAF</div>
+            <p class="price-note">One-time investment, approximately equivalent to $25 USD</p>
           </div>
           
           <div class="cta-container">
@@ -380,8 +380,8 @@ export function generateNurturingEmail(
           
           <div class="pricing-box">
             <h2>Start Your Journey Today</h2>
-            <div class="price">$25</div>
-            <p class="price-note">Your investment in a brighter future</p>
+            <div class="price">15 625 XAF</div>
+            <p class="price-note">Your investment in a brighter future, approximately $25 USD</p>
           </div>
           
           <div class="cta-container">
