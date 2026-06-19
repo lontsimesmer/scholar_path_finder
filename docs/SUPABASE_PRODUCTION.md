@@ -209,7 +209,7 @@ Rester strict :
 
 La source de vérité est :
 
-- [supabase/migrations/V1__baseline.sql](../supabase/migrations/V1__baseline.sql)
+- [supabase/migrations](../supabase/migrations) (baseline `V1__baseline.sql` puis migrations incrémentales)
 
 Ne pas s’appuyer sur des modifications manuelles de schéma en production.
 
@@ -242,6 +242,65 @@ Pointer Flyway vers le même dossier de migrations :
 - toujours lancer `validate` avant `migrate`
 - ne pas charger les données de démonstration en production
 - ne pas modifier la base manuellement puis oublier de reporter le changement dans Flyway
+
+### Cas particulier : baseline d'une base existante (montée hors Flyway)
+
+Si la base distante a été initialisée par un autre canal que Flyway — typiquement
+via le MCP Supabase (`apply_migration`), via Studio, ou via `psql` direct — la
+table `flyway_schema_history` n'existe pas. Dans cet état, lancer
+`npm run db:flyway:migrate` échoue : Flyway voit une base non vide et refuse
+d'appliquer la baseline V1 par dessus.
+
+Pour réintégrer Flyway sans rejouer le schéma, baseliner la BD distante sur la
+dernière version déjà appliquée, puis reprendre le flux normal pour les versions
+suivantes.
+
+Définir les variables comme pour une migration distante classique :
+
+```powershell
+$env:FLYWAY_URL="jdbc:postgresql://db.<project-ref>.supabase.co:5432/postgres?sslmode=require"
+$env:FLYWAY_USER="postgres"
+$env:FLYWAY_PASSWORD="<database password>"
+```
+
+Puis baseliner sur la dernière version réellement présente dans la base. Exemple
+si V1 et V2 ont été appliquées via MCP et que la prochaine sera V3 :
+
+```bash
+flyway -locations=filesystem:supabase/migrations `
+       -url=$env:FLYWAY_URL -user=$env:FLYWAY_USER -password=$env:FLYWAY_PASSWORD `
+       -schemas=public `
+       baseline -baselineVersion=2 -baselineDescription="security_fixes"
+```
+
+Cette commande crée `flyway_schema_history` et y inscrit une entrée de baseline
+pour la version 2. Aucune DDL n'est rejouée.
+
+Vérifier ensuite :
+
+```bash
+npm run db:flyway:info
+```
+
+L'état attendu : V1 et V2 marquées `Baseline`/`Success`, V3+ en `Pending`.
+
+À partir de là, le flux standard reprend pour les évolutions suivantes :
+
+```bash
+npm run db:flyway:validate
+npm run db:flyway:migrate
+```
+
+Notes :
+
+- `-baselineVersion` doit correspondre à la dernière migration **réellement
+  présente** dans la base. Si seule V1 a été appliquée hors Flyway, baseliner sur
+  `1`. Si V1 et V2 ont été appliquées hors Flyway, baseliner sur `2`.
+- Cette opération est à faire **une seule fois par environnement**. Une fois
+  baselinée, la base distante suit le flux Flyway normal.
+- Tant que la base distante n'a pas été baselinée, les déploiements via
+  `npm run deploy:prod` doivent passer `-SkipMigrate` pour éviter l'échec
+  Flyway, comme indiqué au §12.
 
 ## 7. Déployer les Edge Functions
 

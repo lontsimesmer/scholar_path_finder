@@ -75,7 +75,7 @@ Notes :
 
 ## Versionnage du Schéma
 
-Le versionnage de la base est géré par Flyway depuis [supabase/migrations/V1__baseline.sql](../supabase/migrations/V1__baseline.sql).
+Le versionnage de la base est géré par Flyway depuis le dossier [supabase/migrations](../supabase/migrations). La baseline est [V1__baseline.sql](../supabase/migrations/V1__baseline.sql) ; les évolutions ultérieures sont ajoutées en `V2__*.sql`, `V3__*.sql`, etc.
 
 Appliquer le schéma après démarrage de Supabase local :
 

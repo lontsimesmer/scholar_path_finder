@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -26,6 +26,30 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -164,45 +188,6 @@ export type Database = {
         }
         Relationships: []
       }
-      flyway_schema_history: {
-        Row: {
-          checksum: number | null
-          description: string
-          execution_time: number
-          installed_by: string
-          installed_on: string
-          installed_rank: number
-          script: string
-          success: boolean
-          type: string
-          version: string | null
-        }
-        Insert: {
-          checksum?: number | null
-          description: string
-          execution_time: number
-          installed_by: string
-          installed_on?: string
-          installed_rank: number
-          script: string
-          success: boolean
-          type: string
-          version?: string | null
-        }
-        Update: {
-          checksum?: number | null
-          description?: string
-          execution_time?: number
-          installed_by?: string
-          installed_on?: string
-          installed_rank?: number
-          script?: string
-          success?: boolean
-          type?: string
-          version?: string | null
-        }
-        Relationships: []
-      }
       leads: {
         Row: {
           created_at: string
@@ -328,12 +313,14 @@ export type Database = {
           {
             foreignKeyName: "manual_payment_submissions_lead_id_fkey"
             columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "manual_payment_submissions_payment_transaction_id_fkey"
             columns: ["payment_transaction_id"]
+            isOneToOne: false
             referencedRelation: "payment_transactions"
             referencedColumns: ["id"]
           },
@@ -488,6 +475,7 @@ export type Database = {
           {
             foreignKeyName: "payment_transactions_lead_id_fkey"
             columns: ["lead_id"]
+            isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
@@ -531,12 +519,14 @@ export type Database = {
           {
             foreignKeyName: "student_admin_activity_logs_application_id_fkey"
             columns: ["application_id"]
+            isOneToOne: false
             referencedRelation: "student_applications"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "student_admin_activity_logs_document_id_fkey"
             columns: ["document_id"]
+            isOneToOne: false
             referencedRelation: "student_documents"
             referencedColumns: ["id"]
           },
@@ -683,6 +673,63 @@ export type Database = {
         }
         Relationships: []
       }
+      student_document_requests: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          description: string | null
+          fulfilled_at: string | null
+          fulfilled_document_id: string | null
+          id: string
+          requested_by: string | null
+          status: string
+          student_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          fulfilled_document_id?: string | null
+          id?: string
+          requested_by?: string | null
+          status?: string
+          student_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          description?: string | null
+          fulfilled_at?: string | null
+          fulfilled_document_id?: string | null
+          id?: string
+          requested_by?: string | null
+          status?: string
+          student_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_document_requests_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "student_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_document_requests_fulfilled_document_id_fkey"
+            columns: ["fulfilled_document_id"]
+            isOneToOne: false
+            referencedRelation: "student_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_documents: {
         Row: {
           admin_feedback: string | null
@@ -694,6 +741,7 @@ export type Database = {
           status: string
           student_id: string
           title: string
+          updated_at: string
         }
         Insert: {
           admin_feedback?: string | null
@@ -705,6 +753,7 @@ export type Database = {
           status?: string
           student_id: string
           title: string
+          updated_at?: string
         }
         Update: {
           admin_feedback?: string | null
@@ -716,11 +765,13 @@ export type Database = {
           status?: string
           student_id?: string
           title?: string
+          updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "student_documents_application_id_fkey"
             columns: ["application_id"]
+            isOneToOne: false
             referencedRelation: "student_applications"
             referencedColumns: ["id"]
           },

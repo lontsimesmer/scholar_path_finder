@@ -73,7 +73,7 @@ Ne pas stocker les secrets `CINETPAY_*` dans un fichier `.env` frontend.
 
 Pour ce dépôt :
 
-- les variables `VITE_*` vont dans `.env.local` pour l’application React
+- les variables `VITE_*` vont dans `.env` (cible distante par défaut) ou `.env.local` (override local pour la stack Supabase locale)
 - `CINETPAY_*` et `SITE_URL` vont dans l’environnement secret des `Supabase Functions`
 
 Le bon emplacement pour les secrets de paiement est donc :
