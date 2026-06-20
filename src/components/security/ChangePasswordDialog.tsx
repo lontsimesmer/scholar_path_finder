@@ -21,9 +21,15 @@ interface ChangePasswordDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const isInvalidCredentialsError = (message: string) => {
+  const lower = message.toLowerCase();
+  return lower.includes("invalid login credentials") || lower.includes("invalid grant");
+};
+
 export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialogProps) => {
   const text = useSecurityText();
   const { toast } = useToast();
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +37,7 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
 
   useEffect(() => {
     if (!open) {
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setShowPassword(false);
@@ -59,14 +66,50 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
       return;
     }
 
-    setIsSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
-    setIsSubmitting(false);
-
-    if (error) {
+    if (newPassword === currentPassword) {
       toast({
         title: text.errorTitle,
-        description: error.message || text.errorGeneric,
+        description: text.errorSameAsCurrent,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData.user?.email) {
+      setIsSubmitting(false);
+      toast({
+        title: text.errorTitle,
+        description: text.errorNoSession,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error: reauthError } = await supabase.auth.signInWithPassword({
+      email: userData.user.email,
+      password: currentPassword,
+    });
+    if (reauthError) {
+      setIsSubmitting(false);
+      const isWrong = isInvalidCredentialsError(reauthError.message);
+      toast({
+        title: text.errorTitle,
+        description: isWrong ? text.errorWrongCurrent : reauthError.message || text.errorGeneric,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    setIsSubmitting(false);
+
+    if (updateError) {
+      toast({
+        title: text.errorTitle,
+        description: updateError.message || text.errorGeneric,
         variant: "destructive",
       });
       return;
@@ -91,6 +134,20 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="current-password">{text.currentPasswordLabel}</Label>
+            <Input
+              id="current-password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              placeholder={text.currentPasswordPlaceholder}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="new-password">{text.newPasswordLabel}</Label>
             <div className="relative">

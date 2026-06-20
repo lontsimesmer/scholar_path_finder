@@ -6,6 +6,8 @@ export interface SecurityText {
   triggerLabel: string;
   dialogTitle: string;
   dialogDescription: string;
+  currentPasswordLabel: string;
+  currentPasswordPlaceholder: string;
   newPasswordLabel: string;
   newPasswordPlaceholder: string;
   confirmPasswordLabel: string;
@@ -20,6 +22,9 @@ export interface SecurityText {
   errorTitle: string;
   errorTooShort: string;
   errorMismatch: string;
+  errorWrongCurrent: string;
+  errorSameAsCurrent: string;
+  errorNoSession: string;
   errorGeneric: string;
 }
 
