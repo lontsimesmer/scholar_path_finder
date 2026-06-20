@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import { KeyRound, LogOut } from "lucide-react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import Footer from "@/components/Footer";
@@ -10,6 +11,8 @@ import { DashboardLoadingState } from "@/components/dashboard/DashboardLoadingSt
 import { DashboardProcedureOverviewCard } from "@/components/dashboard/DashboardProcedureOverviewCard";
 import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { DashboardProfileValidationDialog } from "@/components/dashboard/DashboardProfileValidationDialog";
+import { ChangePasswordDialog } from "@/components/security/ChangePasswordDialog";
+import { useSecurityText } from "@/components/security/security-text";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDashboard } from "@/hooks/use-dashboard";
@@ -23,6 +26,8 @@ const Dashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const dashboardText = t.dashboard as DashboardText;
+  const securityText = useSecurityText();
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const redirectAfterCompletion = sanitizeDashboardRedirect(searchParams.get("redirect"));
   const {
     actions,
@@ -97,15 +102,26 @@ const Dashboard = () => {
                     {dashboardText.subtitle}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => void actions.handleSignOut()}
-                  className="gap-2 rounded-xl text-muted-foreground transition-colors hover:bg-destructive/5 hover:text-destructive"
-                >
-                  <LogOut size={16} />
-                  {t.checkout.signOut}
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsPasswordDialogOpen(true)}
+                    className="gap-2 rounded-xl text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary"
+                  >
+                    <KeyRound size={16} />
+                    {securityText.triggerLabel}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => void actions.handleSignOut()}
+                    className="gap-2 rounded-xl text-muted-foreground transition-colors hover:bg-destructive/5 hover:text-destructive"
+                  >
+                    <LogOut size={16} />
+                    {t.checkout.signOut}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -179,6 +195,11 @@ const Dashboard = () => {
         onConfirm={actions.confirmProfileValidation}
         onOpenChange={setIsConfirmDialogOpen}
         text={dashboardText}
+      />
+
+      <ChangePasswordDialog
+        open={isPasswordDialogOpen}
+        onOpenChange={setIsPasswordDialogOpen}
       />
 
       <Footer />

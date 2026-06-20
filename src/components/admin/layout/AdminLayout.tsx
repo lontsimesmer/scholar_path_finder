@@ -1,9 +1,13 @@
+import { KeyRound } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { AdminCommandPalette } from "@/components/admin/layout/AdminCommandPalette";
 import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/layout/AdminTopbar";
+import { ChangePasswordDialog } from "@/components/security/ChangePasswordDialog";
+import { useSecurityText } from "@/components/security/security-text";
+import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { getAdminSession } from "@/lib/admin-session";
@@ -29,8 +33,10 @@ export const AdminLayout = ({
 }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const securityText = useSecurityText();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(skipAuthGuard);
 
@@ -108,7 +114,20 @@ export const AdminLayout = ({
         <AdminTopbar
           title={title}
           subtitle={subtitle}
-          actions={actions}
+          actions={
+            <>
+              {actions}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setPasswordDialogOpen(true)}
+                aria-label={securityText.dialogTitle}
+                title={securityText.dialogTitle}
+              >
+                <KeyRound className="h-4 w-4" />
+              </Button>
+            </>
+          }
           onOpenMobileNav={() => setMobileNavOpen(true)}
           onOpenCommand={() => setCommandOpen(true)}
         />
@@ -117,6 +136,7 @@ export const AdminLayout = ({
       </div>
 
       <AdminCommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+      <ChangePasswordDialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen} />
     </div>
   );
 };
