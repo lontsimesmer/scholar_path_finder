@@ -113,7 +113,7 @@ Important :
 - `src/i18n` : fournisseur de langue et fichiers de traduction.
 - `src/integrations/supabase` : client Supabase frontend et types générés.
 - `supabase/functions` : Edge Functions utilisées par les parcours leads, paiements et automatisations.
-- `supabase/migrations` : migrations SQL Flyway pour le schéma et les règles de sécurité. La baseline actuelle est `V1__baseline.sql`.
+- `supabase/migrations` : migrations SQL Flyway pour le schéma et les règles de sécurité. La baseline est `V1__baseline.sql` ; les évolutions suivantes sont versionnées en `V2__*.sql`, `V3__*.sql`, etc.
 - `docs` : guides d’onboarding, architecture, environnement local, production et tests.
 
 ## Notes Supabase
@@ -122,7 +122,7 @@ Important :
 - Les secrets serveur comme `SUPABASE_SERVICE_ROLE_KEY` restent dans l’environnement des fonctions Supabase.
 - Les Edge Functions liées au paiement sont configurées dans `supabase/config.toml`.
 - La stack Supabase locale démarre depuis la racine du dépôt avec `npm run db:supabase:start`.
-- Le versionnage du schéma est géré par Flyway depuis `supabase/migrations/V1__baseline.sql`.
+- Le versionnage du schéma est géré par Flyway depuis `supabase/migrations/` (baseline `V1__baseline.sql` puis migrations incrémentales `V2__*.sql`+).
 - Les commandes Flyway utilisent le binaire local `flyway` s’il est disponible, sinon l’image Docker `flyway/flyway`.
 
 Secrets CinetPay requis côté serveur :

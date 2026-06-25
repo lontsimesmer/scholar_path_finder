@@ -499,6 +499,33 @@ export const en = {
       "Keep your profile updated to help our advisors find the best opportunities for you.",
   },
 
+  // Security (change password dialog, reused in user dashboard and admin layout)
+  security: {
+    triggerLabel: "Password",
+    dialogTitle: "Change my password",
+    dialogDescription: "Enter your current password, then choose a new one with at least 8 characters. You will remain signed in on this device.",
+    currentPasswordLabel: "Current password",
+    currentPasswordPlaceholder: "Your current password",
+    newPasswordLabel: "New password",
+    newPasswordPlaceholder: "At least 8 characters",
+    confirmPasswordLabel: "Confirm new password",
+    confirmPasswordPlaceholder: "Re-type the new password",
+    showPasswordLabel: "Show password",
+    hidePasswordLabel: "Hide password",
+    submitLabel: "Update",
+    submittingLabel: "Updating...",
+    cancelLabel: "Cancel",
+    successTitle: "Password updated",
+    successDescription: "Your password has been changed successfully.",
+    errorTitle: "Error",
+    errorTooShort: "New password must contain at least 8 characters.",
+    errorMismatch: "The two new passwords do not match.",
+    errorWrongCurrent: "Current password is incorrect.",
+    errorSameAsCurrent: "New password must be different from the current one.",
+    errorNoSession: "Session expired. Sign in again to change your password.",
+    errorGeneric: "Failed to update password. Please try again.",
+  },
+
   // Login
   login: {
     title: "Sign In Required",

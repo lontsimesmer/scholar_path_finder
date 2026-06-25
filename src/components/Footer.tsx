@@ -84,7 +84,7 @@ const Footer = () => {
     {
       icon: MapPin,
       label: t.footer.officeLabel,
-      value: "FOUDA, derriere le FNE-Yaounde",
+      value: "FOUDA, derrière le FNE-Yaoundé",
       href: "https://www.google.com/maps/search/?api=1&query=FOUDA%2C%20derriere%20le%20FNE-Yaounde",
     },
   ];

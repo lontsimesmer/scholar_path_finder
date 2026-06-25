@@ -85,7 +85,7 @@ const LegalDocument = () => {
                   <div className="mt-3 space-y-2 text-sm leading-7 text-muted-foreground">
                     <p className="break-all">powerprestationint@gmail.com</p>
                     <p>+(237)674819411</p>
-                    <p>FOUDA, derriere le FNE-Yaounde</p>
+                    <p>FOUDA, derrière le FNE-Yaoundé</p>
                   </div>
                 </div>
               </div>

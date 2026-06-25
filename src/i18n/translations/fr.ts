@@ -20,7 +20,7 @@ export const fr = {
       "Accompagnement expert pour les étudiants à la recherche d'une éducation de classe mondiale à l'étranger. De la sélection universitaire aux demandes de bourses, nous vous accompagnons à chaque étape.",
     ctaPrimary: "Commencer Votre Parcours",
     ctaSecondary: "Explorer Nos Services",
-    advisoryLabel: "Accompagnement academique cible",
+    advisoryLabel: "Accompagnement académique cible",
     roadmapTitle: "Votre feuille de route",
     roadmapCopy:
       "Un parcours clair du diagnostic au dossier de candidature solide.",
@@ -135,13 +135,13 @@ export const fr = {
     subtitle:
       "Découvrez les parcours et destinations de ceux que nous avons accompagnés vers les meilleures universités mondiales.",
     germany: "Allemagne",
-    verifiedSuccess: "Succes confirme",
+    verifiedSuccess: "Succès confirmé",
     impactTitle: "Notre impact mondial",
     impactDescription:
-      "De Yaounde a Berlin, de Douala a Montreal, nous construisons des ponts entre les talents camerounais et l'excellence academique internationale.",
+      "De Yaoundé a Berlin, de Douala a Montréal, nous construisons des ponts entre les talents camerounais et l'excellence académique internationale.",
     stats: {
-      countries: "Pays vises",
-      universities: "Universites",
+      countries: "Pays visés",
+      universities: "Universités",
       visaSuccess: "Taux de visa",
       scholarships: "Bourses FCFA",
     },
@@ -216,12 +216,12 @@ export const fr = {
     titleHighlight: "Parcours",
     subtitle:
       "Contactez notre équipe pour votre consultation. Nous sommes là pour répondre à vos questions et vous aider à faire le premier pas vers vos objectifs d'éducation internationale.",
-    successRateSuffix: "de r?ussite",
+    successRateSuffix: "de réussite",
     info: {
       email: "Email",
       phone: "Téléphone",
       office: "Bureau",
-      officeValue: "FOUDA, derriere le FNE-Yaounde",
+      officeValue: "FOUDA, derrière le FNE-Yaoundé",
     },
     form: {
       title: "Envoyez-nous un Message",
@@ -236,7 +236,7 @@ export const fr = {
       message: "Votre Message",
       messagePlaceholder: "Parlez-nous de vos objectifs académiques...",
       submit: "Envoyer le Message",
-      privacyNote: "Consultation initiale - confidentialit? garantie",
+      privacyNote: "Consultation initiale - confidentialité garantie",
       errorTitle: "Erreur",
       errorMessage:
         "Impossible d'envoyer vos informations. Veuillez r?essayer.",
@@ -495,7 +495,7 @@ export const fr = {
     profileLockedAt: "Date de validation",
     errorTitle: "Erreur",
     advisorNoteLabel: "Note du conseiller",
-    stepLabel: "Etape",
+    stepLabel: "Étape",
     untitledDocument: "Document sans titre",
     advisorFeedback: "Retour du conseiller",
     targetCountryPlaceholder: "Ex: France, Canada...",
@@ -555,8 +555,8 @@ export const fr = {
     ctaTitle:
       "Transformez votre projet d'etudes a l'etranger en plan clair et concret.",
     ctaDescription:
-      "Echangez avec Power Prestation pour clarifier vos options, securiser vos prochaines etapes et passer d'une idee a une strategie de candidature structuree.",
-    ctaPrimary: "Reserver une consultation",
+      "Échangez avec Power Prestation pour clarifier vos options, sécuriser vos prochaines étapes et passer d'une idée a une stratégie de candidature structuree.",
+    ctaPrimary: "Réserver une consultation",
     ctaSecondary: "Voir nos services",
     contactTitle: "Contact",
     contactDescription:
@@ -616,7 +616,7 @@ export const fr = {
     verificationFailedDetails: "La verification du paiement a ?chou?.",
     contactPrompt: "Des questions Contactez-nous :",
     returnToCheckout: "Retour au paiement",
-    backHome: "Retour a l'accueil",
+    backHome: "Retour à l'accueil",
     success: {
       title: "Paiement confirm?",
       description:
@@ -686,46 +686,46 @@ export const fr = {
   },
 
   startProcedure: {
-    badge: "Proc?dure",
+    badge: "Procédure",
     title: "Soumettez votre",
-    titleHighlight: "proc?dure",
+    titleHighlight: "procédure",
     subtitle:
-      "Cette page est reservee aux ?tudiants connectes. Validez d'abord votre profil, puis soumettez votre demande avant de passer au paiement.",
+      "Cette page est réservée aux étudiants connectés. Validez d'abord votre profil, puis soumettez votre demande avant de passer au paiement.",
     backToDashboard: "Retour au dashboard",
-    loading: "Chargement de votre espace proc?dure...",
-    loadErrorTitle: "Impossible de charger la page proc?dure",
+    loading: "Chargement de votre espace procédure...",
+    loadErrorTitle: "Impossible de charger la page procédure",
     loadErrorDescription:
-      "Le profil ou le statut actuel de votre proc?dure n'a pas pu etre charge. Veuillez r?essayer.",
-    profileSummaryTitle: "Resume du profil",
+      "Le profil ou le statut actuel de votre procédure n'a pas pu être chargé. Veuillez réessayer.",
+    profileSummaryTitle: "Résumé du profil",
     fullName: "Nom complet",
     email: "Email",
-    profileRequiredTitle: "Completez d'abord votre profil",
+    profileRequiredTitle: "Complétez d'abord votre profil",
     profileRequiredDescription:
-      "Votre prenom, votre nom et votre date de naissance doivent etre valides avant de pouvoir soumettre votre proc?dure.",
-    profileRequiredAction: "Completer mon profil",
-    resumePaymentTitle: "Votre demande est deja soumise",
+      "Votre prénom, votre nom et votre date de naissance doivent être valides avant de pouvoir soumettre votre procédure.",
+    profileRequiredAction: "Compléter mon profil",
+    resumePaymentTitle: "Votre demande est déjà soumise",
     resumePaymentDescription:
-      "Une demande de proc?dure existe deja pour ce compte. Continuez directement vers le paiement au lieu de soumettre a nouveau.",
+      "Une demande de procédure existe déjà pour ce compte. Continuez directement vers le paiement au lieu de soumettre a nouveau.",
     resumePaymentAction: "Continuer vers le paiement",
-    pendingTitle: "Paiement en attente de verification",
+    pendingTitle: "Paiement en attente de vérification",
     pendingDescription:
-      "Votre paiement est deja en cours de verification. Il n'est pas necessaire de soumettre une nouvelle demande maintenant.",
-    activeTitle: "Proc?dure deja active",
+      "Votre paiement est déjà en cours de vérification. Il n'est pas nécessaire de soumettre une nouvelle demande maintenant.",
+    activeTitle: "Procédure déjà active",
     activeDescription:
       "Ce compte a déjà une procédure active. Revenez au tableau de bord pour continuer le suivi de votre dossier.",
     formTitle: "Soumission finale de la demande",
     formDescription:
-      "Confirmez vos coordonn?es et decrivez votre projet d'etudes. Une fois la demande soumise, vous serez redirige vers le paiement.",
-    phone: "Num?ro de t?l?phone",
+      "Confirmez vos coordonnées et decrivez votre projet d'études. Une fois la demande soumise, vous serez redirigé vers le paiement.",
+    phone: "Numéro de téléphone",
     phonePlaceholder: "674 819 411",
-    message: "Details de la proc?dure",
+    message: "Détails de la procédure",
     messagePlaceholder:
-      "Precisez le pays vise, le programme, votre parcours academique et toute contrainte importante a prendre en compte.",
-    submitAction: "Soumettre ma proc?dure",
-    submitSuccessTitle: "Proc?dure soumise",
+      "Précisez le pays visé, le programme, votre parcours académique et toute contrainte importante a prendre en compte.",
+    submitAction: "Soumettre ma procédure",
+    submitSuccessTitle: "Procédure soumise",
     submitSuccessDescription:
-      "Votre demande a bien ete enregistree. Vous pouvez maintenant poursuivre vers le paiement de la consultation.",
-    submitErrorTitle: "Impossible de soumettre la proc?dure",
+      "Votre demande a bien été enregistrée. Vous pouvez maintenant poursuivre vers le paiement de la consultation.",
+    submitErrorTitle: "Impossible de soumettre la procédure",
     submitErrorDescription:
       "Votre demande n'a pas pu etre soumise pour le moment. Veuillez r?essayer dans un instant.",
     nextStepsTitle: "Etapes suivantes",
@@ -735,7 +735,7 @@ export const fr = {
     nextStepsPayment:
       "R?glez les frais de consultation pour activer votre dossier.",
     supportHint:
-      "Besoin d'aide avant la soumission ? Contactez l'equipe sur WhatsApp ou par t?l?phone au +(237) 674 819 411.",
+      "Besoin d'aide avant la soumission ? Contactez l'équipe sur WhatsApp ou par téléphone au +(237) 674 819 411.",
   },
 
   adminSidebar: {
@@ -811,7 +811,7 @@ export const fr = {
     viewSite: "Voir le site",
     seoHealth: "SEO Health",
     optimizationOk: "Optimisation OK",
-    settings: "Paramètres",
+    settings: "Paramètrès",
     pricing: {
       title: "Prix de la consultation",
       description:
@@ -1367,32 +1367,32 @@ export const fr = {
   legal: {
     documents: {
       privacy: {
-        title: "Politique de confidentialit?",
+        title: "Politique de confidentialité",
         summary:
-          "Un document public complet de confidentialit? n'est pas encore publie dans l'application. Pour toute demande liee aux donnees personnelles ou au traitement des leads, contactez directement l'equipe.",
+          "Un document public complet de confidentialité n'est pas encore publié dans l'application. Pour toute demande liée aux données personnelles ou au traitement des leads, contactez directement l'équipe.",
       },
       terms: {
         title: "Conditions d'utilisation",
         summary:
-          "Un document public complet sur les conditions d'utilisation n'est pas encore publie dans l'application. Pour toute question sur les services, le paiement ou les conditions de consultation, contactez directement l'equipe.",
+          "Un document public complet sur les conditions d'utilisation n'est pas encore publié dans l'application. Pour toute question sur les services, le paiement ou les conditions de consultation, contactez directement l'équipe.",
       },
       cookies: {
         title: "Politique de cookies",
         summary:
-          "Un document public complet sur les cookies n'est pas encore publie dans l'application. Si vous avez besoin d'informations sur l'analytics, le stockage ou le traitement des donnees navigateur, contactez directement l'equipe.",
+          "Un document public complet sur les cookies n'est pas encore publié dans l'application. Si vous avez besoin d'informations sur l'analytics, le stockage ou le traitement des données navigateur, contactez directement l'équipe.",
       },
     },
     notFoundBadge: "Document legal",
     notFoundTitle: "Document introuvable",
-    notFoundDescription: "La page legale demandee n'est pas disponible.",
-    backHome: "Retour a l'accueil",
+    notFoundDescription: "La page legale demandée n'est pas disponible.",
+    backHome: "Retour à l'accueil",
     back: "Retour",
     currentStatus: "Statut actuel",
     currentStatusCopy:
       "Cette page est un contenu public temporaire pendant la preparation du texte legal definitif.",
     contactTitle: "Contact",
-    contactTeam: "Contacter l'equipe",
-    returnHome: "Retourner a l'accueil",
+    contactTeam: "Contacter l'équipe",
+    returnHome: "Retourner à l'accueil",
   },
 };
 
@@ -1516,30 +1516,30 @@ frCheckoutPayment.payWithCinetpayMobileMoney = "Continuer vers Mobile Money";
 frCheckoutPayment.redirectingToGateway = "Redirection vers CinetPay...";
 
 (fr.paymentSuccess as FrPaymentSuccessExtensions).cinetpayPendingDetails =
-  "Le paiement a ?t? initie, mais la confirmation CinetPay n'est pas encore remontee. Nous reverifions automatiquement la transaction.";
+  "Le paiement a été initié, mais la confirmation CinetPay n'est pas encore remontée. Nous revérifions automatiquement la transaction.";
 
 const frDashboard = fr.dashboard as FrDashboardExtensions;
 frDashboard.noActiveProcedureTitle = "Aucune procédure active";
 frDashboard.noActiveProcedureDescription =
-  "Votre compte est bien cr??, mais aucun dossier n'est encore en cours. Commencez par envoyer le formulaire de contact pour ouvrir officiellement votre demande.";
+  "Votre compte est bien créé, mais aucun dossier n'est encore en cours. Commencez par envoyer le formulaire de contact pour ouvrir officiellement votre demande.";
 frDashboard.noActiveProcedureHelper =
-  "Vous pouvez completer votre profil des maintenant, mais il ne deviendra obligatoire qu'une fois votre demande de contact soumise.";
+  "Vous pouvez compléter votre profil des maintenant, mais il ne deviendra obligatoire qu'une fois votre demande de contact soumise.";
 frDashboard.startProcedure = "Démarrer ma procédure";
 frDashboard.procedureStatusTitle = "Statut de la procédure";
 frDashboard.paymentRequiredTitle = "Paiement de consultation en attente";
 frDashboard.paymentRequiredDescription =
-  "Votre demande a bien ete recue. Le paiement de la consultation est la prochaine etape pour lancer la proc?dure.";
+  "Votre demande a bien été reçue. Le paiement de la consultation est la prochaine étape pour lancer la procédure.";
 frDashboard.paymentPendingTitle = "Paiement en cours de confirmation";
 frDashboard.paymentPendingDescription =
-  "Votre paiement a ?t? initie. Nous attendons encore la confirmation definitive avant d'activer la suite de votre dossier.";
+  "Votre paiement a été initié. Nous attendons encore la confirmation définitive avant d'activer la suite de votre dossier.";
 frDashboard.paymentConfirmedTitle = "Paiement confirmé";
 frDashboard.paymentConfirmedDescription =
-  "Votre paiement est confirme. L'equipe peut maintenant poursuivre le traitement de votre dossier.";
+  "Votre paiement est confirmé. L'équipe peut maintenant poursuivre le traitement de votre dossier.";
 frDashboard.proceedToPayment = "Acceder au paiement";
 frDashboard.completeProfileForPayment =
   "Completez et validez votre profil avant de payer.";
 frDashboard.paymentAvailableAfterProfile =
-  "Le lien de paiement sera disponible ici des que votre profil aura ?t? valide.";
+  "Le lien de paiement sera disponible ici dès que votre profil aura été validé.";
 frDashboard.procedureStartedBadge = "Procédure active";
 frDashboard.noActiveProcedureBadge = "Aucune demande";
 frDashboard.paymentPendingBadge = "Confirmation en attente";
@@ -1551,27 +1551,27 @@ frContactForm.passwordPlaceholder = "Creez votre mot de passe";
 frContactForm.confirmPassword = "Confirmer le mot de passe";
 frContactForm.confirmPasswordPlaceholder = "Retapez votre mot de passe";
 frContactForm.createAccountHint =
-  "En envoyant cette demande, votre compte ?tudiant sera cr?? automatiquement afin que vous puissiez suivre la suite de votre proc?dure.";
+  "En envoyant cette demande, votre compte étudiant sera créé automatiquement afin que vous puissiez suivre la suite de votre procédure.";
 frContactForm.signedInHint =
-  "Vous etes connecte. Envoyez maintenant votre demande officielle pour ouvrir votre proc?dure.";
+  "Vous êtes connecté. Envoyez maintenant votre demande officielle pour ouvrir votre procédure.";
 frContactForm.existingAccountTitle = "Compte existant detecte";
 frContactForm.existingAccountDescription =
-  "Un compte existe deja avec cette adresse email. Connectez-vous pour reprendre votre demande sans perdre vos informations.";
-frContactForm.accountCreatedTitle = "Compte cr??";
+  "Un compte existe déjà avec cette adresse email. Connectez-vous pour reprendre votre demande sans perdre vos informations.";
+frContactForm.accountCreatedTitle = "Compte créé";
 frContactForm.accountCreatedDescription =
-  "Votre compte a ?t? cr?? et votre demande a ?t? enregistree. Completez maintenant le reste de votre profil.";
-frContactForm.completeProfileTitle = "Completez d'abord votre profil";
+  "Votre compte a été créé et votre demande a été enregistrée. Complétez maintenant le reste de votre profil.";
+frContactForm.completeProfileTitle = "Complétez d'abord votre profil";
 frContactForm.completeProfileDescription =
-  "Avant d'envoyer votre demande de proc?dure depuis votre compte, votre profil doit etre complete et valide.";
-frContactForm.completeProfileAction = "Completer mon profil";
+  "Avant d'envoyer votre demande de procédure depuis votre compte, votre profil doit être complète et valide.";
+frContactForm.completeProfileAction = "Compléter mon profil";
 frContactForm.submitProcedure = "Envoyer ma demande";
 frContactForm.createAccountAndSubmit = "Creer mon compte et envoyer";
 frContactForm.passwordMismatchTitle = "Mots de passe differents";
 frContactForm.passwordMismatchDescription =
-  "Le mot de passe et sa confirmation doivent etre identiques.";
+  "Le mot de passe et sa confirmation doivent être identiques.";
 frContactForm.passwordRequiredTitle = "Mot de passe requis";
 frContactForm.passwordRequiredDescription =
-  "Choisissez un mot de passe pour cr?er automatiquement votre compte.";
+  "Choisissez un mot de passe pour créer automatiquement votre compte.";
 
 fr.contact.title = "Prêt à Commencer Votre";
 fr.contact.titleHighlight = "Parcours ";
@@ -1779,7 +1779,7 @@ fr.adminDashboard.publishedPosts = "Articles Publiés";
 fr.adminDashboard.blogDescription =
   "Rédigez de nouveaux guides, modifiez les articles existants ou masquez les brouillons.";
 fr.adminDashboard.manageBlogs = "Gérer le blog";
-fr.adminDashboard.settings = "Paramètres";
+fr.adminDashboard.settings = "Paramètrès";
 
 fr.adminBlog.saveSuccessTitle = "Succès";
 fr.adminBlog.saveSuccessDescription = "Article bilingue enregistré.";
@@ -2035,7 +2035,7 @@ frLoginVerification.verificationRequiredTitle = "Terminez la vérification";
 frLoginVerification.verificationRequiredDescription =
   "Ce compte doit encore valider un code avant de pouvoir accéder au portail.";
 
-(fr as typeof fr & { verification: Record<string, string> }).verification = {
+(fr as typeof fr & { vérification: Record<string, string> }).vérification = {
   title: "Confirmez votre email et votre téléphone",
   subtitle:
     "Utilisez les codes envoyés avant d'ouvrir le portail étudiant. Le parcours reste désactivé tant que les flags serveur ne sont pas activés.",
