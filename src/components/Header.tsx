@@ -31,7 +31,9 @@ const Header = () => {
     // Auth check
     const checkAuth = async () => {
       logger.info("Checking header auth session");
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         logger.info("Header session found", { userId: session.user.id });
         setUser({ id: session.user.id, email: session.user.email });
@@ -41,7 +43,9 @@ const Header = () => {
           .eq("email", session.user.email)
           .maybeSingle();
 
-        logger.info("Header admin status resolved", { isAdmin: Boolean(admin) });
+        logger.info("Header admin status resolved", {
+          isAdmin: Boolean(admin),
+        });
         setIsAdmin(!!admin);
       } else {
         logger.info("No active session in header");
@@ -52,8 +56,13 @@ const Header = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      logger.info("Header auth state changed", { event, hasSession: Boolean(session) });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      logger.info("Header auth state changed", {
+        event,
+        hasSession: Boolean(session),
+      });
 
       if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") {
         return;
@@ -80,7 +89,10 @@ const Header = () => {
   const navLinks = [
     { href: isHomePage ? "#services" : "/#services", label: t.nav.services },
     { href: isHomePage ? "#about" : "/#about", label: t.nav.aboutUs },
-    { href: isHomePage ? "#how-it-works" : "/#how-it-works", label: t.nav.howItWorks },
+    {
+      href: isHomePage ? "#how-it-works" : "/#how-it-works",
+      label: t.nav.howItWorks,
+    },
     { href: isHomePage ? "#faq" : "/#faq", label: t.nav.faq },
     { href: "/blog", label: t.nav.blog, isInternal: true },
   ];
@@ -114,7 +126,7 @@ const Header = () => {
 
             <div className="hidden xl:flex flex-1 justify-center px-2">
               <nav className="flex items-center rounded-full border border-border/40 bg-secondary/40 px-1 py-1 shadow-sm min-w-max">
-                {navLinks.map((link) => (
+                {navLinks.map((link) =>
                   link.isInternal ? (
                     <Link
                       key={link.href}
@@ -131,8 +143,8 @@ const Header = () => {
                     >
                       {link.label}
                     </a>
-                  )
-                ))}
+                  ),
+                )}
               </nav>
             </div>
 
@@ -143,7 +155,7 @@ const Header = () => {
                 {user ? (
                   <NotificationsBell
                     userId={isAdmin ? null : user.id}
-                    adminEmail={isAdmin ? user.email ?? null : null}
+                    adminEmail={isAdmin ? (user.email ?? null) : null}
                   />
                 ) : null}
 
@@ -154,7 +166,11 @@ const Header = () => {
                   >
                     <User size={14} />
                     <span className="hidden xl:inline">
-                      {isAdmin ? "Admin Hub" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                      {isAdmin
+                        ? "Admin Hub"
+                        : language === "fr"
+                          ? "Mon Dossier"
+                          : "My Portal"}
                     </span>
                   </Link>
                 ) : (
@@ -167,10 +183,15 @@ const Header = () => {
                   </Link>
                 )}
               </div>
-              <Button asChild className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center">
-                <a href={isHomePage ? "#contact" : "/#contact"}>{t.nav.contactUs}</a>
+              <Button
+                asChild
+                className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center"
+              >
+                <a href={isHomePage ? "#contact" : "/#contact"}>
+                  {t.nav.contactUs}
+                </a>
               </Button>
-              
+
               <div className="xl:hidden">
                 <button
                   type="button"
@@ -186,14 +207,14 @@ const Header = () => {
 
           {isMenuOpen && (
             <div className="xl:hidden pb-4 animate-fade-in">
-              <div className="rounded-[1.5rem] border border-white/70 bg-white/92 p-4 shadow-medium">
-                <nav className="flex flex-col gap-2">
-                  {navLinks.map((link) => (
+              <div className="rounded-[1.5rem] border border-white/70 bg-white/92 p-4 shadow-medium max-h-[calc(100vh-6rem)] overflow-y-auto">
+                <nav className="flex flex-col gap-2 min-w-0">
+                  {navLinks.map((link) =>
                     link.isInternal ? (
                       <Link
                         key={link.href}
                         to={link.href}
-                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
+                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 break-words transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
@@ -202,14 +223,20 @@ const Header = () => {
                       <a
                         key={link.href}
                         href={link.href}
-                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
+                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 break-words transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
                       </a>
-                    )
-                  ))}
+                    ),
+                  )}
                   <div className="h-px bg-border/40 my-2" />
+                  <div className="px-4">
+                    <div className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground/70">
+                      {language === "fr" ? "Langue" : "Language"}
+                    </div>
+                    <LanguageSwitcher />
+                  </div>
                   {user ? (
                     <Link
                       to={isAdmin ? "/admin/crm" : "/dashboard"}
@@ -217,7 +244,11 @@ const Header = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <User size={18} />
-                      {isAdmin ? "Admin CRM" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                      {isAdmin
+                        ? "Admin CRM"
+                        : language === "fr"
+                          ? "Mon Dossier"
+                          : "My Portal"}
                     </Link>
                   ) : (
                     <Link
@@ -229,8 +260,15 @@ const Header = () => {
                       {t.login.signInTab}
                     </Link>
                   )}
-                  <Button variant="outline" className="mt-3 w-full text-center" asChild>
-                    <a href={isHomePage ? "#contact" : "/#contact"} onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="mt-3 w-full text-center"
+                    asChild
+                  >
+                    <a
+                      href={isHomePage ? "#contact" : "/#contact"}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
                       {t.nav.contactUs}
                     </a>
                   </Button>

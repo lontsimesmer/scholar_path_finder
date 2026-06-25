@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -9,35 +9,35 @@
     /* Primary Blue from logo */
     --primary: 223 62% 53%;
     --primary-foreground: 0 0% 100%;
-    
+
     /* Deep Navy for contrast */
     --navy: 222 49% 12%;
     --navy-foreground: 210 40% 98%;
-    
+
     /* Background & Foreground */
     --background: 220 45% 98%;
     --foreground: 222 47% 11%;
-    
+
     /* Cards */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-    
+
     /* Popover */
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    
+
     /* Secondary - Light blue tint */
     --secondary: 220 56% 96%;
     --secondary-foreground: 223 58% 42%;
-    
+
     /* Muted */
     --muted: 220 32% 95%;
     --muted-foreground: 220 14% 42%;
-    
+
     /* Accent - Golden warm */
     --accent: 40 90% 55%;
     --accent-foreground: 0 0% 100%;
-    
+
     /* Success Green */
     --success: 158 64% 42%;
     --success-foreground: 0 0% 100%;
@@ -49,26 +49,44 @@
     /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    
+
     /* Border & Input */
     --border: 219 26% 88%;
     --input: 219 26% 88%;
     --ring: 224 60% 55%;
-    
+
     --radius: 1rem;
-    
+
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(223 62% 53%) 0%, hsl(214 72% 45%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(222 49% 12% / 0.88) 0%, hsl(222 49% 12% / 0.52) 52%, hsl(222 49% 12% / 0.86) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.98) 0%, hsl(220 55% 98%) 55%, hsl(217 58% 95%) 100%);
-    --gradient-panel: linear-gradient(160deg, hsl(0 0% 100% / 0.96) 0%, hsl(220 50% 98% / 0.94) 100%);
-    
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(223 62% 53%) 0%,
+      hsl(214 72% 45%) 100%
+    );
+    --gradient-hero: linear-gradient(
+      180deg,
+      hsl(222 49% 12% / 0.88) 0%,
+      hsl(222 49% 12% / 0.52) 52%,
+      hsl(222 49% 12% / 0.86) 100%
+    );
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(0 0% 100% / 0.98) 0%,
+      hsl(220 55% 98%) 55%,
+      hsl(217 58% 95%) 100%
+    );
+    --gradient-panel: linear-gradient(
+      160deg,
+      hsl(0 0% 100% / 0.96) 0%,
+      hsl(220 50% 98% / 0.94) 100%
+    );
+
     /* Shadows */
     --shadow-sm: 0 10px 30px -18px hsl(223 62% 24% / 0.22);
     --shadow-md: 0 20px 60px -26px hsl(223 62% 22% / 0.28);
     --shadow-lg: 0 28px 90px -32px hsl(223 62% 18% / 0.34);
     --shadow-glow: 0 0 50px hsl(223 62% 53% / 0.24);
-    
+
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -125,17 +143,33 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     background-image:
-      radial-gradient(circle at top left, hsl(223 62% 53% / 0.14), transparent 32%),
-      radial-gradient(circle at 85% 12%, hsl(40 90% 55% / 0.1), transparent 22%),
+      radial-gradient(
+        circle at top left,
+        hsl(223 62% 53% / 0.14),
+        transparent 32%
+      ),
+      radial-gradient(
+        circle at 85% 12%,
+        hsl(40 90% 55% / 0.1),
+        transparent 22%
+      ),
       linear-gradient(180deg, hsl(var(--background)) 0%, hsl(220 46% 99%) 100%);
     min-height: 100vh;
-    overflow-x: clip;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Playfair Display", serif;
   }
 
   ::selection {
@@ -146,26 +180,26 @@
 
 @layer components {
   .section-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-w-0;
   }
-  
+
   .section-padding {
-    @apply py-20 md:py-28;
+    @apply py-16 md:py-28;
   }
 
   .section-shell {
     @apply relative overflow-hidden;
   }
-  
+
   .gradient-text {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
   }
-  
+
   .card-hover {
     @apply transition-all duration-500 hover:-translate-y-1.5 hover:shadow-strong;
   }
-  
+
   .glass-effect {
     @apply border border-white/55 backdrop-blur-xl bg-white/72 shadow-medium;
   }
@@ -215,7 +249,11 @@
     height: 26rem;
     top: -10rem;
     right: -6rem;
-    background: radial-gradient(circle, hsl(223 62% 53% / 0.14) 0%, transparent 68%);
+    background: radial-gradient(
+      circle,
+      hsl(223 62% 53% / 0.14) 0%,
+      transparent 68%
+    );
   }
 
   .page-shell::after {
@@ -223,7 +261,11 @@
     height: 20rem;
     bottom: -7rem;
     left: -4rem;
-    background: radial-gradient(circle, hsl(40 90% 55% / 0.12) 0%, transparent 68%);
+    background: radial-gradient(
+      circle,
+      hsl(40 90% 55% / 0.12) 0%,
+      transparent 68%
+    );
   }
 
   .section-kicker {
@@ -233,11 +275,13 @@
   .section-title {
     @apply font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl;
     text-wrap: balance;
+    word-break: break-word;
   }
 
   .section-copy {
     @apply text-base leading-7 text-muted-foreground sm:text-lg;
     text-wrap: pretty;
+    word-break: break-word;
   }
 
   .surface-card {
@@ -245,9 +289,19 @@
     @apply rounded-[1.5rem] border border-white/70 bg-card/95 shadow-medium backdrop-blur-sm;
   }
 
+  img,
+  picture,
+  video,
+  iframe,
+  canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
   .surface-panel {
     background-image: var(--gradient-panel);
-    @apply rounded-[1.75rem] border border-white/70 bg-card/90 shadow-strong backdrop-blur-sm;
+    @apply rounded-[1.75rem] border border-white/70 bg-card/90 shadow-strong backdrop-blur-sm min-w-0;
   }
 
   .surface-panel-dark {
@@ -347,13 +401,22 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -390,8 +453,12 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes numberIn {

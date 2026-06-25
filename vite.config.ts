@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 const manualChunks = (id: string) => {
   if (!id.includes("node_modules")) {
     return undefined;
@@ -48,7 +50,7 @@ export default defineConfig(() => ({
       overlay: false,
     },
   },
-  plugins: [react()],
+  plugins: [react(), cloudflare()],
   build: {
     rollupOptions: {
       output: {

@@ -12,10 +12,10 @@ shadow_port = 15420
 major_version = 17
 
 [db.migrations]
-enabled = true
+enabled = false
 
 [db.seed]
-enabled = true
+enabled = false
 sql_paths = ["./seed.sql"]
 
 [studio]

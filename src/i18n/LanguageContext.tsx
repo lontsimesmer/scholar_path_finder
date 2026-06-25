@@ -6,22 +6,24 @@ const isSupportedLanguage = (value: string | null): value is Language =>
 
 const getInitialLanguage = (): Language => {
   if (typeof window === "undefined") {
-    return "en";
+    return "fr";
   }
 
   try {
     const saved = window.localStorage.getItem("language");
-    return isSupportedLanguage(saved) ? saved : "en";
+    return isSupportedLanguage(saved) ? saved : "fr";
   } catch {
-    return "en";
+    return "fr";
   }
 };
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
   const setLanguage = (lang: Language) => {
-    const nextLanguage = isSupportedLanguage(lang) ? lang : "en";
+    const nextLanguage = isSupportedLanguage(lang) ? lang : "fr";
 
     setLanguageState(nextLanguage);
 
