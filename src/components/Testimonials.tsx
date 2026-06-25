@@ -10,23 +10,29 @@ const Testimonials = () => {
   const stories = [
     {
       ...t.testimonials.items[0],
-      image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&q=80&w=1200",
+      image:
+        "https://www.image2url.com/r2/default/images/1782382864628-5a852ee8-ced3-40cf-84e6-932b9b00646e.webp",
       country: "France",
     },
     {
       ...t.testimonials.items[1],
-      image: "https://images.unsplash.com/photo-1564934304048-eb9410d647d3?auto=format&fit=crop&q=80&w=1200",
+      image:
+        "https://www.image2url.com/r2/default/images/1782383497656-d26b0fb4-8d21-439b-be2b-7ba3509341f1.jpg",
       country: "Canada",
     },
     {
       ...t.testimonials.items[2],
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200",
+      image:
+        "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200",
       country: t.testimonials.germany,
     },
   ];
 
   return (
-    <section id="testimonials" className="relative overflow-hidden bg-secondary/10 section-padding">
+    <section
+      id="testimonials"
+      className="relative overflow-hidden bg-secondary/10 section-padding"
+    >
       <div className="section-container relative z-10 space-y-16">
         <ScrollReveal animation="fade-in">
           <SectionHeading
@@ -39,7 +45,11 @@ const Testimonials = () => {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {stories.map((story, index) => (
-            <ScrollReveal key={story.name} animation="slide-up" delay={index * 100}>
+            <ScrollReveal
+              key={story.name}
+              animation="slide-up"
+              delay={index * 100}
+            >
               <Card className="group h-full overflow-hidden rounded-[2.5rem] border-border/40 bg-white shadow-none transition-all duration-500 hover:shadow-strong">
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <img
@@ -60,7 +70,9 @@ const Testimonials = () => {
                       <GraduationCap className="h-5 w-5" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-display text-lg font-bold leading-none text-foreground">{story.name}</h4>
+                      <h4 className="font-display text-lg font-bold leading-none text-foreground">
+                        {story.name}
+                      </h4>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
                         {story.role}
                       </p>

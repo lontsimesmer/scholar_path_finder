@@ -22,10 +22,12 @@ export const fr = {
     ctaSecondary: "Explorer Nos Services",
     advisoryLabel: "Accompagnement academique cible",
     roadmapTitle: "Votre feuille de route",
-    roadmapCopy: "Un parcours clair du diagnostic au dossier de candidature solide.",
+    roadmapCopy:
+      "Un parcours clair du diagnostic au dossier de candidature solide.",
     focusTitle: "La ou nous creons le plus de valeur",
     proofTitle: "Execution fiable",
-    proofCopy: "Des prochaines etapes claires, un suivi rapide et un accompagnement jusqu'a l'arrivee.",
+    proofCopy:
+      "Des prochaines etapes claires, un suivi rapide et un accompagnement jusqu'a l'arrivee.",
     stats: {
       countries: "Années",
       studentsPlaced: "Étudiants Placés",
@@ -99,7 +101,8 @@ export const fr = {
     badge: "Comment Ça Marche",
     title: "Votre Parcours vers le",
     titleHighlight: "Succès",
-    subtitle: "Notre processus éprouvé a aidé des centaines d'étudiants à réaliser leurs rêves d'études à l'étranger.",
+    subtitle:
+      "Notre processus éprouvé a aidé des centaines d'étudiants à réaliser leurs rêves d'études à l'étranger.",
     steps: {
       consultation: {
         title: "Consultation Initiale",
@@ -157,7 +160,7 @@ export const fr = {
       },
       {
         name: "Doctorat Recherche",
-        role: "TU Berlin, Allemagne",
+        role: "Berlin, Allemagne",
         content:
           "Conseils sur la rédaction du projet de recherche et mise en relation avec les laboratoires d'accueil.",
       },
@@ -169,7 +172,8 @@ export const fr = {
     badge: "FAQ",
     title: "Questions",
     titleHighlight: "Fréquentes",
-    subtitle: "Trouvez des réponses aux questions courantes sur nos services et notre processus.",
+    subtitle:
+      "Trouvez des réponses aux questions courantes sur nos services et notre processus.",
     empty: "Aucune question fréquente publiée pour le moment.",
     items: [
       {
@@ -234,9 +238,11 @@ export const fr = {
       submit: "Envoyer le Message",
       privacyNote: "Consultation initiale - confidentialit? garantie",
       errorTitle: "Erreur",
-      errorMessage: "Impossible d'envoyer vos informations. Veuillez r?essayer.",
+      errorMessage:
+        "Impossible d'envoyer vos informations. Veuillez r?essayer.",
       successTitle: "Message Envoyé!",
-      successMessage: "Merci de nous avoir contactés. Nous vous répondrons sous peu.",
+      successMessage:
+        "Merci de nous avoir contactés. Nous vous répondrons sous peu.",
     },
   },
 
@@ -244,13 +250,15 @@ export const fr = {
   checkout: {
     title: "Finalisez Votre Inscription",
     titleHighlight: "Inscription",
-    subtitle: "Sécurisez votre consultation et commencez votre session de planification académique guidée avec l'équipe Power Prestation.",
+    subtitle:
+      "Sécurisez votre consultation et commencez votre session de planification académique guidée avec l'équipe Power Prestation.",
     signedInAs: "Connecté en tant que",
     signOut: "Déconnexion",
     packageTitle: "Forfait Consultation",
     packagePrice: "25$",
     packageCurrency: "USD",
-    packageDescription: "Paiement unique pour votre consultation initiale et votre forfait d'accompagnement sur mesure.",
+    packageDescription:
+      "Paiement unique pour votre consultation initiale et votre forfait d'accompagnement sur mesure.",
     whatIncluded: "Ce qui est inclus dans votre consultation",
     benefits: {
       expert: "Consultation individuelle avec un expert",
@@ -267,40 +275,48 @@ export const fr = {
       "Session Q&R avec notre expert",
     ],
     guaranteeTitle: "Garantie Satisfait ou Remboursé",
-    guaranteeDescription: "Pas satisfait ? Obtenez un remboursement complet sous 7 jours.",
+    guaranteeDescription:
+      "Pas satisfait ? Obtenez un remboursement complet sous 7 jours.",
     questions: "Des questions ? Contactez-nous :",
     selectPayment: "Sélectionnez le mode de paiement",
     methods: {
       mobileMoney: {
         title: "Mobile Money",
-        description: "MTN Mobile Money ou Orange Money pour les paiements locaux.",
+        description:
+          "MTN Mobile Money ou Orange Money pour les paiements locaux.",
       },
       card: {
         title: "Carte Bancaire",
-        description: "Paiement sécurisé via CinetPay avec les cartes internationales.",
+        description:
+          "Paiement sécurisé via CinetPay avec les cartes internationales.",
       },
     },
     paymentDetails: {
       card: {
         title: "Paiement par Carte",
-        description: "Payez en toute sécurité via CinetPay avec Visa, Mastercard ou toute autre carte majeure.",
+        description:
+          "Payez en toute sécurité via CinetPay avec Visa, Mastercard ou toute autre carte majeure.",
       },
       mobileMoney: {
         title: "Paiement Mobile Money",
-        description: "Payez en toute sécurité via MTN Mobile Money ou Orange Money.",
+        description:
+          "Payez en toute sécurité via MTN Mobile Money ou Orange Money.",
       },
     },
-    terms: "En complétant cet achat, vous acceptez nos Conditions d'Utilisation et notre Politique de Confidentialité.",
+    terms:
+      "En complétant cet achat, vous acceptez nos Conditions d'Utilisation et notre Politique de Confidentialité.",
     manualOrangeMoney: {
       cardTitle: "Paiement Orange Money",
-      cardSubtitle: "Envoyez le montant indiqué puis téléversez le reçu pour validation manuelle.",
+      cardSubtitle:
+        "Envoyez le montant indiqué puis téléversez le reçu pour validation manuelle.",
       accountLabel: "Envoyer à",
       amountLabel: "Montant",
       step1: "Composez #150# ou ouvrez l'application Orange Money.",
       step2: "Envoyez 15 625 XAF au +237 698 090 6123 (PETNJI).",
       step3: "Téléversez la capture du SMS de confirmation ci-dessous.",
       uploadTitle: "Reçu de paiement",
-      uploadHelper: "Capture d'écran ou PDF (PNG, JPG, WEBP ou PDF, 5 Mo maximum).",
+      uploadHelper:
+        "Capture d'écran ou PDF (PNG, JPG, WEBP ou PDF, 5 Mo maximum).",
       senderNameLabel: "Nom de l'émetteur",
       senderNamePlaceholder: "Nom utilisé sur Orange Money",
       senderPhoneLabel: "Numéro émetteur",
@@ -317,13 +333,15 @@ export const fr = {
       submitSuccessDescription:
         "Votre preuve est en attente de validation. Vous serez notifié dès l'approbation.",
       submitErrorTitle: "Soumission impossible",
-      submitErrorGeneric: "La soumission n'a pas pu aboutir. Veuillez réessayer.",
+      submitErrorGeneric:
+        "La soumission n'a pas pu aboutir. Veuillez réessayer.",
       submitErrorMissingLead: "Le dossier de paiement est introuvable.",
       submitErrorMissingReceipt: "Vous devez joindre la capture du reçu.",
       submitErrorMissingSenderIdentity:
         "Le nom et le numéro de l'émetteur sont obligatoires.",
       submitErrorTooLarge: "Le fichier dépasse 5 Mo.",
-      submitErrorWrongFormat: "Format non supporté (PNG, JPG, WEBP ou PDF uniquement).",
+      submitErrorWrongFormat:
+        "Format non supporté (PNG, JPG, WEBP ou PDF uniquement).",
       submitErrorAlreadyPending:
         "Une preuve est déjà en cours de validation pour ce dossier.",
       submitErrorAlreadyPaid: "Ce dossier est déjà marqué comme payé.",
@@ -347,17 +365,22 @@ export const fr = {
     backToHome: "Retour à l'accueil",
     backToDashboard: "Retour au tableau de bord",
     unavailableTitle: "Paiement indisponible",
-    unavailableDescription: "Veuillez commencer par le formulaire de contact afin que nous puissions lier votre paiement à votre dossier.",
+    unavailableDescription:
+      "Veuillez commencer par le formulaire de contact afin que nous puissions lier votre paiement à votre dossier.",
     profileRequiredTitle: "Profil à valider",
-    profileRequiredDescription: "Renseignez puis confirmez votre prénom, votre nom et votre date de naissance avant de continuer vers le paiement.",
+    profileRequiredDescription:
+      "Renseignez puis confirmez votre prénom, votre nom et votre date de naissance avant de continuer vers le paiement.",
     loading: "Préparation de votre paiement sécurisé...",
     payment: {
       missingLeadTitle: "Dossier de paiement introuvable",
-      missingLeadDescription: "Commencez par le formulaire de contact pour lier ce paiement à votre dossier.",
+      missingLeadDescription:
+        "Commencez par le formulaire de contact pour lier ce paiement à votre dossier.",
       missingPhoneTitle: "Numéro de téléphone requis",
-      missingPhoneDescription: "Saisissez le numéro à utiliser pour ce paiement.",
+      missingPhoneDescription:
+        "Saisissez le numéro à utiliser pour ce paiement.",
       errorTitle: "Erreur de paiement",
-      errorDescription: "La demande de paiement n'a pas pu aboutir. Veuillez réessayer.",
+      errorDescription:
+        "La demande de paiement n'a pas pu aboutir. Veuillez réessayer.",
       providerLabel: "Opérateur de paiement",
       currencyLabel: "Devise de paiement",
       selectCurrency: "Sélectionnez une devise",
@@ -367,12 +390,16 @@ export const fr = {
       phonePlaceholder: "Saisissez le numéro à débiter",
       phoneHelper: "Utilisez le numéro lié à votre compte Mobile Money.",
       pendingTitle: "Paiement en attente",
-      pendingMessage: "Votre demande de paiement a été enregistrée et attend une confirmation.",
+      pendingMessage:
+        "Votre demande de paiement a été enregistrée et attend une confirmation.",
       mtnRequestSent: "Demande MTN envoyée",
-      mtnInstructions: "Validez la demande de paiement sur votre téléphone pour continuer.",
+      mtnInstructions:
+        "Validez la demande de paiement sur votre téléphone pour continuer.",
       mtnHelper: "Demande automatique sur votre numéro MTN Mobile Money.",
-      orangeHelper: "Vérification manuelle après le transfert vers le numéro Orange Money affiché.",
-      manualInstructions: "Envoyez le paiement puis gardez votre reçu pour la vérification manuelle.",
+      orangeHelper:
+        "Vérification manuelle après le transfert vers le numéro Orange Money affiché.",
+      manualInstructions:
+        "Envoyez le paiement puis gardez votre reçu pour la vérification manuelle.",
       requestPayment: "Demander le paiement",
       confirmManual: "Confirmer le paiement manuel",
       successTitle: "Paiement confirmé",
@@ -384,17 +411,19 @@ export const fr = {
       checkStatus: "Vérifier le statut",
       noCheckoutUrlReceived: "Aucune URL de paiement n'a été retournée.",
       requestFailed: "La demande de paiement a échoué.",
-    }
+    },
   },
 
   // Dashboard
   dashboard: {
     welcome: "Bienvenue,",
-    subtitle: "Suivez l'avancement de votre dossier et gérez vos documents en toute sécurité.",
+    subtitle:
+      "Suivez l'avancement de votre dossier et gérez vos documents en toute sécurité.",
     roadmapTitle: "Votre Feuille de Route",
     documentsTitle: "Coffre-fort Documentaire",
     documentRequestsTitle: "Documents demandés par l'équipe",
-    documentRequestsDescription: "Déposez ces documents pour permettre à l'équipe de continuer l'étude de votre dossier.",
+    documentRequestsDescription:
+      "Déposez ces documents pour permettre à l'équipe de continuer l'étude de votre dossier.",
     documentRequestPendingBadge: "Demandé",
     documentRequestUploadAction: "Déposer",
     profileTitle: "Mon Profil Académique",
@@ -430,18 +459,25 @@ export const fr = {
     targetProgram: "Programme visé",
     currentDegree: "Diplôme actuel",
     completeProfileTitle: "Complétez votre profil étudiant",
-    completeProfileDescription: "Votre dossier ne peut pas être pris en compte dans la procédure tant que ces informations d'identité ne sont pas renseignées.",
-    completeProfileHelper: "Renseignez votre prénom, votre nom et votre date de naissance afin que notre équipe puisse valider et traiter correctement votre dossier.",
-    completeBeforeContinuing: "Renseignez ces informations d'identité obligatoires pour passer à l'étape suivante de votre procédure.",
+    completeProfileDescription:
+      "Votre dossier ne peut pas être pris en compte dans la procédure tant que ces informations d'identité ne sont pas renseignées.",
+    completeProfileHelper:
+      "Renseignez votre prénom, votre nom et votre date de naissance afin que notre équipe puisse valider et traiter correctement votre dossier.",
+    completeBeforeContinuing:
+      "Renseignez ces informations d'identité obligatoires pour passer à l'étape suivante de votre procédure.",
     correctionRequestedTitle: "Correction demandée par l'équipe",
-    correctionRequestedPrompt: "L'équipe vous demande de mettre à jour les informations du profil avant de poursuivre la procédure.",
-    confirmProfilePrompt: "Vérifiez attentivement vos informations. Une fois ce profil validé, vous ne pourrez plus le modifier.",
+    correctionRequestedPrompt:
+      "L'équipe vous demande de mettre à jour les informations du profil avant de poursuivre la procédure.",
+    confirmProfilePrompt:
+      "Vérifiez attentivement vos informations. Une fois ce profil validé, vous ne pourrez plus le modifier.",
     requiredForProcedure: "Obligatoire pour la procédure",
     validateProfile: "Valider mes informations",
     validateAndContinue: "Valider et continuer",
     confirmValidationTitle: "Confirmer la validation du profil",
-    confirmValidationDescription: "Vous êtes sur le point de valider définitivement les informations de votre profil pour la procédure.",
-    confirmValidationWarning: "Après confirmation, vous ne pourrez plus modifier votre prénom, votre nom, votre date de naissance ni les autres informations de profil depuis votre espace étudiant.",
+    confirmValidationDescription:
+      "Vous êtes sur le point de valider définitivement les informations de votre profil pour la procédure.",
+    confirmValidationWarning:
+      "Après confirmation, vous ne pourrez plus modifier votre prénom, votre nom, votre date de naissance ni les autres informations de profil depuis votre espace étudiant.",
     confirmValidationCancel: "Revenir et vérifier",
     confirmValidationAction: "Confirmer la validation du profil",
     validationInProgress: "Validation en cours...",
@@ -450,9 +486,11 @@ export const fr = {
     editProfile: "Modifier mon profil",
     profileUpdated: "Profil mis à jour avec succès",
     profileLockedTitle: "Profil déjà validé",
-    profileLockedDescription: "Votre profil validé ne peut plus être modifié depuis votre espace. Contactez l'équipe si une correction est nécessaire.",
+    profileLockedDescription:
+      "Votre profil validé ne peut plus être modifié depuis votre espace. Contactez l'équipe si une correction est nécessaire.",
     profileLockedSuccessTitle: "Profil validé",
-    profileLockedSuccessDescription: "Vos informations ont été confirmées et votre profil est désormais validé pour la procédure.",
+    profileLockedSuccessDescription:
+      "Vos informations ont été confirmées et votre profil est désormais validé pour la procédure.",
     profileLockedBadge: "Profil validé",
     profileLockedAt: "Date de validation",
     errorTitle: "Erreur",
@@ -464,7 +502,8 @@ export const fr = {
     targetProgramPlaceholder: "Ex: Master en informatique",
     currentDegreePlaceholder: "Ex: Licence en droit",
     notSpecified: "Non renseigne",
-    profileReminder: "Gardez votre profil a jour pour aider nos conseillers a identifier les meilleures opportunites pour vous.",
+    profileReminder:
+      "Gardez votre profil a jour pour aider nos conseillers a identifier les meilleures opportunites pour vous.",
   },
 
   // Login
@@ -485,19 +524,23 @@ export const fr = {
     highlights: {
       secure: {
         title: "Accès Sécurisé",
-        description: "Vos paiements et documents sont protégés et liés à votre compte.",
+        description:
+          "Vos paiements et documents sont protégés et liés à votre compte.",
       },
       followup: {
         title: "Suivi Simplifié",
-        description: "Retrouvez l'avancement de votre dossier en un seul endroit.",
+        description:
+          "Retrouvez l'avancement de votre dossier en un seul endroit.",
       },
       journey: {
         title: "Parcours Fluide",
-        description: "Progressez directement vers votre prochaine étape académique.",
-      }
+        description:
+          "Progressez directement vers votre prochaine étape académique.",
+      },
     },
     errorTitle: "Erreur",
-    signUpSuccessDescription: "Compte cr??. Verifiez votre email pour continuer.",
+    signUpSuccessDescription:
+      "Compte cr??. Verifiez votre email pour continuer.",
     brandSubtitle: "Conseil academique expert",
     emailPlaceholder: "votre@email.com",
   },
@@ -509,18 +552,22 @@ export const fr = {
     services: "Services",
     company: "Entreprise",
     ctaEyebrow: "Pret a avancer",
-    ctaTitle: "Transformez votre projet d'etudes a l'etranger en plan clair et concret.",
+    ctaTitle:
+      "Transformez votre projet d'etudes a l'etranger en plan clair et concret.",
     ctaDescription:
       "Echangez avec Power Prestation pour clarifier vos options, securiser vos prochaines etapes et passer d'une idee a une strategie de candidature structuree.",
     ctaPrimary: "Reserver une consultation",
     ctaSecondary: "Voir nos services",
     contactTitle: "Contact",
-    contactDescription: "Ecrivez-nous directement pour un accompagnement, un suivi ou une question sur votre dossier.",
+    contactDescription:
+      "Ecrivez-nous directement pour un accompagnement, un suivi ou une question sur votre dossier.",
     officeLabel: "Bureau",
     responseLabel: "Delai de reponse",
-    responseCopy: "Nous repondons en general sous 24 a 48 heures avec la prochaine etape recommandee.",
+    responseCopy:
+      "Nous repondons en general sous 24 a 48 heures avec la prochaine etape recommandee.",
     stayUpdated: "Restez Informé",
-    subscribeText: "Abonnez-vous pour recevoir les dernières nouvelles et mises à jour.",
+    subscribeText:
+      "Abonnez-vous pour recevoir les dernières nouvelles et mises à jour.",
     emailPlaceholder: "Votre email",
     copyright: "Tous droits réservés.",
     links: {
@@ -540,10 +587,12 @@ export const fr = {
 
   blog: {
     seoTitle: "Blog & Guides Academiques",
-    seoDescription: "Decouvrez nos guides complets pour reussir votre mobilite academique depuis le Cameroun.",
+    seoDescription:
+      "Decouvrez nos guides complets pour reussir votre mobilite academique depuis le Cameroun.",
     heroTitleLeading: "Conseils &",
     heroTitleHighlight: "Guides Academiques",
-    heroSubtitle: "Tout ce qu'il faut savoir pour preparer votre depart : bourses, visas et choix d'universites.",
+    heroSubtitle:
+      "Tout ce qu'il faut savoir pour preparer votre depart : bourses, visas et choix d'universites.",
     readMore: "Lire l'article",
     untitled: "Sans titre",
     noDescription: "Pas de description disponible.",
@@ -554,13 +603,15 @@ export const fr = {
     backToBlog: "Retour au blog",
     authorRole: "Conseil expert",
     ctaTitle: "Pret a lancer votre projet academique ",
-    ctaDescription: "Reservez une consultation personnalisee avec nos experts pour definir votre strategie.",
+    ctaDescription:
+      "Reservez une consultation personnalisee avec nos experts pour definir votre strategie.",
     ctaButton: "Reserver maintenant",
   },
 
   paymentSuccess: {
     loadingTitle: "Verification du paiement...",
-    loadingDescription: "Veuillez patienter pendant que nous verifions votre paiement.",
+    loadingDescription:
+      "Veuillez patienter pendant que nous verifions votre paiement.",
     missingDetails: "Informations de verification du paiement manquantes.",
     verificationFailedDetails: "La verification du paiement a ?chou?.",
     contactPrompt: "Des questions Contactez-nous :",
@@ -568,55 +619,67 @@ export const fr = {
     backHome: "Retour a l'accueil",
     success: {
       title: "Paiement confirm?",
-      description: "Votre consultation est confirmee. Nous vous contacterons rapidement pour la suite.",
+      description:
+        "Votre consultation est confirmee. Nous vous contacterons rapidement pour la suite.",
       steps: {
         email: {
           title: "Verifiez votre email",
-          description: "Nous avons envoye un email de confirmation avec le recu de paiement.",
+          description:
+            "Nous avons envoye un email de confirmation avec le recu de paiement.",
         },
         invite: {
           title: "Attendez l'invitation",
-          description: "Un conseiller vous contactera sous 24 a 48 heures pour planifier votre session.",
+          description:
+            "Un conseiller vous contactera sous 24 a 48 heures pour planifier votre session.",
         },
         questions: {
           title: "Preparez vos questions",
-          description: "Pensez a vos objectifs academiques et aux questions que vous souhaitez poser.",
+          description:
+            "Pensez a vos objectifs academiques et aux questions que vous souhaitez poser.",
         },
       },
     },
     pending: {
       title: "Paiement soumis",
-      description: "Nous avons recu votre demande de paiement, mais elle doit encore etre confirmee avant de valider la consultation.",
+      description:
+        "Nous avons recu votre demande de paiement, mais elle doit encore etre confirmee avant de valider la consultation.",
       steps: {
         proof: {
           title: "Conservez votre preuve",
-          description: "Gardez le recu de virement ou de mobile money disponible jusqu'a la validation par notre equipe.",
+          description:
+            "Gardez le recu de virement ou de mobile money disponible jusqu'a la validation par notre equipe.",
         },
         inbox: {
           title: "Surveillez votre boite mail",
-          description: "Nous vous ecrirons des que le paiement sera verifie ou si nous avons besoin d'informations complementaires.",
+          description:
+            "Nous vous ecrirons des que le paiement sera verifie ou si nous avons besoin d'informations complementaires.",
         },
         help: {
           title: "Besoin d'aide ",
-          description: "Contactez le support si vous devez mettre a jour vos details de paiement ou renvoyer une preuve.",
+          description:
+            "Contactez le support si vous devez mettre a jour vos details de paiement ou renvoyer une preuve.",
         },
       },
     },
     error: {
       title: "Impossible de verifier le paiement",
-      description: "Cette page n'a pas pu confirmer le statut de votre paiement. Retournez au paiement ou contactez le support.",
+      description:
+        "Cette page n'a pas pu confirmer le statut de votre paiement. Retournez au paiement ou contactez le support.",
       steps: {
         support: {
           title: "Contactez le support",
-          description: "Partagez votre reference de paiement ou votre recu pour que l'equipe puisse vous aider rapidement.",
+          description:
+            "Partagez votre reference de paiement ou votre recu pour que l'equipe puisse vous aider rapidement.",
         },
         retry: {
           title: "Ne recommencez pas sans verification",
-          description: "Evitez de repayer tant que la tentative precedente n'a pas ete verifiee.",
+          description:
+            "Evitez de repayer tant que la tentative precedente n'a pas ete verifiee.",
         },
         checkout: {
           title: "Retour au paiement",
-          description: "Vous pouvez revenir a la page de paiement une fois la situation clarifiee.",
+          description:
+            "Vous pouvez revenir a la page de paiement une fois la situation clarifiee.",
         },
       },
     },
@@ -666,9 +729,11 @@ export const fr = {
     submitErrorDescription:
       "Votre demande n'a pas pu etre soumise pour le moment. Veuillez r?essayer dans un instant.",
     nextStepsTitle: "Etapes suivantes",
-    nextStepsProfile: "Validez les informations de votre profil étudiant depuis le tableau de bord.",
+    nextStepsProfile:
+      "Validez les informations de votre profil étudiant depuis le tableau de bord.",
     nextStepsSubmit: "Soumettez votre demande depuis cette page privee.",
-    nextStepsPayment: "R?glez les frais de consultation pour activer votre dossier.",
+    nextStepsPayment:
+      "R?glez les frais de consultation pour activer votre dossier.",
     supportHint:
       "Besoin d'aide avant la soumission ? Contactez l'equipe sur WhatsApp ou par t?l?phone au +(237) 674 819 411.",
   },
@@ -721,11 +786,13 @@ export const fr = {
       "Surveillez les paiements en attente, acceptés ou échoués depuis un seul espace.",
     openPayments: "Ouvrir les paiements",
     crmTitle: "Gestion des Clients (CRM)",
-    crmDescription: "Pilotez les dossiers étudiants, changez les statuts et validez les documents sécurisés.",
+    crmDescription:
+      "Pilotez les dossiers étudiants, changez les statuts et validez les documents sécurisés.",
     openCrm: "Ouvrir le CRM",
     publishedPosts: "Articles Publiés",
     blogTitle: "Gestion du Blog (SEO)",
-    blogDescription: "Rédigez de nouveaux guides, modifiez les articles existants ou masquez les brouillons.",
+    blogDescription:
+      "Rédigez de nouveaux guides, modifiez les articles existants ou masquez les brouillons.",
     manageBlogs: "Gérer le blog",
     newArticle: "Nouvel Article",
     operationalOverview: "Vue opérationnelle",
@@ -750,17 +817,21 @@ export const fr = {
       description:
         "Modifiez le montant XAF affiché sur la page de paiement et utilisé lors de la création de la transaction CinetPay.",
       amountLabel: "Montant facturé",
-      amountHelp: "Saisissez un montant en XAF. CinetPay exige un montant positif et multiple de 5.",
+      amountHelp:
+        "Saisissez un montant en XAF. CinetPay exige un montant positif et multiple de 5.",
       currentPriceLabel: "Prix actuel",
       save: "Enregistrer le prix",
       saving: "Enregistrement...",
       loading: "Chargement...",
       invalidAmountTitle: "Montant invalide",
-      invalidAmountDescription: "Utilisez un montant XAF positif et multiple de 5.",
+      invalidAmountDescription:
+        "Utilisez un montant XAF positif et multiple de 5.",
       updateSuccessTitle: "Prix mis à jour",
-      updateSuccessDescription: "Le prix de consultation est maintenant utilisé par le paiement et CinetPay.",
+      updateSuccessDescription:
+        "Le prix de consultation est maintenant utilisé par le paiement et CinetPay.",
       updateErrorTitle: "Mise à jour impossible",
-      updateErrorDescription: "Le prix de consultation n'a pas pu être mis à jour. Réessayez.",
+      updateErrorDescription:
+        "Le prix de consultation n'a pas pu être mis à jour. Réessayez.",
     },
     metrics: {
       activeStudents: "Dossiers actifs",
@@ -769,8 +840,7 @@ export const fr = {
       pendingPayments: "Paiements en attente",
       pendingDocuments: "Documents en attente",
       publishedPosts: "Articles publiés",
-      activeStudentsDescription:
-        "Étudiants actuellement suivis par l'équipe.",
+      activeStudentsDescription: "Étudiants actuellement suivis par l'équipe.",
       totalLeadsDescription:
         "Tous les prospects captés depuis le site et le parcours privé de procédure.",
       paidConsultationsDescription:
@@ -817,15 +887,21 @@ export const fr = {
     contentEn: "Contenu mis en forme (EN)",
     titleFrPlaceholder: "Ex: Comment obtenir une bourse pour le Canada",
     slugFrPlaceholder: "Ex: guide-bourses-canada",
-    excerptFrPlaceholder: "Résumez l'article en une phrase claire pour le lecteur.",
-    contentFrPlaceholder: "Rédigez le contenu français avec l'éditeur ci-dessous.",
+    excerptFrPlaceholder:
+      "Résumez l'article en une phrase claire pour le lecteur.",
+    contentFrPlaceholder:
+      "Rédigez le contenu français avec l'éditeur ci-dessous.",
     titleEnPlaceholder: "Ex: How to get a scholarship for Canada",
     slugEnPlaceholder: "Ex: canada-scholarship-guide",
     excerptEnPlaceholder: "Summarize the article in one clear sentence.",
-    contentEnPlaceholder: "Rédigez le contenu anglais avec l'éditeur ci-dessous.",
-    contentFrHelper: "Utilisez titres, listes, citations et liens pour structurer l'article en français.",
-    contentEnHelper: "Utilisez titres, listes, citations et liens pour structurer l'article en anglais.",
-    requiredHint: "Tous les champs sont obligatoires pour créer ou modifier un article.",
+    contentEnPlaceholder:
+      "Rédigez le contenu anglais avec l'éditeur ci-dessous.",
+    contentFrHelper:
+      "Utilisez titres, listes, citations et liens pour structurer l'article en français.",
+    contentEnHelper:
+      "Utilisez titres, listes, citations et liens pour structurer l'article en anglais.",
+    requiredHint:
+      "Tous les champs sont obligatoires pour créer ou modifier un article.",
     cancel: "Annuler",
     save: "Enregistrer l'Article Bilingue",
     articleColumn: "Article (FR / EN)",
@@ -861,7 +937,8 @@ export const fr = {
       link: "Lien",
       undo: "Annuler",
       redo: "Rétablir",
-      linkPrompt: "Saisissez l'URL du lien. Laissez vide pour supprimer le lien.",
+      linkPrompt:
+        "Saisissez l'URL du lien. Laissez vide pour supprimer le lien.",
     },
   },
 
@@ -914,10 +991,14 @@ export const fr = {
       validatedProfiles: "Profils validés",
       paidConsultations: "Consultations payées",
       pendingDocuments: "Documents à revoir",
-      totalStudentsDescription: "Étudiants actuellement suivis dans le pipeline d'admission.",
-      validatedProfilesDescription: "Profils validés et prêts à avancer vers l'étape suivante.",
-      paidConsultationsDescription: "Étudiants avec un paiement confirmé ou une transaction acceptée.",
-      pendingDocumentsDescription: "Dossiers contenant encore au moins un document en attente.",
+      totalStudentsDescription:
+        "Étudiants actuellement suivis dans le pipeline d'admission.",
+      validatedProfilesDescription:
+        "Profils validés et prêts à avancer vers l'étape suivante.",
+      paidConsultationsDescription:
+        "Étudiants avec un paiement confirmé ou une transaction acceptée.",
+      pendingDocumentsDescription:
+        "Dossiers contenant encore au moins un document en attente.",
     },
     empty: "Aucun dossier étudiant trouvé.",
     noEmail: "Aucun email",
@@ -927,11 +1008,13 @@ export const fr = {
     studentUpdated: "Profil étudiant mis à jour avec succès",
     updateFailed: "Échec de la mise à jour",
     statusUpdated: "Statut mis à jour",
-    applicationStatusChangedSummary: "Le statut du dossier est passé de {from} à {to}.",
+    applicationStatusChangedSummary:
+      "Le statut du dossier est passé de {from} à {to}.",
     unknownStatus: "Statut inconnu",
     documentUpdated: "Document mis à jour",
     documentRequestTitle: "Demandes de documents",
-    documentRequestDescription: "Créez une demande ciblée qui apparaîtra dans le dashboard étudiant.",
+    documentRequestDescription:
+      "Créez une demande ciblée qui apparaîtra dans le dashboard étudiant.",
     documentRequestNameLabel: "Document demandé",
     documentRequestNamePlaceholder: "Ex: Copie du passeport",
     documentRequestDetailsLabel: "Consignes",
@@ -940,7 +1023,8 @@ export const fr = {
     documentRequestCreating: "Demande en cours...",
     documentRequestCreated: "Demande de document envoyée",
     documentRequestRequiredTitle: "Nom du document requis",
-    documentRequestRequiredDescription: "Renseignez le nom du document avant d'envoyer la demande.",
+    documentRequestRequiredDescription:
+      "Renseignez le nom du document avant d'envoyer la demande.",
     documentRequestsEmpty: "Aucune demande de document pour le moment.",
     documentRequestStatuses: {
       pending: "En attente",
@@ -951,10 +1035,13 @@ export const fr = {
     profilePendingValidation: "Profil à confirmer",
     profileCorrectionRequested: "Correction demandée",
     correctionComment: "Commentaire de correction",
-    correctionCommentPlaceholder: "Précisez ce que l'étudiant doit corriger avant de valider à nouveau son profil...",
+    correctionCommentPlaceholder:
+      "Précisez ce que l'étudiant doit corriger avant de valider à nouveau son profil...",
     correctionCommentRequiredTitle: "Commentaire de correction requis",
-    correctionCommentRequiredDescription: "Ajoutez un commentaire de correction avant de rouvrir le profil pour l'étudiant.",
-    correctionRequestedSuccess: "Demande de correction envoyée au profil étudiant",
+    correctionCommentRequiredDescription:
+      "Ajoutez un commentaire de correction avant de rouvrir le profil pour l'étudiant.",
+    correctionRequestedSuccess:
+      "Demande de correction envoyée au profil étudiant",
     requestCorrection: "Demander une correction",
     editDialogTitle: "Modifier le profil étudiant",
     fields: {
@@ -965,7 +1052,8 @@ export const fr = {
       targetProgram: "Programme visé",
       currentDegree: "Diplôme actuel",
       generalNote: "Note générale du conseiller (visible par l'étudiant)",
-      generalNotePlaceholder: "Message pour l'étudiant au sujet de sa candidature...",
+      generalNotePlaceholder:
+        "Message pour l'étudiant au sujet de sa candidature...",
     },
     saveChanges: "Enregistrer les modifications",
     documentsTitle: "Documents de",
@@ -1016,8 +1104,7 @@ export const fr = {
       followUpDue: "Relances à faire",
       totalDescription:
         "Tous les prospects captés depuis le site et le parcours privé de procédure.",
-      paidDescription:
-        "Leads déjà convertis en consultations payées.",
+      paidDescription: "Leads déjà convertis en consultations payées.",
       pendingDescription:
         "Leads dont le paiement attend encore une confirmation.",
       followUpDescription:
@@ -1074,12 +1161,10 @@ export const fr = {
       acceptedAmount: "Volume accepté",
       totalDescription:
         "Toutes les tentatives de paiement suivies dans le système.",
-      acceptedDescription:
-        "Transactions confirmées comme réussies.",
+      acceptedDescription: "Transactions confirmées comme réussies.",
       pendingDescription:
         "Transactions qui attendent encore une confirmation finale du provider.",
-      failedDescription:
-        "Transactions terminées en échec ou en refus.",
+      failedDescription: "Transactions terminées en échec ou en refus.",
       acceptedAmountDescription:
         "Montant total confirmé sur les transactions acceptées.",
     },
@@ -1134,8 +1219,7 @@ export const fr = {
     filters: {
       status: "Statut",
       all: "Tous",
-      searchPlaceholder:
-        "Rechercher par lead, étudiant, email, référence...",
+      searchPlaceholder: "Rechercher par lead, étudiant, email, référence...",
     },
     statuses: {
       pending_review: "En attente",
@@ -1172,8 +1256,7 @@ export const fr = {
       providerReferenceLabel: "Référence transaction",
       notesLabel: "Note du client",
       commentLabel: "Commentaire pour le client",
-      commentPlaceholder:
-        "Ex : Le reçu ne correspond pas au montant attendu.",
+      commentPlaceholder: "Ex : Le reçu ne correspond pas au montant attendu.",
       approveButton: "Valider le paiement",
       rejectButton: "Rejeter",
       blockButton: "Bloquer ce lead",
@@ -1217,7 +1300,8 @@ export const fr = {
       "Gérez les questions/réponses affichées publiquement sur la landing page. Modifications appliquées instantanément.",
     empty: "Aucune entrée ne correspond aux filtres.",
     filters: {
-      searchPlaceholder: "Rechercher une question, une réponse, une catégorie...",
+      searchPlaceholder:
+        "Rechercher une question, une réponse, une catégorie...",
       status: "Statut",
       all: "Toutes",
       published: "Publiées",
@@ -1304,7 +1388,8 @@ export const fr = {
     backHome: "Retour a l'accueil",
     back: "Retour",
     currentStatus: "Statut actuel",
-    currentStatusCopy: "Cette page est un contenu public temporaire pendant la preparation du texte legal definitif.",
+    currentStatusCopy:
+      "Cette page est un contenu public temporaire pendant la preparation du texte legal definitif.",
     contactTitle: "Contact",
     contactTeam: "Contacter l'equipe",
     returnHome: "Retourner a l'accueil",
@@ -1382,14 +1467,26 @@ type FrContactFormExtensions = typeof fr.contact.form & {
   passwordRequiredDescription: string;
   phoneAlreadyUsedTitle: string;
   phoneAlreadyUsedDescription: string;
+  verificationPendingTitle: string;
+  verificationPendingDescription: string;
 };
-
-fr.checkout.packagePrice = "15 625";
-fr.checkout.packageCurrency = "XAF";
 fr.checkout.packageDescription =
   "Paiement unique en XAF pour votre consultation initiale et votre accompagnement sur mesure.";
 
 const frCheckoutPayment = fr.checkout.payment as FrCheckoutPaymentExtensions;
+const frAdminCRM = fr.adminCRM as typeof fr.adminCRM & {
+  openStudent: string;
+  notesTitle: string;
+  notesDescription: string;
+  notePlaceholder: string;
+  addNote: string;
+  noteAdded: string;
+  noNotes: string;
+  historyTitle: string;
+  historyDescription: string;
+  noHistory: string;
+  historyActions: Record<string, string>;
+}; // Added new fields for admin CRM
 frCheckoutPayment.cinetpayCardTitle = "Carte via CinetPay";
 frCheckoutPayment.cinetpayCardSubtitle =
   "Visa et Mastercard depuis le guichet de paiement CinetPay.";
@@ -1439,7 +1536,8 @@ frDashboard.paymentConfirmedTitle = "Paiement confirmé";
 frDashboard.paymentConfirmedDescription =
   "Votre paiement est confirme. L'equipe peut maintenant poursuivre le traitement de votre dossier.";
 frDashboard.proceedToPayment = "Acceder au paiement";
-frDashboard.completeProfileForPayment = "Completez et validez votre profil avant de payer.";
+frDashboard.completeProfileForPayment =
+  "Completez et validez votre profil avant de payer.";
 frDashboard.paymentAvailableAfterProfile =
   "Le lien de paiement sera disponible ici des que votre profil aura ?t? valide.";
 frDashboard.procedureStartedBadge = "Procédure active";
@@ -1494,7 +1592,8 @@ fr.checkout.profileRequiredTitle = "Profil à valider";
 fr.checkout.profileRequiredDescription =
   "Renseignez puis confirmez votre prénom, votre nom et votre date de naissance avant de continuer vers le paiement.";
 
-fr.dashboard.subtitle = "Suivez l'avancement de votre dossier et gérez vos documents en toute sécurité.";
+fr.dashboard.subtitle =
+  "Suivez l'avancement de votre dossier et gérez vos documents en toute sécurité.";
 fr.dashboard.profileTitle = "Mon Profil Académique";
 fr.dashboard.uploadDoc = "Déposer un document";
 fr.dashboard.docTitlePlaceholder = "Ex: Diplôme du Baccalauréat";
@@ -1535,7 +1634,8 @@ fr.dashboard.notSpecified = "Non renseigné";
 fr.dashboard.profileReminder =
   "Gardez votre profil à jour pour aider nos conseillers à identifier les meilleures opportunités pour vous.";
 
-fr.login.subtitle = "Veuillez vous connecter pour accéder à votre espace sécurisé.";
+fr.login.subtitle =
+  "Veuillez vous connecter pour accéder à votre espace sécurisé.";
 fr.login.signUpButton = "Créer un Compte";
 fr.login.loadingSignUp = "Création du compte...";
 fr.login.backHome = "Retour à l'accueil";
@@ -1545,13 +1645,15 @@ fr.login.highlights.secure.description =
 fr.login.highlights.followup.title = "Suivi Simplifié";
 fr.login.highlights.journey.description =
   "Progressez directement vers votre prochaine étape académique.";
-fr.login.signUpSuccessDescription = "Compte créé. Vérifiez votre email pour continuer.";
+fr.login.signUpSuccessDescription =
+  "Compte créé. Vérifiez votre email pour continuer.";
 fr.login.brandSubtitle = "Conseil académique expert";
 
 fr.footer.description =
   "Votre partenaire de confiance en mobilité académique et professionnelle. Aidant les étudiants à réaliser leurs rêves d'études à l'étranger depuis 2014.";
 fr.footer.ctaEyebrow = "Prêt à avancer";
-fr.footer.ctaTitle = "Transformez votre projet d'études à l'étranger en plan clair et concret.";
+fr.footer.ctaTitle =
+  "Transformez votre projet d'études à l'étranger en plan clair et concret.";
 fr.footer.ctaDescription =
   "Échangez avec Power Prestation pour clarifier vos options, sécuriser vos prochaines étapes et passer d'une idée à une stratégie de candidature structurée.";
 fr.footer.ctaPrimary = "Réserver une consultation";
@@ -1582,9 +1684,12 @@ fr.blogPost.ctaDescription =
 fr.blogPost.ctaButton = "Réserver maintenant";
 
 fr.paymentSuccess.loadingTitle = "Vérification du paiement...";
-fr.paymentSuccess.loadingDescription = "Veuillez patienter pendant que nous vérifions votre paiement.";
-fr.paymentSuccess.missingDetails = "Informations de vérification du paiement manquantes.";
-fr.paymentSuccess.verificationFailedDetails = "La vérification du paiement a échoué.";
+fr.paymentSuccess.loadingDescription =
+  "Veuillez patienter pendant que nous vérifions votre paiement.";
+fr.paymentSuccess.missingDetails =
+  "Informations de vérification du paiement manquantes.";
+fr.paymentSuccess.verificationFailedDetails =
+  "La vérification du paiement a échoué.";
 fr.paymentSuccess.backHome = "Retour à l'accueil";
 fr.paymentSuccess.success.title = "Paiement confirmé";
 fr.paymentSuccess.success.description =
@@ -1657,12 +1762,15 @@ frStartProcedure.phoneAlreadyUsedDescription =
 frStartProcedure.nextStepsTitle = "Étapes suivantes";
 frStartProcedure.nextStepsProfile =
   "Validez les informations de votre profil étudiant depuis le tableau de bord.";
-frStartProcedure.nextStepsSubmit = "Soumettez votre demande depuis cette page privée.";
-frStartProcedure.nextStepsPayment = "Réglez les frais de consultation pour activer votre dossier.";
+frStartProcedure.nextStepsSubmit =
+  "Soumettez votre demande depuis cette page privée.";
+frStartProcedure.nextStepsPayment =
+  "Réglez les frais de consultation pour activer votre dossier.";
 frStartProcedure.supportHint =
   "Besoin d'aide avant la soumission ? Contactez l'équipe sur WhatsApp ou par téléphone au +(237) 674 819 411.";
 
-fr.adminDashboard.subtitle = "Bienvenue dans votre centre de contrôle Power Prestation.";
+fr.adminDashboard.subtitle =
+  "Bienvenue dans votre centre de contrôle Power Prestation.";
 fr.adminDashboard.signOut = "Déconnexion";
 fr.adminDashboard.studentsTotal = "Total Étudiants";
 fr.adminDashboard.crmDescription =
@@ -1678,24 +1786,30 @@ fr.adminBlog.saveSuccessDescription = "Article bilingue enregistré.";
 fr.adminBlog.publishedTitle = "Article publié";
 fr.adminBlog.deleteSuccessTitle = "Supprimé";
 fr.adminBlog.deleteSuccessDescription = "L'article a été retiré.";
-fr.adminBlog.subtitle = "Gérez les articles en français et en anglais simultanément.";
+fr.adminBlog.subtitle =
+  "Gérez les articles en français et en anglais simultanément.";
 fr.adminBlog.createArticle = "Créer un Nouvel Article Bilingue";
 fr.adminBlog.published = "Publié";
 fr.adminBlog.coverImageUrl = "URL de l'image de couverture";
 fr.adminBlog.frTab = "Français (FR)";
-fr.adminBlog.excerptFrPlaceholder = "Résumez l'article en une phrase claire pour le lecteur.";
-fr.adminBlog.contentFrPlaceholder = "Rédigez le contenu français avec l'éditeur ci-dessous.";
-fr.adminBlog.contentEnPlaceholder = "Rédigez le contenu anglais avec l'éditeur ci-dessous.";
+fr.adminBlog.excerptFrPlaceholder =
+  "Résumez l'article en une phrase claire pour le lecteur.";
+fr.adminBlog.contentFrPlaceholder =
+  "Rédigez le contenu français avec l'éditeur ci-dessous.";
+fr.adminBlog.contentEnPlaceholder =
+  "Rédigez le contenu anglais avec l'éditeur ci-dessous.";
 fr.adminBlog.contentFrHelper =
   "Utilisez titres, listes, citations et liens pour structurer l'article en français.";
-fr.adminBlog.requiredHint = "Tous les champs sont obligatoires pour créer ou modifier un article.";
+fr.adminBlog.requiredHint =
+  "Tous les champs sont obligatoires pour créer ou modifier un article.";
 fr.adminBlog.empty = "Aucun article trouvé.";
 fr.adminBlog.editor.bulletList = "Liste à puces";
 fr.adminBlog.editor.orderedList = "Liste numérotée";
 fr.adminBlog.editor.redo = "Rétablir";
 
 fr.adminCRM.accessDenied = "Accès refusé";
-fr.adminCRM.subtitle = "Gérez les dossiers étudiants et la vérification des documents.";
+fr.adminCRM.subtitle =
+  "Gérez les dossiers étudiants et la vérification des documents.";
 fr.adminCRM.searchPlaceholder = "Rechercher un étudiant...";
 fr.adminCRM.columns.student = "Étudiant";
 fr.adminCRM.empty = "Aucun dossier étudiant trouvé.";
@@ -1708,7 +1822,8 @@ fr.adminCRM.correctionCommentPlaceholder =
   "Précisez ce que l'étudiant doit corriger avant de valider à nouveau son profil...";
 fr.adminCRM.correctionCommentRequiredDescription =
   "Ajoutez un commentaire de correction avant de rouvrir le profil pour l'étudiant.";
-fr.adminCRM.correctionRequestedSuccess = "Demande de correction envoyée au profil étudiant";
+fr.adminCRM.correctionRequestedSuccess =
+  "Demande de correction envoyée au profil étudiant";
 fr.adminCRM.editDialogTitle = "Modifier le profil étudiant";
 fr.adminCRM.fields.firstName = "Prénom";
 fr.adminCRM.fields.targetProgram = "Programme visé";
@@ -1746,13 +1861,15 @@ frCheckoutPayment.selectCurrency = "Sélectionnez une devise";
 frCheckoutPayment.sendTo = "Envoyer au numéro";
 frCheckoutPayment.phoneLabel = "Numéro de téléphone";
 frCheckoutPayment.phonePlaceholder = "Saisissez le numéro à débiter";
-frCheckoutPayment.phoneHelper = "Utilisez le numéro lié à votre compte Mobile Money.";
+frCheckoutPayment.phoneHelper =
+  "Utilisez le numéro lié à votre compte Mobile Money.";
 frCheckoutPayment.pendingMessage =
   "Votre demande de paiement a été enregistrée et attend une confirmation.";
 frCheckoutPayment.mtnRequestSent = "Demande MTN envoyée";
 frCheckoutPayment.mtnInstructions =
   "Validez la demande de paiement sur votre téléphone pour continuer.";
-frCheckoutPayment.mtnHelper = "Demande automatique sur votre numéro MTN Mobile Money.";
+frCheckoutPayment.mtnHelper =
+  "Demande automatique sur votre numéro MTN Mobile Money.";
 frCheckoutPayment.orangeHelper =
   "Vérification manuelle après le transfert vers le numéro Orange Money affiché.";
 frCheckoutPayment.manualInstructions =
@@ -1799,7 +1916,8 @@ frDashboard.paymentConfirmedTitle = "Paiement confirmé";
 frDashboard.paymentConfirmedDescription =
   "Votre paiement est confirmé. L'équipe peut maintenant poursuivre le traitement de votre dossier.";
 frDashboard.proceedToPayment = "Accéder au paiement";
-frDashboard.completeProfileForPayment = "Complétez et validez votre profil avant de payer.";
+frDashboard.completeProfileForPayment =
+  "Complétez et validez votre profil avant de payer.";
 frDashboard.paymentAvailableAfterProfile =
   "Le lien de paiement sera disponible ici dès que votre profil aura été validé.";
 frDashboard.procedureStartedBadge = "Procédure active";
@@ -1828,17 +1946,20 @@ frContactForm.passwordRequiredDescription =
 frContactForm.phoneAlreadyUsedTitle = "Numéro déjà utilisé";
 frContactForm.phoneAlreadyUsedDescription =
   "Ce numéro de téléphone est déjà lié à un autre compte. Utilisez un autre numéro ou connectez-vous au bon compte.";
-fr.adminCRM.openStudent = "Ouvrir le dossier";
-fr.adminCRM.notesTitle = "Notes internes";
-fr.adminCRM.notesDescription = "Notes privées visibles uniquement par l'équipe admin.";
-fr.adminCRM.notePlaceholder = "Ajoutez une note interne sur la relance, les risques ou la suite à donner...";
-fr.adminCRM.addNote = "Ajouter une note";
-fr.adminCRM.noteAdded = "Note interne ajoutée";
-fr.adminCRM.noNotes = "Aucune note interne pour le moment.";
-fr.adminCRM.historyTitle = "Historique d'activité";
-fr.adminCRM.historyDescription = "Suivez les dernières actions admin effectuées sur ce dossier étudiant.";
-fr.adminCRM.noHistory = "Aucune activité admin enregistrée pour le moment.";
-fr.adminCRM.historyActions = {
+frAdminCRM.openStudent = "Ouvrir le dossier";
+frAdminCRM.notesTitle = "Notes internes";
+frAdminCRM.notesDescription =
+  "Notes privées visibles uniquement par l'équipe admin.";
+frAdminCRM.notePlaceholder =
+  "Ajoutez une note interne sur la relance, les risques ou la suite à donner...";
+frAdminCRM.addNote = "Ajouter une note";
+frAdminCRM.noteAdded = "Note interne ajoutée";
+frAdminCRM.noNotes = "Aucune note interne pour le moment.";
+frAdminCRM.historyTitle = "Historique d'activité";
+frAdminCRM.historyDescription =
+  "Suivez les dernières actions admin effectuées sur ce dossier étudiant.";
+frAdminCRM.noHistory = "Aucune activité admin enregistrée pour le moment.";
+frAdminCRM.historyActions = {
   profile_updated: "Profil mis à jour",
   profile_correction_requested: "Correction de profil demandée",
   application_status_updated: "Statut du dossier mis à jour",
@@ -1893,7 +2014,8 @@ frAdminCRMSheet.paymentPendingAction =
   "Le paiement reste en attente de confirmation côté prestataire et doit être surveillé.";
 frAdminCRMSheet.paymentMissingAction =
   "Aucun paiement de consultation confirmé n'est encore visible sur ce dossier.";
-frAdminCRMSheet.documentsPendingAction = "{count} document(s) attend(ent) encore une revue admin.";
+frAdminCRMSheet.documentsPendingAction =
+  "{count} document(s) attend(ent) encore une revue admin.";
 frAdminCRMSheet.notesMissingAction =
   "Aucune note interne n'a encore été enregistrée pour le suivi d'équipe.";
 frContactForm.verificationPendingTitle = "Vérifiez vos coordonnées";
@@ -1933,11 +2055,14 @@ frLoginVerification.verificationRequiredDescription =
   sentTitle: "Code envoyé",
   sentDescription: "Un code de vérification a été préparé pour {channel}.",
   verifiedTitle: "Vérification terminée",
-  verifiedDescription: "Vos coordonnées sont confirmées. Connectez-vous pour poursuivre votre procédure.",
+  verifiedDescription:
+    "Vos coordonnées sont confirmées. Connectez-vous pour poursuivre votre procédure.",
   alreadyVerifiedTitle: "Vérification déjà terminée",
-  alreadyVerifiedDescription: "Vos coordonnées sont déjà vérifiées. Vous pouvez vous connecter normalement.",
+  alreadyVerifiedDescription:
+    "Vos coordonnées sont déjà vérifiées. Vous pouvez vous connecter normalement.",
   signInTitle: "Connexion requise",
-  signInDescription: "Utilisez votre email et votre mot de passe pour continuer après la vérification.",
+  signInDescription:
+    "Utilisez votre email et votre mot de passe pour continuer après la vérification.",
   emailChannelLabel: "Code par email",
   smsChannelLabel: "Code par SMS",
   emailChannelDescription: "Confirmez l'adresse email liée à votre compte.",

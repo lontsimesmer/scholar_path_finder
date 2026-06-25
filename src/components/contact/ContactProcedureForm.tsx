@@ -29,7 +29,9 @@ type ContactProcedureFormProps = {
   isSubmitting: boolean;
   isAuthLoading: boolean;
   onSubmit: (event: React.FormEvent) => void;
-  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   onCountryCodeChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onConfirmPasswordChange: (value: string) => void;
@@ -59,7 +61,9 @@ export function ContactProcedureForm({
   return (
     <form onSubmit={onSubmit} className="space-y-10">
       <div className="rounded-[1.2rem] border border-border/40 bg-secondary/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
-        {sessionUser ? contactFormText.signedInHint : contactFormText.createAccountHint}
+        {sessionUser
+          ? contactFormText.signedInHint
+          : contactFormText.createAccountHint}
       </div>
 
       <div className="grid gap-10 sm:grid-cols-2">
@@ -154,7 +158,10 @@ export function ContactProcedureForm({
           {t.contact.form.phone}
         </label>
         <div className="flex items-center gap-4 border-b border-border/40 transition-all duration-500 group-focus-within:border-primary">
-          <CountryCodeSelect value={countryCode} onValueChange={onCountryCodeChange} />
+          <CountryCodeSelect
+            value={countryCode}
+            onValueChange={onCountryCodeChange}
+          />
           <Input
             id="phone"
             name="phone"
@@ -188,15 +195,20 @@ export function ContactProcedureForm({
         <Button
           type="submit"
           size="xl"
-          className="group relative w-full overflow-hidden bg-primary py-7 shadow-none transition-all duration-500 hover:bg-navy"
+          className="group content-center relative w-full overflow-hidden bg-primary py-7 shadow-none transition-all duration-500 hover:bg-navy"
           disabled={isSubmitting || isAuthLoading}
         >
           {isSubmitting || isAuthLoading ? (
-            <Loader2 className="animate-spin" size={20} />
+            <Loader2 className="animate-spin" size={16} />
           ) : (
             <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em]">
-              {sessionUser ? contactFormText.submitProcedure : contactFormText.createAccountAndSubmit}
-              <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
+              {sessionUser
+                ? contactFormText.submitProcedure
+                : contactFormText.createAccountAndSubmit}
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-500 group-hover:translate-x-2"
+              />
             </span>
           )}
         </Button>

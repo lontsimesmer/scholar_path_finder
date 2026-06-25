@@ -1,4 +1,12 @@
-import { ArrowRight, Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import {
+  ArrowRight,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 import { useLanguage } from "@/i18n/language";
 import { Button } from "@/components/ui/button";
 import BrandMark from "@/components/BrandMark";
@@ -15,10 +23,26 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 );
 
 const socialLinks = [
-  { icon: Facebook, href: "https://www.facebook.com/profile.php?id=61578800394432", label: "Facebook" },
-  { icon: TikTokIcon, href: "https://www.tiktok.com/@power.prestation", label: "TikTok" },
-  { icon: Instagram, href: "https://www.instagram.com/power.prestation", label: "Instagram" },
-  { icon: Linkedin, href: "https://www.linkedin.com/company/powerprestation/posts", label: "LinkedIn" },
+  {
+    icon: Facebook,
+    href: "https://www.facebook.com/profile.php?id=61578800394432",
+    label: "Facebook",
+  },
+  {
+    icon: TikTokIcon,
+    href: "https://www.tiktok.com/@power.prestation",
+    label: "TikTok",
+  },
+  {
+    icon: Instagram,
+    href: "https://www.instagram.com/power.prestation",
+    label: "Instagram",
+  },
+  {
+    icon: Linkedin,
+    href: "https://www.linkedin.com/company/powerprestation/posts",
+    label: "LinkedIn",
+  },
 ];
 
 const Footer = () => {
@@ -77,11 +101,15 @@ const Footer = () => {
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-navy-foreground/58">
                     Power Prestation
                   </p>
-                  <p className="mt-1 text-sm text-navy-foreground/72">{t.hero.advisoryLabel}</p>
+                  <p className="mt-1 text-sm text-navy-foreground/72">
+                    {t.hero.advisoryLabel}
+                  </p>
                 </div>
               </div>
 
-              <p className="mt-5 max-w-[34rem] text-sm leading-7 text-navy-foreground/72">{t.footer.description}</p>
+              <p className="mt-5 max-w-[34rem] text-sm leading-7 text-navy-foreground/72">
+                {t.footer.description}
+              </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 <span className="rounded-full border border-white/10 bg-white/7 px-3 py-1.5 text-xs font-medium text-navy-foreground/72">
@@ -114,14 +142,16 @@ const Footer = () => {
                   <p className="text-sm font-semibold uppercase tracking-[0.22em] text-navy-foreground/58">
                     {t.footer.contactTitle}
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-navy-foreground/72">{t.footer.contactDescription}</p>
+                  <p className="mt-3 text-sm leading-7 text-navy-foreground/72">
+                    {t.footer.contactDescription}
+                  </p>
                 </div>
 
                 <Button
                   variant="outline"
                   size="lg"
                   asChild
-                  className="shrink-0 border-white/14 bg-white/7 text-navy-foreground hover:border-white/24 hover:bg-white/10"
+                  className="hidden md:inline-flex shrink-0 border-white/14 bg-white/7 text-navy-foreground hover:border-white/24 hover:bg-white/10"
                 >
                   <a href="#contact">
                     {t.nav.contactUs}
@@ -145,7 +175,9 @@ const Footer = () => {
                         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-navy-foreground/52">
                           {detail.label}
                         </p>
-                        <p className="mt-1 break-words text-sm leading-6 text-navy-foreground">{detail.value}</p>
+                        <p className="mt-1 break-words text-sm leading-6 text-navy-foreground">
+                          {detail.value}
+                        </p>
                       </div>
                     </div>
                   </a>
@@ -165,7 +197,9 @@ const Footer = () => {
                   <p className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-navy-foreground/52">
                     {contactDetails[2].label}
                   </p>
-                  <p className="mt-1 break-words text-sm leading-6 text-navy-foreground">{contactDetails[2].value}</p>
+                  <p className="mt-1 break-words text-sm leading-6 text-navy-foreground">
+                    {contactDetails[2].value}
+                  </p>
                 </div>
               </a>
             </div>
@@ -212,7 +246,11 @@ const Footer = () => {
               <p className="text-sm text-navy-foreground/54">{`(c) ${new Date().getFullYear()} Power Prestation. ${t.footer.copyright}`}</p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 md:justify-end">
                 {footerLinks.legal.map((link) => (
-                  <a key={link.label} href={link.href} className="text-sm transition-colors hover:text-primary">
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    className="text-sm transition-colors hover:text-primary"
+                  >
                     {link.label}
                   </a>
                 ))}

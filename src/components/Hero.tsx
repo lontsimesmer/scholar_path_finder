@@ -35,13 +35,15 @@ const Hero = () => {
   ];
 
   return (
-    <section id="home" className="relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40">
+    <section
+      id="home"
+      className="relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40"
+    >
       {/* Subtle Background elements */}
       <div className="absolute inset-x-0 top-0 h-[30rem] bg-[radial-gradient(circle_at_15%_15%,_rgba(53,90,204,0.08),_transparent_40%)]" />
-      
+
       <div className="section-container relative z-10">
         <div className="grid gap-16 xl:grid-cols-[1fr_0.9fr] xl:items-center">
-          
           {/* Left Content - Refined Typography */}
           <div className="max-w-2xl">
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-1000">
@@ -52,7 +54,9 @@ const Hero = () => {
 
               <h1 className="mt-8 font-display text-[clamp(2.5rem,5vw,4.2rem)] font-bold leading-[1.15] tracking-tight text-foreground">
                 {t.hero.title}
-                <span className="block text-primary/90">{t.hero.titleHighlight}</span>
+                <span className="block text-primary/90">
+                  {t.hero.titleHighlight}
+                </span>
               </h1>
 
               <p className="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground/90">
@@ -61,19 +65,32 @@ const Hero = () => {
             </div>
 
             <div className="mt-12 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-              <Button variant="hero" size="xl" asChild className="group px-8">
-                <a href="#contact" className="flex items-center gap-2">
+              <Button
+                variant="hero"
+                size="xl"
+                asChild
+                className="group px-8 w-full sm:w-auto"
+              >
+                <a
+                  href="#contact"
+                  className="flex items-center justify-center gap-2 w-full"
+                >
                   {t.hero.ctaPrimary}
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <ArrowRight
+                    size={18}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </a>
               </Button>
               <Button
                 variant="ghost"
                 size="xl"
                 asChild
-                className="text-foreground/70 hover:text-primary hover:bg-primary/5"
+                className="w-full sm:w-auto text-foreground/70 hover:text-primary hover:bg-primary/5"
               >
-                <a href="#services">{t.hero.ctaSecondary}</a>
+                <a href="#services" className="flex justify-center w-full">
+                  {t.hero.ctaSecondary}
+                </a>
               </Button>
             </div>
 
@@ -83,7 +100,9 @@ const Hero = () => {
                   key={stat.label}
                   className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left"
                 >
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-3xl font-bold text-foreground">
+                    {stat.value}
+                  </p>
                   <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
                     {stat.label}
                   </p>
@@ -138,7 +157,6 @@ const Hero = () => {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

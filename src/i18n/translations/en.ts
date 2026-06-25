@@ -22,10 +22,12 @@ export const en = {
     ctaSecondary: "Explore Services",
     advisoryLabel: "Tailored academic advisory",
     roadmapTitle: "Your admission roadmap",
-    roadmapCopy: "A clear process from profile review to a strong application strategy.",
+    roadmapCopy:
+      "A clear process from profile review to a strong application strategy.",
     focusTitle: "Where we create the most value",
     proofTitle: "Trusted execution",
-    proofCopy: "Clear next steps, faster follow-up, and support from application to arrival.",
+    proofCopy:
+      "Clear next steps, faster follow-up, and support from application to arrival.",
     stats: {
       countries: "Years",
       studentsPlaced: "Students Placed",
@@ -63,7 +65,8 @@ export const en = {
       },
       application: {
         title: "Application Support",
-        description: "Complete application assistance including document preparation, essays, and interview coaching.",
+        description:
+          "Complete application assistance including document preparation, essays, and interview coaching.",
       },
       visa: {
         title: "Visa Guidance",
@@ -98,7 +101,8 @@ export const en = {
     badge: "How It Works",
     title: "Your Journey to",
     titleHighlight: "Success",
-    subtitle: "Our proven process has helped hundreds of students achieve their dreams of studying abroad.",
+    subtitle:
+      "Our proven process has helped hundreds of students achieve their dreams of studying abroad.",
     steps: {
       consultation: {
         title: "Initial Consultation",
@@ -156,7 +160,7 @@ export const en = {
       },
       {
         name: "Research PhD",
-        role: "TU Berlin, Germany",
+        role: "Berlin, Germany",
         content:
           "Advice on writing the research project and connecting with host laboratories.",
       },
@@ -168,7 +172,8 @@ export const en = {
     badge: "FAQ",
     title: "Frequently Asked",
     titleHighlight: "Questions",
-    subtitle: "Find answers to common questions about our services and process.",
+    subtitle:
+      "Find answers to common questions about our services and process.",
     empty: "No published FAQ entries yet.",
     items: [
       {
@@ -233,7 +238,8 @@ export const en = {
       submit: "Send Message",
       privacyNote: "Initial consultation - guaranteed privacy",
       successTitle: "Message Sent!",
-      successMessage: "Thank you for contacting us. We'll get back to you shortly.",
+      successMessage:
+        "Thank you for contacting us. We'll get back to you shortly.",
       errorTitle: "Error",
       errorMessage: "Failed to submit your information. Please try again.",
     },
@@ -243,13 +249,15 @@ export const en = {
   checkout: {
     title: "Complete Your Registration",
     titleHighlight: "Registration",
-    subtitle: "Secure your consultation and move into a guided academic planning session with the Power Prestation team.",
+    subtitle:
+      "Secure your consultation and move into a guided academic planning session with the Power Prestation team.",
     signedInAs: "Signed in as",
     signOut: "Sign Out",
     packageTitle: "Consultation package",
     packagePrice: "$25",
     packageCurrency: "USD",
-    packageDescription: "One-time payment for your initial consultation and tailored guidance package.",
+    packageDescription:
+      "One-time payment for your initial consultation and tailored guidance package.",
     whatIncluded: "What's Included in Your Consultation",
     benefits: {
       expert: "1-on-1 consultation with an expert",
@@ -272,7 +280,8 @@ export const en = {
     methods: {
       mobileMoney: {
         title: "Mobile Money",
-        description: "MTN Mobile Money or Orange Money for local payment flows.",
+        description:
+          "MTN Mobile Money or Orange Money for local payment flows.",
       },
       card: {
         title: "Card",
@@ -282,17 +291,20 @@ export const en = {
     paymentDetails: {
       card: {
         title: "Card Payment",
-        description: "Pay securely through CinetPay with Visa, Mastercard, or any major card.",
+        description:
+          "Pay securely through CinetPay with Visa, Mastercard, or any major card.",
       },
       mobileMoney: {
         title: "Mobile Money Payment",
         description: "Pay securely using MTN Mobile Money or Orange Money.",
       },
     },
-    terms: "By completing this purchase, you agree to our Terms of Service and Privacy Policy.",
+    terms:
+      "By completing this purchase, you agree to our Terms of Service and Privacy Policy.",
     manualOrangeMoney: {
       cardTitle: "Orange Money payment",
-      cardSubtitle: "Send the indicated amount, then upload the receipt for manual validation.",
+      cardSubtitle:
+        "Send the indicated amount, then upload the receipt for manual validation.",
       accountLabel: "Send to",
       amountLabel: "Amount",
       step1: "Dial #150# or open the Orange Money app.",
@@ -322,7 +334,8 @@ export const en = {
       submitErrorMissingSenderIdentity:
         "The sender name and phone number are required.",
       submitErrorTooLarge: "The file exceeds 5 MB.",
-      submitErrorWrongFormat: "Unsupported format (PNG, JPG, WEBP or PDF only).",
+      submitErrorWrongFormat:
+        "Unsupported format (PNG, JPG, WEBP or PDF only).",
       submitErrorAlreadyPending:
         "A proof is already pending review for this lead.",
       submitErrorAlreadyPaid: "This lead is already marked as paid.",
@@ -346,17 +359,22 @@ export const en = {
     backToHome: "Back to Home",
     backToDashboard: "Back to Dashboard",
     unavailableTitle: "Checkout unavailable",
-    unavailableDescription: "Start from the contact form so we can attach your payment to a lead.",
+    unavailableDescription:
+      "Start from the contact form so we can attach your payment to a lead.",
     profileRequiredTitle: "Validate your profile first",
-    profileRequiredDescription: "Complete and confirm your first name, last name, and date of birth before continuing to payment.",
+    profileRequiredDescription:
+      "Complete and confirm your first name, last name, and date of birth before continuing to payment.",
     loading: "Preparing your secure checkout...",
     payment: {
       missingLeadTitle: "Missing payment file",
-      missingLeadDescription: "Start from the contact form so we can link this payment to your file.",
+      missingLeadDescription:
+        "Start from the contact form so we can link this payment to your file.",
       missingPhoneTitle: "Phone number required",
-      missingPhoneDescription: "Enter the phone number to use for this payment.",
+      missingPhoneDescription:
+        "Enter the phone number to use for this payment.",
       errorTitle: "Payment error",
-      errorDescription: "The payment request could not be completed. Please try again.",
+      errorDescription:
+        "The payment request could not be completed. Please try again.",
       providerLabel: "Payment provider",
       currencyLabel: "Payment currency",
       selectCurrency: "Select a currency",
@@ -366,12 +384,15 @@ export const en = {
       phonePlaceholder: "Enter the number to debit",
       phoneHelper: "Use the number linked to your Mobile Money account.",
       pendingTitle: "Payment pending",
-      pendingMessage: "Your payment request has been recorded and is awaiting confirmation.",
+      pendingMessage:
+        "Your payment request has been recorded and is awaiting confirmation.",
       mtnRequestSent: "MTN request sent",
       mtnInstructions: "Approve the payment prompt on your phone to continue.",
       mtnHelper: "Automatic request on your MTN Mobile Money number.",
-      orangeHelper: "Manual verification after transfer to the Orange Money number shown.",
-      manualInstructions: "Send the payment, then keep the receipt ready for manual verification.",
+      orangeHelper:
+        "Manual verification after transfer to the Orange Money number shown.",
+      manualInstructions:
+        "Send the payment, then keep the receipt ready for manual verification.",
       requestPayment: "Request payment",
       confirmManual: "Confirm manual payment",
       successTitle: "Payment confirmed",
@@ -383,17 +404,19 @@ export const en = {
       checkStatus: "Check status",
       noCheckoutUrlReceived: "No checkout URL was returned.",
       requestFailed: "Payment request failed.",
-    }
+    },
   },
 
   // Dashboard
   dashboard: {
     welcome: "Welcome,",
-    subtitle: "Track your application progress and manage your documents securely.",
+    subtitle:
+      "Track your application progress and manage your documents securely.",
     roadmapTitle: "Your Admission Roadmap",
     documentsTitle: "Document Vault",
     documentRequestsTitle: "Documents requested by the team",
-    documentRequestsDescription: "Upload these documents so the team can continue reviewing your file.",
+    documentRequestsDescription:
+      "Upload these documents so the team can continue reviewing your file.",
     documentRequestPendingBadge: "Requested",
     documentRequestUploadAction: "Upload",
     profileTitle: "Academic Profile",
@@ -429,18 +452,25 @@ export const en = {
     targetProgram: "Target program",
     currentDegree: "Current degree",
     completeProfileTitle: "Complete your student profile",
-    completeProfileDescription: "Your file cannot be considered in the procedure until these identity details are completed.",
-    completeProfileHelper: "Provide your first name, last name, and date of birth so our team can validate and process your application correctly.",
-    completeBeforeContinuing: "Complete these required identity details to continue to the next step of your procedure.",
+    completeProfileDescription:
+      "Your file cannot be considered in the procedure until these identity details are completed.",
+    completeProfileHelper:
+      "Provide your first name, last name, and date of birth so our team can validate and process your application correctly.",
+    completeBeforeContinuing:
+      "Complete these required identity details to continue to the next step of your procedure.",
     correctionRequestedTitle: "Correction requested by the team",
-    correctionRequestedPrompt: "The team asked you to update your profile information before the procedure can continue.",
-    confirmProfilePrompt: "Review your details carefully. Once you validate this profile, you will not be able to edit it anymore.",
+    correctionRequestedPrompt:
+      "The team asked you to update your profile information before the procedure can continue.",
+    confirmProfilePrompt:
+      "Review your details carefully. Once you validate this profile, you will not be able to edit it anymore.",
     requiredForProcedure: "Profile required to continue",
     validateProfile: "Validate my information",
     validateAndContinue: "Validate and continue",
     confirmValidationTitle: "Confirm profile validation",
-    confirmValidationDescription: "You are about to validate your profile information for the procedure.",
-    confirmValidationWarning: "After confirmation, you will no longer be able to change your first name, last name, date of birth, or other profile details from your student space.",
+    confirmValidationDescription:
+      "You are about to validate your profile information for the procedure.",
+    confirmValidationWarning:
+      "After confirmation, you will no longer be able to change your first name, last name, date of birth, or other profile details from your student space.",
     confirmValidationCancel: "Go back and review",
     confirmValidationAction: "Confirm profile validation",
     validationInProgress: "Validation in progress...",
@@ -449,9 +479,11 @@ export const en = {
     editProfile: "Edit My Profile",
     profileUpdated: "Profile updated successfully",
     profileLockedTitle: "Profile already validated",
-    profileLockedDescription: "Your validated profile can no longer be edited from your student space. Contact the team if a correction is required.",
+    profileLockedDescription:
+      "Your validated profile can no longer be edited from your student space. Contact the team if a correction is required.",
     profileLockedSuccessTitle: "Profile validated",
-    profileLockedSuccessDescription: "Your information has been confirmed and your profile is now validated for the procedure.",
+    profileLockedSuccessDescription:
+      "Your information has been confirmed and your profile is now validated for the procedure.",
     profileLockedBadge: "Profile validated",
     profileLockedAt: "Validation date",
     errorTitle: "Error",
@@ -463,7 +495,8 @@ export const en = {
     targetProgramPlaceholder: "e.g. Master's in Computer Science",
     currentDegreePlaceholder: "e.g. Bachelor's in Law",
     notSpecified: "Not specified",
-    profileReminder: "Keep your profile updated to help our advisors find the best opportunities for you.",
+    profileReminder:
+      "Keep your profile updated to help our advisors find the best opportunities for you.",
   },
 
   // Login
@@ -488,16 +521,18 @@ export const en = {
     highlights: {
       secure: {
         title: "Secure Access",
-        description: "Your payments and documents are protected and linked to your account.",
+        description:
+          "Your payments and documents are protected and linked to your account.",
       },
       followup: {
         title: "Easy Follow-up",
-        description: "Keep all your application details and updates in one place.",
+        description:
+          "Keep all your application details and updates in one place.",
       },
       journey: {
         title: "Seamless Journey",
         description: "Continue directly to your next academic milestone.",
-      }
+      },
     },
   },
 
@@ -514,10 +549,12 @@ export const en = {
     ctaPrimary: "Book a consultation",
     ctaSecondary: "Review our services",
     contactTitle: "Contact",
-    contactDescription: "Reach us directly for guidance, follow-up, or questions about your file.",
+    contactDescription:
+      "Reach us directly for guidance, follow-up, or questions about your file.",
     officeLabel: "Office",
     responseLabel: "Response window",
-    responseCopy: "We usually reply within 24 to 48 hours with the next recommended step.",
+    responseCopy:
+      "We usually reply within 24 to 48 hours with the next recommended step.",
     stayUpdated: "Stay Updated",
     subscribeText: "Subscribe to get the latest news and updates.",
     emailPlaceholder: "Your email",
@@ -539,10 +576,12 @@ export const en = {
 
   blog: {
     seoTitle: "Blog & Academic Guides",
-    seoDescription: "Discover our comprehensive guides to succeed in your academic mobility from Cameroon.",
+    seoDescription:
+      "Discover our comprehensive guides to succeed in your academic mobility from Cameroon.",
     heroTitleLeading: "Academic",
     heroTitleHighlight: "Expertise & Blog",
-    heroSubtitle: "Everything you need to prepare your next move: scholarships, visas, and university choices.",
+    heroSubtitle:
+      "Everything you need to prepare your next move: scholarships, visas, and university choices.",
     readMore: "Read article",
     untitled: "Untitled",
     noDescription: "No description available.",
@@ -553,7 +592,8 @@ export const en = {
     backToBlog: "Back to blog",
     authorRole: "Expert advisory",
     ctaTitle: "Ready to launch your academic project?",
-    ctaDescription: "Book a personalized consultation with our experts to define your strategy.",
+    ctaDescription:
+      "Book a personalized consultation with our experts to define your strategy.",
     ctaButton: "Book now",
   },
 
@@ -567,55 +607,67 @@ export const en = {
     backHome: "Back to Home",
     success: {
       title: "Payment Confirmed",
-      description: "Your consultation is confirmed. We will contact you shortly with the next steps.",
+      description:
+        "Your consultation is confirmed. We will contact you shortly with the next steps.",
       steps: {
         email: {
           title: "Check Your Email",
-          description: "We have sent a confirmation email with your payment receipt.",
+          description:
+            "We have sent a confirmation email with your payment receipt.",
         },
         invite: {
           title: "Await Consultation Invite",
-          description: "A consultant will contact you within 24-48 hours to schedule your session.",
+          description:
+            "A consultant will contact you within 24-48 hours to schedule your session.",
         },
         questions: {
           title: "Prepare Your Questions",
-          description: "Think about your academic goals and prepare any questions you have.",
+          description:
+            "Think about your academic goals and prepare any questions you have.",
         },
       },
     },
     pending: {
       title: "Payment Submitted",
-      description: "We received your payment request, but it still needs confirmation before the consultation is confirmed.",
+      description:
+        "We received your payment request, but it still needs confirmation before the consultation is confirmed.",
       steps: {
         proof: {
           title: "Keep Your Proof of Payment",
-          description: "Keep the transfer or mobile money receipt available until our team validates it.",
+          description:
+            "Keep the transfer or mobile money receipt available until our team validates it.",
         },
         inbox: {
           title: "Watch Your Inbox",
-          description: "We will email you as soon as the payment is verified or if we need more information.",
+          description:
+            "We will email you as soon as the payment is verified or if we need more information.",
         },
         help: {
           title: "Need Help?",
-          description: "Contact support if you need to update your payment details or resend proof.",
+          description:
+            "Contact support if you need to update your payment details or resend proof.",
         },
       },
     },
     error: {
       title: "Unable to Verify Payment",
-      description: "This page could not confirm your payment status. Return to checkout or contact support for help.",
+      description:
+        "This page could not confirm your payment status. Return to checkout or contact support for help.",
       steps: {
         support: {
           title: "Contact Support",
-          description: "Share your payment reference or receipt so the team can help you quickly.",
+          description:
+            "Share your payment reference or receipt so the team can help you quickly.",
         },
         retry: {
           title: "Do Not Retry Blindly",
-          description: "Avoid repeating the payment until the previous attempt has been checked.",
+          description:
+            "Avoid repeating the payment until the previous attempt has been checked.",
         },
         checkout: {
           title: "Return to Checkout",
-          description: "You can go back to the checkout page once the issue is clarified.",
+          description:
+            "You can go back to the checkout page once the issue is clarified.",
         },
       },
     },
@@ -665,7 +717,8 @@ export const en = {
     submitErrorDescription:
       "Your request could not be submitted right now. Please try again in a moment.",
     nextStepsTitle: "Next steps",
-    nextStepsProfile: "Validate your student profile information from the dashboard.",
+    nextStepsProfile:
+      "Validate your student profile information from the dashboard.",
     nextStepsSubmit: "Submit your procedure request from this private page.",
     nextStepsPayment: "Pay the consultation fee to activate your file.",
     supportHint:
@@ -720,18 +773,21 @@ export const en = {
       "Track pending, accepted, and failed payment attempts in one place.",
     openPayments: "Open payments",
     crmTitle: "Client Management (CRM)",
-    crmDescription: "Manage student files, update statuses, and validate secured documents.",
+    crmDescription:
+      "Manage student files, update statuses, and validate secured documents.",
     openCrm: "Open CRM",
     publishedPosts: "Published Posts",
     blogTitle: "Blog Management (SEO)",
-    blogDescription: "Write new guides, edit existing articles, or hide drafts.",
+    blogDescription:
+      "Write new guides, edit existing articles, or hide drafts.",
     manageBlogs: "Manage blog",
     newArticle: "New Article",
     operationalOverview: "Operational Overview",
     operationalDescription:
       "Move quickly between files, leads, payments, and editorial tasks without losing the operational picture.",
     actionRequiredTitle: "Action Required",
-    actionRequiredDescription: "This is where the current workload concentrates right now.",
+    actionRequiredDescription:
+      "This is where the current workload concentrates right now.",
     reviewDocumentsTitle: "Documents waiting for review",
     reviewDocumentsDescription:
       "Student uploads that still require an admin decision.",
@@ -748,17 +804,21 @@ export const en = {
       description:
         "Update the XAF amount used on the checkout page and by the CinetPay transaction creation.",
       amountLabel: "Amount charged",
-      amountHelp: "Enter an amount in XAF. CinetPay amounts must be positive and multiples of 5.",
+      amountHelp:
+        "Enter an amount in XAF. CinetPay amounts must be positive and multiples of 5.",
       currentPriceLabel: "Current price",
       save: "Save price",
       saving: "Saving...",
       loading: "Loading...",
       invalidAmountTitle: "Invalid amount",
-      invalidAmountDescription: "Use a positive XAF amount that is a multiple of 5.",
+      invalidAmountDescription:
+        "Use a positive XAF amount that is a multiple of 5.",
       updateSuccessTitle: "Price updated",
-      updateSuccessDescription: "The consultation price is now used by checkout and CinetPay.",
+      updateSuccessDescription:
+        "The consultation price is now used by checkout and CinetPay.",
       updateErrorTitle: "Update failed",
-      updateErrorDescription: "The consultation price could not be updated. Try again.",
+      updateErrorDescription:
+        "The consultation price could not be updated. Try again.",
     },
     metrics: {
       activeStudents: "Active Files",
@@ -815,14 +875,19 @@ export const en = {
     contentEn: "Formatted Content (EN)",
     titleFrPlaceholder: "Ex: How to prepare a scholarship application",
     slugFrPlaceholder: "Ex: guide-bourses-canada",
-    excerptFrPlaceholder: "Summarize the article in one clear sentence for readers.",
-    contentFrPlaceholder: "Write the French article content with the editor below.",
+    excerptFrPlaceholder:
+      "Summarize the article in one clear sentence for readers.",
+    contentFrPlaceholder:
+      "Write the French article content with the editor below.",
     titleEnPlaceholder: "Ex: How to get a scholarship for Canada",
     slugEnPlaceholder: "Ex: canada-scholarship-guide",
     excerptEnPlaceholder: "Summarize the article in one clear sentence.",
-    contentEnPlaceholder: "Write the English article content with the editor below.",
-    contentFrHelper: "Use headings, lists, quotes, and links to structure the French article.",
-    contentEnHelper: "Use headings, lists, quotes, and links to structure the English article.",
+    contentEnPlaceholder:
+      "Write the English article content with the editor below.",
+    contentFrHelper:
+      "Use headings, lists, quotes, and links to structure the French article.",
+    contentEnHelper:
+      "Use headings, lists, quotes, and links to structure the English article.",
     requiredHint: "All fields are required to create or update an article.",
     cancel: "Cancel",
     save: "Save Bilingual Article",
@@ -912,10 +977,14 @@ export const en = {
       validatedProfiles: "Validated Profiles",
       paidConsultations: "Paid Consultations",
       pendingDocuments: "Documents to Review",
-      totalStudentsDescription: "Students currently tracked inside the admissions pipeline.",
-      validatedProfilesDescription: "Profiles validated and ready to progress to the next step.",
-      paidConsultationsDescription: "Students with a confirmed consultation payment or accepted transaction.",
-      pendingDocumentsDescription: "Student files that still contain at least one pending document.",
+      totalStudentsDescription:
+        "Students currently tracked inside the admissions pipeline.",
+      validatedProfilesDescription:
+        "Profiles validated and ready to progress to the next step.",
+      paidConsultationsDescription:
+        "Students with a confirmed consultation payment or accepted transaction.",
+      pendingDocumentsDescription:
+        "Student files that still contain at least one pending document.",
     },
     empty: "No student records found.",
     noEmail: "No email",
@@ -925,11 +994,13 @@ export const en = {
     studentUpdated: "Student profile updated successfully",
     updateFailed: "Update failed",
     statusUpdated: "Status updated",
-    applicationStatusChangedSummary: "Application status changed from {from} to {to}.",
+    applicationStatusChangedSummary:
+      "Application status changed from {from} to {to}.",
     unknownStatus: "Unknown status",
     documentUpdated: "Document updated",
     documentRequestTitle: "Document requests",
-    documentRequestDescription: "Create a targeted request that will appear in the student's dashboard.",
+    documentRequestDescription:
+      "Create a targeted request that will appear in the student's dashboard.",
     documentRequestNameLabel: "Requested document",
     documentRequestNamePlaceholder: "Example: Passport copy",
     documentRequestDetailsLabel: "Instructions",
@@ -938,7 +1009,8 @@ export const en = {
     documentRequestCreating: "Requesting...",
     documentRequestCreated: "Document request sent",
     documentRequestRequiredTitle: "Document name required",
-    documentRequestRequiredDescription: "Enter the document name before sending the request.",
+    documentRequestRequiredDescription:
+      "Enter the document name before sending the request.",
     documentRequestsEmpty: "No document request yet.",
     documentRequestStatuses: {
       pending: "Pending",
@@ -949,10 +1021,13 @@ export const en = {
     profilePendingValidation: "Pending validation",
     profileCorrectionRequested: "Correction requested",
     correctionComment: "Correction comment",
-    correctionCommentPlaceholder: "Explain what the student must correct before validating again...",
+    correctionCommentPlaceholder:
+      "Explain what the student must correct before validating again...",
     correctionCommentRequiredTitle: "Correction comment required",
-    correctionCommentRequiredDescription: "Add a correction comment before reopening the profile for the student.",
-    correctionRequestedSuccess: "Correction request sent to the student profile",
+    correctionCommentRequiredDescription:
+      "Add a correction comment before reopening the profile for the student.",
+    correctionRequestedSuccess:
+      "Correction request sent to the student profile",
     requestCorrection: "Request correction",
     editDialogTitle: "Edit Student Profile",
     fields: {
@@ -963,7 +1038,8 @@ export const en = {
       targetProgram: "Target Program",
       currentDegree: "Current Degree",
       generalNote: "General Advisor Note (Visible to Student)",
-      generalNotePlaceholder: "Message for the student about their application...",
+      generalNotePlaceholder:
+        "Message for the student about their application...",
     },
     saveChanges: "Save Changes",
     documentsTitle: "Documents for",
@@ -1000,8 +1076,7 @@ export const en = {
     subtitle:
       "Monitor prospect intake, payment progression, and follow-up opportunities before a student file is opened.",
     openPayments: "Open payments",
-    searchPlaceholder:
-      "Search by name, email, phone, status, or message...",
+    searchPlaceholder: "Search by name, email, phone, status, or message...",
     noPhone: "No phone provided",
     noMessage: "No message available",
     notProvided: "Not provided",
@@ -1014,10 +1089,8 @@ export const en = {
       followUpDue: "Follow-ups Due",
       totalDescription:
         "All captured prospects across the website and private procedure flow.",
-      paidDescription:
-        "Leads already converted into paid consultations.",
-      pendingDescription:
-        "Leads with a payment still awaiting confirmation.",
+      paidDescription: "Leads already converted into paid consultations.",
+      pendingDescription: "Leads with a payment still awaiting confirmation.",
       followUpDescription:
         "Leads whose next follow-up date is due or already overdue.",
     },
@@ -1070,13 +1143,11 @@ export const en = {
       pending: "Pending",
       failed: "Failed or Refused",
       acceptedAmount: "Accepted Volume",
-      totalDescription:
-        "All tracked payment attempts in the current system.",
+      totalDescription: "All tracked payment attempts in the current system.",
       acceptedDescription: "Transactions confirmed as successful.",
       pendingDescription:
         "Transactions still awaiting a final provider confirmation.",
-      failedDescription:
-        "Transactions that ended in failure or refusal.",
+      failedDescription: "Transactions that ended in failure or refusal.",
       acceptedAmountDescription:
         "Total confirmed volume based on accepted transactions.",
     },
@@ -1167,7 +1238,8 @@ export const en = {
       providerReferenceLabel: "Transaction reference",
       notesLabel: "Client note",
       commentLabel: "Comment for the client",
-      commentPlaceholder: "e.g. The receipt does not match the expected amount.",
+      commentPlaceholder:
+        "e.g. The receipt does not match the expected amount.",
       approveButton: "Approve payment",
       rejectButton: "Reject",
       blockButton: "Block this lead",
@@ -1298,7 +1370,8 @@ export const en = {
     backHome: "Back to Home",
     back: "Back",
     currentStatus: "Current status",
-    currentStatusCopy: "This page is a temporary public placeholder while the final legal copy is being prepared.",
+    currentStatusCopy:
+      "This page is a temporary public placeholder while the final legal copy is being prepared.",
     contactTitle: "Contact",
     contactTeam: "Contact the Team",
     returnHome: "Return Home",
@@ -1433,7 +1506,8 @@ enDashboard.paymentConfirmedTitle = "Payment confirmed";
 enDashboard.paymentConfirmedDescription =
   "Your payment is confirmed. The team can now continue processing your file.";
 enDashboard.proceedToPayment = "Go to payment";
-enDashboard.completeProfileForPayment = "Complete and validate your profile before paying.";
+enDashboard.completeProfileForPayment =
+  "Complete and validate your profile before paying.";
 enDashboard.paymentAvailableAfterProfile =
   "The payment link will appear here as soon as your profile has been validated.";
 enDashboard.procedureStartedBadge = "Procedure active";
@@ -1483,12 +1557,14 @@ enContactForm.phoneAlreadyUsedDescription =
 en.adminCRM.openStudent = "Open file";
 en.adminCRM.notesTitle = "Internal notes";
 en.adminCRM.notesDescription = "Private notes for the admin team only.";
-en.adminCRM.notePlaceholder = "Add an internal note about follow-up, risks, or next actions...";
+en.adminCRM.notePlaceholder =
+  "Add an internal note about follow-up, risks, or next actions...";
 en.adminCRM.addNote = "Add note";
 en.adminCRM.noteAdded = "Internal note added";
 en.adminCRM.noNotes = "No internal notes yet.";
 en.adminCRM.historyTitle = "Activity history";
-en.adminCRM.historyDescription = "Trace the latest admin actions on this student file.";
+en.adminCRM.historyDescription =
+  "Trace the latest admin actions on this student file.";
 en.adminCRM.noHistory = "No admin activity recorded yet.";
 en.adminCRM.historyActions = {
   profile_updated: "Profile updated",
@@ -1545,7 +1621,8 @@ enAdminCRMSheet.paymentPendingAction =
   "The payment is still pending provider confirmation and should be monitored.";
 enAdminCRMSheet.paymentMissingAction =
   "No confirmed consultation payment is visible yet on this file.";
-enAdminCRMSheet.documentsPendingAction = "{count} document(s) still need an admin review.";
+enAdminCRMSheet.documentsPendingAction =
+  "{count} document(s) still need an admin review.";
 enAdminCRMSheet.notesMissingAction =
   "No internal note has been recorded yet for the team follow-up.";
 
@@ -1586,11 +1663,14 @@ enLoginVerification.verificationRequiredDescription =
   sentTitle: "Code sent",
   sentDescription: "A verification code was prepared for {channel}.",
   verifiedTitle: "Verification completed",
-  verifiedDescription: "Your contact details are confirmed. Sign in to continue your procedure.",
+  verifiedDescription:
+    "Your contact details are confirmed. Sign in to continue your procedure.",
   alreadyVerifiedTitle: "Verification already completed",
-  alreadyVerifiedDescription: "Your contact details are already verified. You can sign in normally.",
+  alreadyVerifiedDescription:
+    "Your contact details are already verified. You can sign in normally.",
   signInTitle: "Sign in required",
-  signInDescription: "Use your email and password to continue after the verification step.",
+  signInDescription:
+    "Use your email and password to continue after the verification step.",
   emailChannelLabel: "Email code",
   smsChannelLabel: "SMS code",
   emailChannelDescription: "Confirm the email address linked to your account.",
