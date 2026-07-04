@@ -30,11 +30,11 @@ const About = () => {
             </div>
             
             {/* Subtle metrics overlay */}
-            <div className="absolute -bottom-6 -right-6 hidden rounded-3xl border border-border/50 bg-white p-8 shadow-medium md:block animate-in zoom-in-95 duration-1000 delay-300">
-              <div className="flex flex-col gap-6">
+            <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 xl:translate-x-8 xl:translate-y-8 hidden rounded-3xl border border-border/50 bg-white p-6 shadow-medium md:block animate-in zoom-in-95 duration-1000 delay-300">
+              <div className="flex flex-col gap-5">
                 {metrics.slice(1).map((metric) => (
                   <div key={metric.label}>
-                    <p className="text-3xl font-bold text-primary">{metric.value}</p>
+                    <p className="text-2xl font-bold text-primary">{metric.value}</p>
                     <p className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
                       {metric.label}
                     </p>
@@ -70,8 +70,8 @@ const About = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button size="xl" asChild className="group px-10">
-                <a href="#contact" className="flex items-center gap-2">
+              <Button size="xl" asChild className="group px-10 w-full sm:w-auto">
+                <a href="#contact" className="flex items-center justify-center gap-2 w-full">
                   {t.about.learnMore}
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </a>

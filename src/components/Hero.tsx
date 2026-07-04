@@ -61,8 +61,8 @@ const Hero = () => {
             </div>
 
             <div className="mt-12 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-              <Button variant="hero" size="xl" asChild className="group px-8">
-                <a href="#contact" className="flex items-center gap-2">
+              <Button variant="hero" size="xl" asChild className="group px-8 w-full sm:w-auto">
+                <a href="#contact" className="flex items-center justify-center gap-2 w-full">
                   {t.hero.ctaPrimary}
                   <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                 </a>
@@ -71,9 +71,9 @@ const Hero = () => {
                 variant="ghost"
                 size="xl"
                 asChild
-                className="text-foreground/70 hover:text-primary hover:bg-primary/5"
+                className="w-full sm:w-auto text-foreground/70 hover:text-primary hover:bg-primary/5"
               >
-                <a href="#services">{t.hero.ctaSecondary}</a>
+                <a href="#services" className="flex justify-center w-full">{t.hero.ctaSecondary}</a>
               </Button>
             </div>
 
