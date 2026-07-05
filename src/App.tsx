@@ -11,6 +11,8 @@ const Index = lazy(() => import("./pages/Index"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Verify2FA = lazy(() => import("./pages/Verify2FA"));
 const VerifyContact = lazy(() => import("./pages/VerifyContact"));
 const StartProcedure = lazy(() => import("./pages/StartProcedure"));
@@ -51,6 +53,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-2fa" element={<Verify2FA />} />
               <Route path="/verify-contact" element={<VerifyContact />} />
               <Route path="/start-procedure" element={<StartProcedure />} />

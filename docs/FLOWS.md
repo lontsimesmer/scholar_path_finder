@@ -144,7 +144,46 @@ Distinction produit :
 - `student_profile` : identité et profil académique
 - `student_application` : dossier actif payé
 
-## 8. Ordre de Lecture Recommandé
+## 8. Réinitialisation du Mot de Passe
+
+Point d'entrée :
+
+- lien "Mot de passe oublié ?" sur l'onglet "Se connecter" de [Login.tsx](../src/pages/Login.tsx)
+- redirige vers [ForgotPassword.tsx](../src/pages/ForgotPassword.tsx) via la route `/forgot-password`
+
+Ce qui se passe :
+
+1. l'utilisateur saisit son email
+2. le frontend appelle l'Edge Function `send-password-reset` avec `{ email, redirectTo: <origin>/reset-password }`
+3. quelle que soit la réponse (email inconnu, rate limit, erreur SMTP), l'UI affiche le même toast succès pour empêcher l'énumération d'emails
+4. côté Edge Function :
+   - rate-limit IP (20 requêtes / 30 min) puis rate-limit email (1 / 60s)
+   - si Brevo configuré (`BREVO_API_KEY` + `BREVO_EMAIL_SENDER` en prod), appelle `supabase.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } })` avec la service role key. `generateLink` retourne l'URL PKCE sans envoyer d'email. L'Edge Function envoie ensuite le mail via Brevo avec le template FR intégré à la fonction
+   - si Brevo non configuré (dev local), fallback sur `supabase.auth.resetPasswordForEmail(email, { redirectTo })` qui utilise le SMTP local et livre l'email dans Inbucket avec le template `supabase/templates/recovery.html`
+5. l'utilisateur clique sur le lien et arrive sur [ResetPassword.tsx](../src/pages/ResetPassword.tsx) via `/reset-password?code=<pkce>`
+6. la page appelle `supabase.auth.exchangeCodeForSession(code)` pour établir une session de recovery
+7. si le code est invalide ou expiré, l'écran propose de redemander un lien
+8. si la session est établie, l'utilisateur saisit un nouveau mot de passe (min 8 caractères, confirmation identique)
+9. le frontend appelle `supabase.auth.updateUser({ password })`, puis `supabase.auth.signOut()` pour forcer une reconnexion propre
+10. l'utilisateur est redirigé vers `/login` avec un toast de confirmation
+
+Règles de sécurité :
+
+- l'existence d'un email n'est jamais révélée par l'UI
+- le code PKCE est à usage unique et le lien expire au bout de 10 minutes (`otp_expiry = 600` dans `supabase/config.toml`)
+- redemander un nouveau lien invalide le précédent
+- après reset, la session est fermée pour forcer une réauthentification propre
+- double rate-limit côté Edge Function : IP (20 / 30 min) + email (1 / 60s), les deux persistés dans `edge_request_events` via `enforceRequestRateLimit`
+- l'Edge Function utilise `verify_jwt = false` (aucune session requise pour un mot de passe oublié) mais exige la service role key en interne pour appeler `admin.generateLink`
+
+Configuration requise :
+
+- `supabase/config.toml` : `/reset-password` dans `additional_redirect_urls`, `[auth.email]` avec `otp_expiry` et `max_frequency`, et `[functions.send-password-reset] verify_jwt = false`
+- `supabase/templates/recovery.html` : template local pour le fallback Inbucket
+- `supabase/functions/send-password-reset/index.ts` : contient une copie FR du HTML pour la prod (indépendante des templates Auth Supabase, ce qui débloque le Free tier)
+- côté projet Supabase distant : secrets `BREVO_API_KEY`, `BREVO_EMAIL_SENDER`, `SITE_URL` (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
+
+## 9. Ordre de Lecture Recommandé
 
 1. [README.md](../README.md)
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)

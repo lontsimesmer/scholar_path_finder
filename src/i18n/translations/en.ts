@@ -512,6 +512,7 @@ export const en = {
     signUpSuccessDescription: "Account created. Please check your email.",
     brandSubtitle: "Expert Academic Advisory",
     emailPlaceholder: "your@email.com",
+    forgotPasswordLink: "Forgot password?",
     highlights: {
       secure: {
         title: "Secure Access",
@@ -526,6 +527,43 @@ export const en = {
         description: "Continue directly to your next academic milestone.",
       }
     },
+  },
+
+  forgotPassword: {
+    title: "Reset your password",
+    subtitle: "Enter the email linked to your Power Prestation account. We will send you a secure link to choose a new password.",
+    emailLabel: "Email address",
+    emailPlaceholder: "your@email.com",
+    submitLabel: "Send reset link",
+    submittingLabel: "Sending...",
+    backToLogin: "Back to sign in",
+    successTitle: "Check your inbox",
+    successDescription: "If an account exists for that email, we have sent instructions to reset your password. The link will expire shortly.",
+    errorTitle: "Error",
+    errorGeneric: "We could not send the reset email. Please try again in a few minutes.",
+  },
+
+  resetPassword: {
+    title: "Choose a new password",
+    subtitle: "Enter and confirm your new password. You will be signed out and asked to sign in again once it is updated.",
+    verifyingTitle: "Checking your link...",
+    verifyingSubtitle: "Please wait while we validate your reset link.",
+    invalidTitle: "Link invalid or expired",
+    invalidDescription: "This reset link is no longer valid. Request a new one from the sign in page.",
+    newPasswordLabel: "New password",
+    newPasswordPlaceholder: "At least 8 characters",
+    confirmPasswordLabel: "Confirm new password",
+    confirmPasswordPlaceholder: "Re-type the new password",
+    showPasswordLabel: "Show password",
+    hidePasswordLabel: "Hide password",
+    submitLabel: "Update password",
+    submittingLabel: "Updating...",
+    backToLogin: "Back to sign in",
+    requestNewLink: "Request a new link",
+    successTitle: "Password updated",
+    successDescription: "Sign in with your new password to continue.",
+    errorTitle: "Error",
+    errorGeneric: "We could not update your password. Please try again.",
   },
 
   // Footer

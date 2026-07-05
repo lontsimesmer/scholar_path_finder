@@ -271,9 +271,9 @@ const Login = () => {
                           </label>
                           <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
                             <Mail size={18} className="text-muted-foreground/30" />
-                            <Input 
-                              type="email" 
-                              required 
+                            <Input
+                              type="email"
+                              required
                               value={email}
                               onChange={e => setEmail(e.target.value)}
                               placeholder={t.login.emailPlaceholder}
@@ -287,9 +287,9 @@ const Login = () => {
                           </label>
                           <div className="flex items-center gap-4 border-b border-border/40 group-focus-within:border-primary transition-all duration-500">
                             <Lock size={18} className="text-muted-foreground/30" />
-                            <Input 
-                              type={showPassword ? "text" : "password"} 
-                              required 
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              required
                               value={password}
                               onChange={e => setPassword(e.target.value)}
                               className="border-0 rounded-none px-0 focus-visible:ring-0 h-10 bg-transparent w-full"
@@ -300,6 +300,15 @@ const Login = () => {
                               className="text-muted-foreground/30 hover:text-primary transition-colors"
                             >
                               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                          <div className="flex justify-end pt-1">
+                            <button
+                              type="button"
+                              onClick={() => navigate("/forgot-password")}
+                              className="text-xs font-medium text-muted-foreground/70 hover:text-primary transition-colors"
+                            >
+                              {t.login.forgotPasswordLink}
                             </button>
                           </div>
                         </div>

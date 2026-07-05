@@ -196,6 +196,7 @@ Dans les paramètres Auth du dashboard Supabase, configurer :
   - exemple : `https://your-domain.com`
 - URLs de redirection
   - inclure chaque origine frontend réelle qui doit s’authentifier
+  - inclure explicitement `https://your-domain.com/reset-password` pour que le flux "mot de passe oublié" fonctionne (l'allowlist Supabase n'accepte pas de préfixe implicite)
   - inclure les domaines admin ou preview seulement si nécessaire
 
 Pour ce dépôt, l’origine principale de production devrait normalement être la même valeur que `SITE_URL`.
@@ -204,6 +205,52 @@ Rester strict :
 
 - ne pas laisser d’URLs de développement en production sauf besoin réel
 - supprimer les domaines preview ou test obsolètes
+
+### Réinitialisation de mot de passe (Edge Function `send-password-reset`)
+
+Le flux "mot de passe oublié" **ne dépend pas** du template ni du SMTP Auth de Supabase en production. À la place, le frontend appelle l'Edge Function `send-password-reset` qui :
+
+1. génère le lien de recovery via `supabase.auth.admin.generateLink({ type: "recovery" })` (sans envoi automatique — Supabase retourne juste l'URL PKCE)
+2. envoie l'email via Brevo avec un template FR embarqué dans le code de la fonction
+
+Cela permet de rester sur le plan Free Supabase (les templates personnalisés côté dashboard Auth sont Pro-only) tout en gardant un email cohérent avec la marque et une délivrabilité correcte.
+
+Prérequis en production :
+
+- secrets `BREVO_API_KEY` et `BREVO_EMAIL_SENDER` définis dans le projet Supabase (déjà utilisés par la vérification contact)
+- secret `SITE_URL` défini pour construire le `redirectTo` par défaut
+- Edge Function déployée : `npx supabase functions deploy send-password-reset --project-ref <ref>`
+- `/reset-password` présent dans les Redirect URLs du dashboard (voir section 5)
+
+Le template `supabase/templates/recovery.html` reste utilisé **uniquement en dev local** : quand l'Edge Function tourne avec la stack CLI locale et que Brevo n'est pas configuré, elle fait un fallback sur `supabase.auth.resetPasswordForEmail`, ce qui délivre le mail dans Inbucket avec le template `config.toml`.
+
+Pour tester en prod après déploiement :
+
+1. aller sur `${SITE_URL}/forgot-password`
+2. saisir un email d'un compte réel
+3. vérifier la réception dans la boîte de l'utilisateur (pas dans le dashboard Supabase)
+4. cliquer le lien → atterrissage sur `/reset-password`
+5. saisir un nouveau mot de passe → redirection `/login`
+6. se reconnecter avec le nouveau mot de passe
+
+Debug : `mcp__supabase__get_logs` sur le service `edge-function` ou `Edge Functions → Logs` dans le dashboard.
+
+### Expiration du lien et fréquence de renvoi
+
+Le `supabase/config.toml` local fixe :
+
+```toml
+[auth.email]
+otp_expiry = 600         # 10 minutes de validité du lien de réinitialisation
+max_frequency = "1m"     # 60s minimum entre deux mails pour la même adresse
+```
+
+Ces valeurs ne sont **pas** poussées automatiquement en production. Depuis l'Edge Function :
+
+- l'expiration du lien PKCE reste contrôlée par `otp_expiry` côté GoTrue Supabase (à régler dans le dashboard si tu veux 10 min au lieu de 60 min par défaut — champ dispo à partir de Pro)
+- la fréquence de renvoi est appliquée **côté Edge Function** via `enforceRequestRateLimit` : 1 mail max par email toutes les 60s, 20 requêtes max par IP toutes les 30 min. Ces limites tournent sans dépendre du plan Supabase.
+
+Le frontend `/forgot-password` affiche toujours le même toast succès, donc un utilisateur qui re-clique dans la fenêtre de 60s ne verra pas d'erreur mais aucun nouveau mail ne partira.
 
 ## 6. Appliquer Flyway sur la Base Distante
 
@@ -411,6 +458,9 @@ Après configuration, valider cette checklist.
 - les redirections Auth reviennent vers le bon domaine de production
 - la connexion étudiant fonctionne
 - la connexion admin fonctionne
+- `${SITE_URL}/reset-password` est dans les Redirect URLs
+- le template email `Reset Password` est aligné sur `supabase/templates/recovery.html`
+- un test bout en bout du "mot de passe oublié" passe : lien reçu, page `/reset-password`, mot de passe changé, reconnexion réussie
 
 ### Base de données
 
