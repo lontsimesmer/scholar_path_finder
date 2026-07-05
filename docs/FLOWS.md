@@ -167,13 +167,14 @@ Ce qui se passe :
 Règles de sécurité :
 
 - l'existence d'un email n'est jamais révélée par l'UI
-- le code PKCE est à usage unique et à durée de vie courte (contrôlé par Supabase)
+- le code PKCE est à usage unique et le lien expire au bout de 10 minutes (`otp_expiry = 600` dans `supabase/config.toml`)
+- redemander un nouveau lien invalide le précédent
 - après reset, la session est fermée pour forcer une réauthentification propre
-- le rate-limit sur `resetPasswordForEmail` est appliqué par Supabase côté serveur
+- rate-limit d'envoi : 60s minimum entre deux mails pour la même adresse (`max_frequency = "1m"`), quota horaire global appliqué par Supabase
 
 Configuration requise :
 
-- `supabase/config.toml` : `/reset-password` doit être présent dans `additional_redirect_urls`
+- `supabase/config.toml` : `/reset-password` dans `additional_redirect_urls`, `[auth.email]` avec `otp_expiry` et `max_frequency`
 - template `supabase/templates/recovery.html` : versionné localement, à recopier dans le dashboard du projet Supabase distant (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
 
 ## 9. Ordre de Lecture Recommandé

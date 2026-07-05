@@ -222,6 +222,23 @@ Marche à suivre :
 
 SMTP requis : sans SMTP custom configuré, Supabase utilise son SMTP par défaut avec un quota strict et un domaine expéditeur `@supabase.io`. Pour un usage réel, configurer un SMTP custom (Brevo, Amazon SES, Postmark…) dans `Authentication → Emails → SMTP settings`.
 
+### Expiration du lien et fréquence de renvoi
+
+Le `supabase/config.toml` local fixe :
+
+```toml
+[auth.email]
+otp_expiry = 600         # 10 minutes de validité du lien de réinitialisation
+max_frequency = "1m"     # 60s minimum entre deux mails pour la même adresse
+```
+
+Ces valeurs ne sont **pas** poussées automatiquement en production. À reporter dans le dashboard :
+
+- `Authentication → Email → Email OTP Expiration` : mettre `600` (secondes) — le défaut est `3600`
+- `Authentication → Rate limits → Time-based token generation frequency` : mettre `60s` pour aligner sur `max_frequency = "1m"`
+
+Ces limites protègent contre le spam et la force brute sans dégrader l'UX : le frontend `/forgot-password` affiche toujours le même toast succès, donc un utilisateur qui re-clique dans la fenêtre de 60s ne verra pas d'erreur mais aucun nouveau mail ne partira.
+
 ## 6. Appliquer Flyway sur la Base Distante
 
 La source de vérité est :

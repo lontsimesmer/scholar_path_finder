@@ -37,6 +37,10 @@ additional_redirect_urls = [
   "http://localhost:8080/reset-password",
 ]
 
+[auth.email]
+otp_expiry = 600
+max_frequency = "1m"
+
 [auth.email.template.recovery]
 subject = "Réinitialisez votre mot de passe — Power Prestation"
 content_path = "./supabase/templates/recovery.html"
