@@ -99,6 +99,9 @@ verify_jwt = false
 [functions.get-contact-verification-status]
 verify_jwt = false
 
+[functions.send-password-reset]
+verify_jwt = false
+
 [functions.submit-manual-payment]
 verify_jwt = true
 

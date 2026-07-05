@@ -206,21 +206,34 @@ Rester strict :
 - ne pas laisser d’URLs de développement en production sauf besoin réel
 - supprimer les domaines preview ou test obsolètes
 
-### Template email de réinitialisation
+### Réinitialisation de mot de passe (Edge Function `send-password-reset`)
 
-Le fichier local `supabase/templates/recovery.html` sert de source de vérité pour l'email de réinitialisation en dev. En production, Supabase n'importe pas automatiquement les templates du `config.toml` : il faut recopier manuellement le contenu dans le dashboard.
+Le flux "mot de passe oublié" **ne dépend pas** du template ni du SMTP Auth de Supabase en production. À la place, le frontend appelle l'Edge Function `send-password-reset` qui :
 
-Marche à suivre :
+1. génère le lien de recovery via `supabase.auth.admin.generateLink({ type: "recovery" })` (sans envoi automatique — Supabase retourne juste l'URL PKCE)
+2. envoie l'email via Brevo avec un template FR embarqué dans le code de la fonction
 
-1. dans le dashboard Supabase, aller dans `Authentication → Emails → Templates → Reset Password`
-2. remplacer le contenu HTML par le contenu de `supabase/templates/recovery.html`
-3. mettre à jour le sujet en `Réinitialisez votre mot de passe — Power Prestation`
-4. conserver la variable `{{ .ConfirmationURL }}` telle quelle : Supabase la remplace au moment de l'envoi par une URL PKCE qui redirige vers `${SITE_URL}/reset-password?code=...`
-5. envoyer un test depuis le dashboard, cliquer sur le lien et vérifier l'atterrissage sur `/reset-password`
+Cela permet de rester sur le plan Free Supabase (les templates personnalisés côté dashboard Auth sont Pro-only) tout en gardant un email cohérent avec la marque et une délivrabilité correcte.
 
-À chaque modification de `supabase/templates/recovery.html` dans le dépôt, refaire la même mise à jour côté dashboard prod.
+Prérequis en production :
 
-SMTP requis : sans SMTP custom configuré, Supabase utilise son SMTP par défaut avec un quota strict et un domaine expéditeur `@supabase.io`. Pour un usage réel, configurer un SMTP custom (Brevo, Amazon SES, Postmark…) dans `Authentication → Emails → SMTP settings`.
+- secrets `BREVO_API_KEY` et `BREVO_EMAIL_SENDER` définis dans le projet Supabase (déjà utilisés par la vérification contact)
+- secret `SITE_URL` défini pour construire le `redirectTo` par défaut
+- Edge Function déployée : `npx supabase functions deploy send-password-reset --project-ref <ref>`
+- `/reset-password` présent dans les Redirect URLs du dashboard (voir section 5)
+
+Le template `supabase/templates/recovery.html` reste utilisé **uniquement en dev local** : quand l'Edge Function tourne avec la stack CLI locale et que Brevo n'est pas configuré, elle fait un fallback sur `supabase.auth.resetPasswordForEmail`, ce qui délivre le mail dans Inbucket avec le template `config.toml`.
+
+Pour tester en prod après déploiement :
+
+1. aller sur `${SITE_URL}/forgot-password`
+2. saisir un email d'un compte réel
+3. vérifier la réception dans la boîte de l'utilisateur (pas dans le dashboard Supabase)
+4. cliquer le lien → atterrissage sur `/reset-password`
+5. saisir un nouveau mot de passe → redirection `/login`
+6. se reconnecter avec le nouveau mot de passe
+
+Debug : `mcp__supabase__get_logs` sur le service `edge-function` ou `Edge Functions → Logs` dans le dashboard.
 
 ### Expiration du lien et fréquence de renvoi
 
@@ -232,12 +245,12 @@ otp_expiry = 600         # 10 minutes de validité du lien de réinitialisation
 max_frequency = "1m"     # 60s minimum entre deux mails pour la même adresse
 ```
 
-Ces valeurs ne sont **pas** poussées automatiquement en production. À reporter dans le dashboard :
+Ces valeurs ne sont **pas** poussées automatiquement en production. Depuis l'Edge Function :
 
-- `Authentication → Email → Email OTP Expiration` : mettre `600` (secondes) — le défaut est `3600`
-- `Authentication → Rate limits → Time-based token generation frequency` : mettre `60s` pour aligner sur `max_frequency = "1m"`
+- l'expiration du lien PKCE reste contrôlée par `otp_expiry` côté GoTrue Supabase (à régler dans le dashboard si tu veux 10 min au lieu de 60 min par défaut — champ dispo à partir de Pro)
+- la fréquence de renvoi est appliquée **côté Edge Function** via `enforceRequestRateLimit` : 1 mail max par email toutes les 60s, 20 requêtes max par IP toutes les 30 min. Ces limites tournent sans dépendre du plan Supabase.
 
-Ces limites protègent contre le spam et la force brute sans dégrader l'UX : le frontend `/forgot-password` affiche toujours le même toast succès, donc un utilisateur qui re-clique dans la fenêtre de 60s ne verra pas d'erreur mais aucun nouveau mail ne partira.
+Le frontend `/forgot-password` affiche toujours le même toast succès, donc un utilisateur qui re-clique dans la fenêtre de 60s ne verra pas d'erreur mais aucun nouveau mail ne partira.
 
 ## 6. Appliquer Flyway sur la Base Distante
 

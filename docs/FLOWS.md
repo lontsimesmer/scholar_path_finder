@@ -154,9 +154,12 @@ Point d'entrée :
 Ce qui se passe :
 
 1. l'utilisateur saisit son email
-2. le frontend appelle `supabase.auth.resetPasswordForEmail(email, { redirectTo: <origin>/reset-password })`
-3. quelle que soit la réponse de Supabase (existant, inconnu, rate limit), l'UI affiche le même toast succès pour empêcher l'énumération d'emails
-4. si un compte existe, Supabase envoie un email basé sur le template `supabase/templates/recovery.html`
+2. le frontend appelle l'Edge Function `send-password-reset` avec `{ email, redirectTo: <origin>/reset-password }`
+3. quelle que soit la réponse (email inconnu, rate limit, erreur SMTP), l'UI affiche le même toast succès pour empêcher l'énumération d'emails
+4. côté Edge Function :
+   - rate-limit IP (20 requêtes / 30 min) puis rate-limit email (1 / 60s)
+   - si Brevo configuré (`BREVO_API_KEY` + `BREVO_EMAIL_SENDER` en prod), appelle `supabase.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } })` avec la service role key. `generateLink` retourne l'URL PKCE sans envoyer d'email. L'Edge Function envoie ensuite le mail via Brevo avec le template FR intégré à la fonction
+   - si Brevo non configuré (dev local), fallback sur `supabase.auth.resetPasswordForEmail(email, { redirectTo })` qui utilise le SMTP local et livre l'email dans Inbucket avec le template `supabase/templates/recovery.html`
 5. l'utilisateur clique sur le lien et arrive sur [ResetPassword.tsx](../src/pages/ResetPassword.tsx) via `/reset-password?code=<pkce>`
 6. la page appelle `supabase.auth.exchangeCodeForSession(code)` pour établir une session de recovery
 7. si le code est invalide ou expiré, l'écran propose de redemander un lien
@@ -170,12 +173,15 @@ Règles de sécurité :
 - le code PKCE est à usage unique et le lien expire au bout de 10 minutes (`otp_expiry = 600` dans `supabase/config.toml`)
 - redemander un nouveau lien invalide le précédent
 - après reset, la session est fermée pour forcer une réauthentification propre
-- rate-limit d'envoi : 60s minimum entre deux mails pour la même adresse (`max_frequency = "1m"`), quota horaire global appliqué par Supabase
+- double rate-limit côté Edge Function : IP (20 / 30 min) + email (1 / 60s), les deux persistés dans `edge_request_events` via `enforceRequestRateLimit`
+- l'Edge Function utilise `verify_jwt = false` (aucune session requise pour un mot de passe oublié) mais exige la service role key en interne pour appeler `admin.generateLink`
 
 Configuration requise :
 
-- `supabase/config.toml` : `/reset-password` dans `additional_redirect_urls`, `[auth.email]` avec `otp_expiry` et `max_frequency`
-- template `supabase/templates/recovery.html` : versionné localement, à recopier dans le dashboard du projet Supabase distant (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
+- `supabase/config.toml` : `/reset-password` dans `additional_redirect_urls`, `[auth.email]` avec `otp_expiry` et `max_frequency`, et `[functions.send-password-reset] verify_jwt = false`
+- `supabase/templates/recovery.html` : template local pour le fallback Inbucket
+- `supabase/functions/send-password-reset/index.ts` : contient une copie FR du HTML pour la prod (indépendante des templates Auth Supabase, ce qui débloque le Free tier)
+- côté projet Supabase distant : secrets `BREVO_API_KEY`, `BREVO_EMAIL_SENDER`, `SITE_URL` (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
 
 ## 9. Ordre de Lecture Recommandé
 

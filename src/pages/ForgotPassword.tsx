@@ -39,14 +39,17 @@ const ForgotPassword = () => {
     setIsSubmitting(true);
     logger.info("Requesting password reset email");
 
-    const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
-      redirectTo: buildRedirectTo(),
+    const { error } = await supabase.functions.invoke("send-password-reset", {
+      body: {
+        email: trimmed,
+        redirectTo: buildRedirectTo(),
+      },
     });
 
     setIsSubmitting(false);
 
     if (error) {
-      logger.warn("resetPasswordForEmail returned an error", {
+      logger.warn("send-password-reset invocation returned an error", {
         message: getErrorMessage(error),
       });
     }

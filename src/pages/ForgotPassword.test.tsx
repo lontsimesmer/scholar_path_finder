@@ -7,14 +7,14 @@ import { LanguageContext } from "@/i18n/language";
 import { en } from "@/i18n/translations/en";
 
 const mocks = vi.hoisted(() => ({
-  resetPasswordForEmail: vi.fn(),
+  invoke: vi.fn(),
   toast: vi.fn(),
 }));
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    auth: {
-      resetPasswordForEmail: mocks.resetPasswordForEmail,
+    functions: {
+      invoke: mocks.invoke,
     },
   },
 }));
@@ -36,12 +36,12 @@ const renderPage = () =>
 
 describe("ForgotPassword", () => {
   beforeEach(() => {
-    mocks.resetPasswordForEmail.mockReset();
+    mocks.invoke.mockReset();
     mocks.toast.mockReset();
   });
 
-  it("submits the request with the origin-based redirect URL and shows the generic success toast", async () => {
-    mocks.resetPasswordForEmail.mockResolvedValueOnce({ error: null });
+  it("invokes send-password-reset with the email and origin-based redirect URL, then shows the generic success toast", async () => {
+    mocks.invoke.mockResolvedValueOnce({ data: { ok: true }, error: null });
 
     renderPage();
 
@@ -51,13 +51,16 @@ describe("ForgotPassword", () => {
     fireEvent.click(screen.getByRole("button", { name: en.forgotPassword.submitLabel }));
 
     await waitFor(() => {
-      expect(mocks.resetPasswordForEmail).toHaveBeenCalledTimes(1);
+      expect(mocks.invoke).toHaveBeenCalledTimes(1);
     });
 
-    expect(mocks.resetPasswordForEmail).toHaveBeenCalledWith(
-      "student@example.com",
+    expect(mocks.invoke).toHaveBeenCalledWith(
+      "send-password-reset",
       expect.objectContaining({
-        redirectTo: `${window.location.origin}/reset-password`,
+        body: expect.objectContaining({
+          email: "student@example.com",
+          redirectTo: `${window.location.origin}/reset-password`,
+        }),
       }),
     );
 
@@ -69,9 +72,10 @@ describe("ForgotPassword", () => {
     });
   }, 10_000);
 
-  it("shows the same generic success toast when the underlying request fails, to avoid email enumeration", async () => {
-    mocks.resetPasswordForEmail.mockResolvedValueOnce({
-      error: { message: "rate limited" },
+  it("shows the same generic success toast when the edge function returns an error, to avoid email enumeration", async () => {
+    mocks.invoke.mockResolvedValueOnce({
+      data: null,
+      error: { message: "internal server error" },
     });
 
     renderPage();
