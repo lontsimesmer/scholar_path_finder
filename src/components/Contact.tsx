@@ -31,15 +31,15 @@ const Contact = ({ standalone = false }: ContactProps) => {
   return (
     <section
       id={standalone ? undefined : "contact"}
-      className={standalone ? "section-padding bg-secondary/5 pt-32" : "section-padding bg-white"}
+      className={standalone ? "section-padding bg-secondary/5 pt-32 overflow-hidden" : "section-padding bg-white overflow-hidden"}
     >
       <div className="section-container">
-        <div className="grid gap-16 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <ContactInfoColumn />
 
           <Card className="animate-in border-none bg-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] fade-in slide-in-from-right-4 duration-1000 delay-200">
-            <CardContent className="p-8 pt-8 lg:p-16 lg:pt-16">
-              <div className="mb-12">
+            <CardContent className="p-6 pt-6 lg:p-16 lg:pt-16">
+              <div className="mb-8 lg:mb-12">
                 <h3 className="font-display text-2xl font-bold tracking-tight text-foreground">{t.contact.form.title}</h3>
                 <div className="mt-2 h-0.5 w-10 bg-primary/20" />
               </div>

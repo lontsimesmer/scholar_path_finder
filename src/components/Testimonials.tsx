@@ -3,6 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/language";
 import SectionHeading from "@/components/SectionHeading";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import testimonialFrance from "@/assets/testimonial-france.jpg";
+import testimonialCanada from "@/assets/testimonial-canada.jpg";
+import testimonialGermany from "@/assets/testimonial-germany.jpg";
 
 const Testimonials = () => {
   const { t } = useLanguage();
@@ -10,17 +13,17 @@ const Testimonials = () => {
   const stories = [
     {
       ...t.testimonials.items[0],
-      image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&q=80&w=1200",
+      image: testimonialFrance,
       country: "France",
     },
     {
       ...t.testimonials.items[1],
-      image: "https://images.unsplash.com/photo-1564934304048-eb9410d647d3?auto=format&fit=crop&q=80&w=1200",
+      image: testimonialCanada,
       country: "Canada",
     },
     {
       ...t.testimonials.items[2],
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200",
+      image: testimonialGermany,
       country: t.testimonials.germany,
     },
   ];
@@ -37,14 +40,15 @@ const Testimonials = () => {
           />
         </ScrollReveal>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {stories.map((story, index) => (
             <ScrollReveal key={story.name} animation="slide-up" delay={index * 100}>
-              <Card className="group h-full overflow-hidden rounded-[2.5rem] border-border/40 bg-white shadow-none transition-all duration-500 hover:shadow-strong">
+              <Card className="group h-full overflow-hidden rounded-[2rem] border-border/40 bg-white shadow-none transition-all duration-500 hover:shadow-strong lg:rounded-[2.5rem]">
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <img
                     src={story.image}
                     alt={story.role}
+                    loading="lazy"
                     className="h-full w-full object-cover grayscale-[30%] transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-transparent" />
@@ -54,13 +58,13 @@ const Testimonials = () => {
                   </div>
                 </div>
 
-                <CardContent className="mt-4 flex flex-1 flex-col space-y-8 p-8 pb-10 pt-10">
+                <CardContent className="mt-2 flex flex-1 flex-col space-y-6 p-6 pb-8 pt-8 lg:mt-4 lg:space-y-8 lg:p-8 lg:pb-10 lg:pt-10">
                   <div className="flex items-center gap-4">
                     <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl border border-primary/10 bg-primary/5 text-primary shadow-sm">
                       <GraduationCap className="h-5 w-5" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-display text-lg font-bold leading-none text-foreground">{story.name}</h4>
+                      <h4 className="font-display text-lg font-bold leading-tight text-foreground">{story.name}</h4>
                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
                         {story.role}
                       </p>
@@ -91,7 +95,7 @@ const Testimonials = () => {
         </div>
 
         <ScrollReveal animation="fade-in" delay={400} className="pt-10">
-          <div className="space-y-8 rounded-[3rem] border border-border/40 bg-white p-10 text-center shadow-medium">
+          <div className="space-y-8 rounded-[2rem] border border-border/40 bg-white p-6 text-center shadow-medium lg:rounded-[3rem] lg:p-10">
             <div className="mx-auto max-w-2xl space-y-4">
               <h3 className="font-display text-2xl font-bold text-foreground">
                 {t.testimonials.impactTitle}
@@ -101,27 +105,27 @@ const Testimonials = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-8 opacity-60 grayscale transition-all duration-700 hover:opacity-100 hover:grayscale-0 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-6 opacity-60 grayscale transition-all duration-700 hover:opacity-100 hover:grayscale-0 md:grid-cols-4 md:gap-8">
               <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl font-bold text-primary">20+</span>
+                <span className="text-3xl font-bold text-primary md:text-2xl">20+</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
                   {t.testimonials.stats.countries}
                 </span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl font-bold text-primary">150+</span>
+                <span className="text-3xl font-bold text-primary md:text-2xl">150+</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
                   {t.testimonials.stats.universities}
                 </span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl font-bold text-primary">95%</span>
+                <span className="text-3xl font-bold text-primary md:text-2xl">95%</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
                   {t.testimonials.stats.visaSuccess}
                 </span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <span className="text-2xl font-bold text-primary">500M+</span>
+                <span className="text-3xl font-bold text-primary md:text-2xl">500M+</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
                   {t.testimonials.stats.scholarships}
                 </span>

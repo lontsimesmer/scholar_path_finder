@@ -53,11 +53,11 @@ const Services = () => {
           />
         </ScrollReveal>
 
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:gap-8 xl:grid-cols-3">
           {services.map((service, index) => (
-            <ScrollReveal 
-              key={service.title} 
-              animation="slide-up" 
+            <ScrollReveal
+              key={service.title}
+              animation="slide-up"
               delay={index * 100}
               className={cn(index === 0 && "xl:col-span-2")}
             >
@@ -67,8 +67,8 @@ const Services = () => {
                   index === 0 && "xl:min-h-[20rem]",
                 )}
               >
-                <CardContent className="relative flex h-full flex-col p-8 pt-8 lg:p-10 lg:pt-10">
-                  <div className="mb-12 flex items-start justify-between">
+                <CardContent className="relative flex h-full flex-col p-6 pt-6 lg:p-10 lg:pt-10">
+                  <div className="mb-8 flex items-start justify-between lg:mb-12">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-white text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
                       <service.icon className="h-7 w-7" />
                     </div>
@@ -84,7 +84,7 @@ const Services = () => {
                     <p className="leading-relaxed text-muted-foreground/80">{service.description}</p>
                   </div>
 
-                  <a href="#contact" className="mt-10 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary group-hover:translate-x-1 transition-transform">
+                  <a href="#contact" className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary group-hover:translate-x-1 transition-transform lg:mt-10">
                     <span>{t.nav.contactUs}</span>
                     <ArrowRight size={14} />
                   </a>
