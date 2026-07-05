@@ -144,7 +144,39 @@ Distinction produit :
 - `student_profile` : identité et profil académique
 - `student_application` : dossier actif payé
 
-## 8. Ordre de Lecture Recommandé
+## 8. Réinitialisation du Mot de Passe
+
+Point d'entrée :
+
+- lien "Mot de passe oublié ?" sur l'onglet "Se connecter" de [Login.tsx](../src/pages/Login.tsx)
+- redirige vers [ForgotPassword.tsx](../src/pages/ForgotPassword.tsx) via la route `/forgot-password`
+
+Ce qui se passe :
+
+1. l'utilisateur saisit son email
+2. le frontend appelle `supabase.auth.resetPasswordForEmail(email, { redirectTo: <origin>/reset-password })`
+3. quelle que soit la réponse de Supabase (existant, inconnu, rate limit), l'UI affiche le même toast succès pour empêcher l'énumération d'emails
+4. si un compte existe, Supabase envoie un email basé sur le template `supabase/templates/recovery.html`
+5. l'utilisateur clique sur le lien et arrive sur [ResetPassword.tsx](../src/pages/ResetPassword.tsx) via `/reset-password?code=<pkce>`
+6. la page appelle `supabase.auth.exchangeCodeForSession(code)` pour établir une session de recovery
+7. si le code est invalide ou expiré, l'écran propose de redemander un lien
+8. si la session est établie, l'utilisateur saisit un nouveau mot de passe (min 8 caractères, confirmation identique)
+9. le frontend appelle `supabase.auth.updateUser({ password })`, puis `supabase.auth.signOut()` pour forcer une reconnexion propre
+10. l'utilisateur est redirigé vers `/login` avec un toast de confirmation
+
+Règles de sécurité :
+
+- l'existence d'un email n'est jamais révélée par l'UI
+- le code PKCE est à usage unique et à durée de vie courte (contrôlé par Supabase)
+- après reset, la session est fermée pour forcer une réauthentification propre
+- le rate-limit sur `resetPasswordForEmail` est appliqué par Supabase côté serveur
+
+Configuration requise :
+
+- `supabase/config.toml` : `/reset-password` doit être présent dans `additional_redirect_urls`
+- template `supabase/templates/recovery.html` : versionné localement, à recopier dans le dashboard du projet Supabase distant (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
+
+## 9. Ordre de Lecture Recommandé
 
 1. [README.md](../README.md)
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)

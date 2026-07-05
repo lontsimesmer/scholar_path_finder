@@ -196,6 +196,7 @@ Dans les paramètres Auth du dashboard Supabase, configurer :
   - exemple : `https://your-domain.com`
 - URLs de redirection
   - inclure chaque origine frontend réelle qui doit s’authentifier
+  - inclure explicitement `https://your-domain.com/reset-password` pour que le flux "mot de passe oublié" fonctionne (l'allowlist Supabase n'accepte pas de préfixe implicite)
   - inclure les domaines admin ou preview seulement si nécessaire
 
 Pour ce dépôt, l’origine principale de production devrait normalement être la même valeur que `SITE_URL`.
@@ -204,6 +205,22 @@ Rester strict :
 
 - ne pas laisser d’URLs de développement en production sauf besoin réel
 - supprimer les domaines preview ou test obsolètes
+
+### Template email de réinitialisation
+
+Le fichier local `supabase/templates/recovery.html` sert de source de vérité pour l'email de réinitialisation en dev. En production, Supabase n'importe pas automatiquement les templates du `config.toml` : il faut recopier manuellement le contenu dans le dashboard.
+
+Marche à suivre :
+
+1. dans le dashboard Supabase, aller dans `Authentication → Emails → Templates → Reset Password`
+2. remplacer le contenu HTML par le contenu de `supabase/templates/recovery.html`
+3. mettre à jour le sujet en `Réinitialisez votre mot de passe — Power Prestation`
+4. conserver la variable `{{ .ConfirmationURL }}` telle quelle : Supabase la remplace au moment de l'envoi par une URL PKCE qui redirige vers `${SITE_URL}/reset-password?code=...`
+5. envoyer un test depuis le dashboard, cliquer sur le lien et vérifier l'atterrissage sur `/reset-password`
+
+À chaque modification de `supabase/templates/recovery.html` dans le dépôt, refaire la même mise à jour côté dashboard prod.
+
+SMTP requis : sans SMTP custom configuré, Supabase utilise son SMTP par défaut avec un quota strict et un domaine expéditeur `@supabase.io`. Pour un usage réel, configurer un SMTP custom (Brevo, Amazon SES, Postmark…) dans `Authentication → Emails → SMTP settings`.
 
 ## 6. Appliquer Flyway sur la Base Distante
 
@@ -411,6 +428,9 @@ Après configuration, valider cette checklist.
 - les redirections Auth reviennent vers le bon domaine de production
 - la connexion étudiant fonctionne
 - la connexion admin fonctionne
+- `${SITE_URL}/reset-password` est dans les Redirect URLs
+- le template email `Reset Password` est aligné sur `supabase/templates/recovery.html`
+- un test bout en bout du "mot de passe oublié" passe : lien reçu, page `/reset-password`, mot de passe changé, reconnexion réussie
 
 ### Base de données
 
