@@ -121,7 +121,7 @@ const Footer = () => {
                   variant="outline"
                   size="lg"
                   asChild
-                  className="shrink-0 border-white/14 bg-white/7 text-navy-foreground hover:border-white/24 hover:bg-white/10"
+                  className="hidden md:inline-flex shrink-0 border-white/14 bg-white/7 text-navy-foreground hover:border-white/24 hover:bg-white/10"
                 >
                   <a href="#contact">
                     {t.nav.contactUs}
