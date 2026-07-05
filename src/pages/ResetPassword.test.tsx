@@ -138,4 +138,71 @@ describe("ResetPassword", () => {
     });
     expect(mocks.updateUser).not.toHaveBeenCalled();
   }, 10_000);
+
+  it("shows a destructive toast and keeps the form when the new password is shorter than the minimum length", async () => {
+    mocks.exchangeCodeForSession.mockResolvedValueOnce({ error: null });
+
+    renderAt("/reset-password?code=good");
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(en.resetPassword.newPasswordLabel)).toBeInTheDocument();
+    });
+
+    const shortValue = "abc";
+    const newPasswordInput = screen.getByLabelText(en.resetPassword.newPasswordLabel);
+    const confirmPasswordInput = screen.getByLabelText(en.resetPassword.confirmPasswordLabel);
+
+    newPasswordInput.removeAttribute("minLength");
+    confirmPasswordInput.removeAttribute("minLength");
+
+    fireEvent.change(newPasswordInput, { target: { value: shortValue } });
+    fireEvent.change(confirmPasswordInput, { target: { value: shortValue } });
+    fireEvent.click(screen.getByRole("button", { name: en.resetPassword.submitLabel }));
+
+    await waitFor(() => {
+      expect(mocks.toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "destructive",
+          description: en.security.errorTooShort,
+        }),
+      );
+    });
+    expect(mocks.updateUser).not.toHaveBeenCalled();
+  }, 10_000);
+
+  it("surfaces a destructive toast and restores the form when updateUser fails", async () => {
+    mocks.exchangeCodeForSession.mockResolvedValueOnce({ error: null });
+    mocks.updateUser.mockResolvedValueOnce({
+      error: { message: "Password does not meet the security policy" },
+    });
+
+    renderAt("/reset-password?code=good");
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(en.resetPassword.newPasswordLabel)).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByLabelText(en.resetPassword.newPasswordLabel), {
+      target: { value: "brandnewpass123" },
+    });
+    fireEvent.change(screen.getByLabelText(en.resetPassword.confirmPasswordLabel), {
+      target: { value: "brandnewpass123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: en.resetPassword.submitLabel }));
+
+    await waitFor(() => {
+      expect(mocks.updateUser).toHaveBeenCalledTimes(1);
+    });
+    await waitFor(() => {
+      expect(mocks.toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: "destructive",
+          description: "Password does not meet the security policy",
+        }),
+      );
+    });
+    expect(mocks.signOut).not.toHaveBeenCalled();
+    expect(screen.queryByText("login-page")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: en.resetPassword.submitLabel })).toBeInTheDocument();
+  }, 15_000);
 });
