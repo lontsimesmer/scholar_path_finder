@@ -35,7 +35,7 @@ const Hero = () => {
   ];
 
   return (
-    <section id="home" className="relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40">
+    <section id="home" className="relative overflow-hidden pb-16 pt-24 md:pb-28 md:pt-40">
       {/* Subtle Background elements */}
       <div className="absolute inset-x-0 top-0 h-[30rem] bg-[radial-gradient(circle_at_15%_15%,_rgba(53,90,204,0.08),_transparent_40%)]" />
       
@@ -103,15 +103,15 @@ const Hero = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />
 
               {/* Minimal Roadmap Overlay */}
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur-md">
-                  <div className="flex items-center gap-3 mb-4">
+              <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6">
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur-md sm:p-6">
+                  <div className="mb-3 flex items-center gap-3 sm:mb-4">
                     <ShieldCheck className="h-5 w-5 text-white/80" />
-                    <h2 className="font-display text-xl font-medium text-white">
+                    <h2 className="font-display text-lg font-medium text-white sm:text-xl">
                       {t.hero.roadmapTitle}
                     </h2>
                   </div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2.5 sm:gap-3">
                     {journey.map((item, index) => (
                       <div key={item} className="flex items-center gap-3">
                         <span className="h-px w-4 bg-white/30" />

@@ -229,6 +229,12 @@ const Header = () => {
                       {t.login.signInTab}
                     </Link>
                   )}
+                  <div className="mt-3 flex items-center justify-between rounded-2xl border border-border/40 bg-secondary/40 px-3 py-2 md:hidden">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">
+                      {language === "fr" ? "Langue" : "Language"}
+                    </span>
+                    <LanguageSwitcher />
+                  </div>
                   <Button variant="outline" className="mt-3 w-full text-center" asChild>
                     <a href={isHomePage ? "#contact" : "/#contact"} onClick={() => setIsMenuOpen(false)}>
                       {t.nav.contactUs}

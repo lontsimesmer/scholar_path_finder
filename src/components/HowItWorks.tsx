@@ -46,7 +46,7 @@ const HowItWorks = () => {
             inverse
           />
 
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/6 p-6 shadow-medium">
+          <div className="hidden rounded-[1.5rem] border border-white/10 bg-white/6 p-6 shadow-medium lg:block">
             <div className="space-y-3">
               {steps.slice(0, 3).map((step) => (
                 <div key={step.step} className="flex items-center gap-3 rounded-[1rem] bg-white/7 px-4 py-3">
@@ -61,6 +61,10 @@ const HowItWorks = () => {
               <a href="#contact">{t.nav.contactUs}</a>
             </Button>
           </div>
+
+          <Button variant="heroOutline" size="lg" asChild className="w-full lg:hidden">
+            <a href="#contact">{t.nav.contactUs}</a>
+          </Button>
         </div>
 
         <div className="space-y-5">
