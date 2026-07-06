@@ -32,7 +32,7 @@ export const ProcedureStatusCard = ({
   if (isLoading) {
     return (
       <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-        <CardContent className="flex min-h-[360px] items-center justify-center p-8">
+        <CardContent className="flex min-h-[280px] items-center justify-center p-5 sm:min-h-[360px] sm:p-8">
           <div className="text-center">
             <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
             <p className="mt-4 text-sm text-muted-foreground">{text.loading}</p>
@@ -45,7 +45,7 @@ export const ProcedureStatusCard = ({
   if (!profileReadyForProcedure) {
     return (
       <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-        <CardHeader className="border-b border-border/40 bg-white p-8">
+        <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
               <AlertCircle size={18} />
@@ -53,7 +53,7 @@ export const ProcedureStatusCard = ({
             <CardTitle className="font-display text-xl">{text.profileRequiredTitle}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 p-8">
+        <CardContent className="space-y-6 p-5 sm:p-8">
           <p className="text-sm leading-7 text-muted-foreground">{text.profileRequiredDescription}</p>
           <Button onClick={onCompleteProfile} className="w-full rounded-xl">
             {text.profileRequiredAction}
@@ -66,7 +66,7 @@ export const ProcedureStatusCard = ({
   if (paymentRequiresAction && paymentCheckoutPath) {
     return (
       <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-        <CardHeader className="border-b border-border/40 bg-white p-8">
+        <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <CreditCard size={18} />
@@ -74,7 +74,7 @@ export const ProcedureStatusCard = ({
             <CardTitle className="font-display text-xl">{text.resumePaymentTitle}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 p-8">
+        <CardContent className="space-y-6 p-5 sm:p-8">
           <p className="text-sm leading-7 text-muted-foreground">{text.resumePaymentDescription}</p>
           <Button onClick={onGoToPayment} className="w-full rounded-xl">
             {text.resumePaymentAction}
@@ -87,7 +87,7 @@ export const ProcedureStatusCard = ({
   if (paymentIsPending) {
     return (
       <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-        <CardHeader className="border-b border-border/40 bg-white p-8">
+        <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
               <Clock size={18} />
@@ -95,7 +95,7 @@ export const ProcedureStatusCard = ({
             <CardTitle className="font-display text-xl">{text.pendingTitle}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 p-8">
+        <CardContent className="space-y-6 p-5 sm:p-8">
           <p className="text-sm leading-7 text-muted-foreground">{text.pendingDescription}</p>
           <Button onClick={onReturnToDashboard} variant="outline" className="w-full rounded-xl">
             {text.backToDashboard}
@@ -108,7 +108,7 @@ export const ProcedureStatusCard = ({
   if (hasActiveProcedure) {
     return (
       <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-        <CardHeader className="border-b border-border/40 bg-white p-8">
+        <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success">
               <CheckCircle2 size={18} />
@@ -116,7 +116,7 @@ export const ProcedureStatusCard = ({
             <CardTitle className="font-display text-xl">{text.activeTitle}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 p-8">
+        <CardContent className="space-y-6 p-5 sm:p-8">
           <p className="text-sm leading-7 text-muted-foreground">{text.activeDescription}</p>
           <Button onClick={onReturnToDashboard} variant="outline" className="w-full rounded-xl">
             {text.backToDashboard}

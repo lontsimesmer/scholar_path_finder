@@ -62,10 +62,10 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/5 flex items-center justify-center px-4 py-20">
+    <div className="min-h-screen bg-secondary/5 flex items-center justify-center px-4 py-12 sm:py-20">
       <div className="section-container max-w-md">
-        <Card className="border-none bg-white shadow-strong rounded-[2.5rem] overflow-hidden">
-          <CardHeader className="p-10 pb-4 text-center space-y-4">
+        <Card className="border-none bg-white shadow-strong rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="p-6 pt-8 sm:p-8 md:p-10 md:pb-4 text-center space-y-4">
             <div className="flex justify-center mb-2">
               <BrandMark size="lg" />
             </div>
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-10 pt-6 space-y-6">
+          <CardContent className="p-6 pt-4 sm:p-8 md:p-10 md:pt-6 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="forgot-email">{text.emailLabel}</Label>

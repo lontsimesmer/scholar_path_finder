@@ -1075,7 +1075,10 @@ export const fr = {
     noMessage: "Aucun message disponible",
     notProvided: "Non renseigné",
     empty: "Aucun lead ne correspond aux filtres actuels.",
-    openCheckout: "Ouvrir le checkout",
+    copyCheckoutLink: "Copier le lien de paiement",
+    linkCopiedTitle: "Lien copié",
+    linkCopiedDescription: "Envoyez-le au lead par WhatsApp, SMS ou email pour qu'il finalise son paiement.",
+    linkCopyErrorTitle: "Copie impossible. Sélectionnez et copiez le lien manuellement.",
     metrics: {
       total: "Total leads",
       paid: "Consultations payées",
@@ -1132,7 +1135,10 @@ export const fr = {
     noStudent: "Étudiant inconnu",
     noLead: "Aucun lead lié",
     empty: "Aucune transaction ne correspond aux filtres actuels.",
-    openCheckout: "Reprendre le checkout",
+    copyCheckoutLink: "Copier le lien de paiement",
+    linkCopiedTitle: "Lien copié",
+    linkCopiedDescription: "Envoyez-le au lead pour qu'il reprenne son paiement.",
+    linkCopyErrorTitle: "Copie impossible. Sélectionnez et copiez le lien manuellement.",
     metrics: {
       total: "Transactions",
       accepted: "Acceptées",

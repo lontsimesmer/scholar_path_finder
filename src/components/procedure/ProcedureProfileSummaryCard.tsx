@@ -28,7 +28,7 @@ export const ProcedureProfileSummaryCard = ({
   text,
 }: ProcedureProfileSummaryCardProps) => (
   <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-    <CardHeader className="border-b border-border/40 bg-white p-8">
+    <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <FileText size={18} />
@@ -36,7 +36,7 @@ export const ProcedureProfileSummaryCard = ({
         <CardTitle className="font-display text-xl">{text.profileSummaryTitle}</CardTitle>
       </div>
     </CardHeader>
-    <CardContent className="grid gap-6 p-8 sm:grid-cols-2">
+    <CardContent className="grid gap-6 p-5 sm:grid-cols-2 sm:p-8">
       <div className="space-y-1.5">
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
           {text.fullName}

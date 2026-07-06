@@ -21,11 +21,11 @@ const LegalDocument = () => {
   if (!content) {
     return (
       <div className="page-shell flex items-center justify-center px-4 py-8">
-        <div className="relative z-10 w-full max-w-xl rounded-[2rem] border border-white/70 bg-white/92 p-10 text-center shadow-strong">
+        <div className="relative z-10 w-full max-w-xl rounded-[1.5rem] border border-white/70 bg-white/92 p-6 text-center shadow-strong sm:rounded-[2rem] md:p-10">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-muted-foreground">
             {t.legal.notFoundBadge}
           </p>
-          <h1 className="mt-4 font-display text-4xl font-bold text-foreground">
+          <h1 className="mt-4 font-display text-3xl font-bold text-foreground sm:text-4xl">
             {t.legal.notFoundTitle}
           </h1>
           <p className="mt-4 text-lg leading-8 text-muted-foreground">

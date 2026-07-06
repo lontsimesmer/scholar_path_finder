@@ -80,8 +80,8 @@ export const DashboardProfileCard = ({
   const fields = profileFields(profile, formattedBirthDate, text);
 
   return (
-    <Card className="sticky top-32 overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
-      <CardHeader className="flex flex-row items-center justify-between border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-8 pt-10 md:px-8 md:pb-8 md:pt-10">
+    <Card className="overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong xl:sticky xl:top-32">
+      <CardHeader className="flex flex-row items-center justify-between gap-3 border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-5 pb-5 pt-6 md:px-8 md:pb-8 md:pt-10">
         <div className="flex items-center gap-3">
           <div
             className={cn(
@@ -105,7 +105,7 @@ export const DashboardProfileCard = ({
           {profileIsReadyForProcedure ? text.profileLockedBadge : text.requiredForProcedure}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 p-8 md:pt-8">
+      <CardContent className="space-y-6 p-5 md:p-8 md:pt-8">
         {profileIsReadyForProcedure ? (
           <>
             <div className="space-y-4">

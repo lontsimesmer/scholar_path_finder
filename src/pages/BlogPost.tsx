@@ -192,7 +192,7 @@ const BlogPost = () => {
               dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
 
-            <div className="mt-20 space-y-8 rounded-[2.5rem] border border-border/40 bg-secondary/30 p-10 text-center">
+            <div className="mt-16 space-y-6 rounded-[2rem] border border-border/40 bg-secondary/30 p-6 text-center sm:mt-20 sm:space-y-8 sm:rounded-[2.5rem] sm:p-10">
               <h3 className="font-display text-2xl font-bold text-foreground">{t.blogPost.ctaTitle}</h3>
               <p className="mx-auto max-w-xl text-muted-foreground">{t.blogPost.ctaDescription}</p>
               <Button size="xl" asChild className="px-10">

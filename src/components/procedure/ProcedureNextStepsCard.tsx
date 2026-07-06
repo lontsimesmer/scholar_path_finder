@@ -9,7 +9,7 @@ interface ProcedureNextStepsCardProps {
 
 export const ProcedureNextStepsCard = ({ text }: ProcedureNextStepsCardProps) => (
   <Card className="rounded-[2.5rem] border-border/40 bg-white/90 shadow-soft">
-    <CardContent className="space-y-4 p-8 pt-8">
+    <CardContent className="space-y-4 p-5 pt-5 sm:p-8 sm:pt-8">
       <p className="text-sm font-semibold text-foreground">{text.nextStepsTitle}</p>
       <div className="space-y-3 text-sm leading-7 text-muted-foreground">
         <p>1. {text.nextStepsProfile}</p>

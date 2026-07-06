@@ -13,7 +13,10 @@ export type AdminLeadsText = {
   noPhone: string;
   noMessage: string;
   notProvided: string;
-  openCheckout: string;
+  copyCheckoutLink: string;
+  linkCopiedTitle: string;
+  linkCopiedDescription: string;
+  linkCopyErrorTitle: string;
   metrics: {
     total: string;
     paid: string;
@@ -122,4 +125,29 @@ export function getAdminLeadPaymentBadgeClassName(paymentStatus: string | null) 
   }
 
   return "border-border/50 bg-secondary/40 text-muted-foreground";
+}
+
+export function buildLeadCheckoutLink(
+  { leadId, email }: { leadId: string; email: string },
+  origin: string,
+) {
+  const trimmedOrigin = origin.replace(/\/+$/, "");
+  const params = new URLSearchParams({ leadId, email }).toString();
+  return `${trimmedOrigin}/checkout?${params}`;
+}
+
+export async function copyLeadCheckoutLink(
+  lead: { id: string; email: string },
+  origin: string,
+): Promise<boolean> {
+  const url = buildLeadCheckoutLink({ leadId: lead.id, email: lead.email }, origin);
+  try {
+    if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+      return false;
+    }
+    await navigator.clipboard.writeText(url);
+    return true;
+  } catch {
+    return false;
+  }
 }

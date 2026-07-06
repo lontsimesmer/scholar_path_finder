@@ -70,7 +70,7 @@ export const DashboardCompletionGate = ({
         </div>
 
         <Card className="animate-card-in overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
-          <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-8 pt-10 md:px-8 md:pb-8 md:pt-10">
+          <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-5 pb-5 pt-6 md:px-8 md:pb-8 md:pt-10">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm">
                 <UserIcon size={22} />
@@ -84,7 +84,7 @@ export const DashboardCompletionGate = ({
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-8 p-8 md:pt-8">
+          <CardContent className="space-y-6 p-5 md:space-y-8 md:p-8 md:pt-8">
             <div className="rounded-[1.6rem] border border-primary/10 bg-gradient-to-r from-primary/[0.06] to-primary/[0.02] p-5">
               <p className="text-xs leading-7 text-foreground/80">
                 {profileReviewStatus === "correction_requested"

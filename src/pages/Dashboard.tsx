@@ -84,7 +84,7 @@ const Dashboard = () => {
       <main className="relative z-10 pb-24 pt-32">
         <div className="section-container space-y-10">
           <Card className="animate-stagger-in overflow-hidden rounded-[2.5rem] border-border/30 bg-white shadow-strong">
-            <CardContent className="relative overflow-hidden p-8 md:p-10">
+            <CardContent className="relative overflow-hidden p-5 md:p-8 lg:p-10">
               {/* Background atmospherics */}
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(25,113,194,0.05)_0%,rgba(255,255,255,0.98)_50%,rgba(40,144,90,0.03)_100%)]" />
               <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/[0.04] blur-3xl" />
