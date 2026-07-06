@@ -23,7 +23,7 @@ export const DashboardApplicationRoadmapCard = ({
 
   return (
     <Card className="overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
-      <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-8 pt-10 md:px-8 md:pb-8 md:pt-10">
+      <CardHeader className="border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-5 pb-5 pt-6 md:px-8 md:pb-8 md:pt-10">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
@@ -46,9 +46,9 @@ export const DashboardApplicationRoadmapCard = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-8 p-8 md:pt-8 lg:p-12 lg:pt-12">
+      <CardContent className="space-y-6 p-5 md:space-y-8 md:p-8 md:pt-8 lg:p-12 lg:pt-12">
         {application.notes ? (
-          <div className="flex gap-4 rounded-[1.5rem] border border-primary/10 bg-gradient-to-r from-primary/[0.06] to-primary/[0.02] p-6 animate-in fade-in slide-in-from-top-2 duration-700">
+          <div className="flex gap-3 rounded-[1.5rem] border border-primary/10 bg-gradient-to-r from-primary/[0.06] to-primary/[0.02] p-4 sm:gap-4 sm:p-6 animate-in fade-in slide-in-from-top-2 duration-700">
             <MessageSquare className="h-6 w-6 shrink-0 text-primary" />
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-primary/60">

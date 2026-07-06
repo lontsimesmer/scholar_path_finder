@@ -32,7 +32,7 @@ export const ProcedureRequestFormCard = ({
   text,
 }: ProcedureRequestFormCardProps) => (
   <Card className="rounded-[2.5rem] border-border/40 shadow-soft">
-    <CardHeader className="border-b border-border/40 bg-white p-8">
+    <CardHeader className="border-b border-border/40 bg-white p-5 sm:p-8">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <FileText size={18} />
@@ -41,7 +41,7 @@ export const ProcedureRequestFormCard = ({
       </div>
       <p className="pt-3 text-sm leading-7 text-muted-foreground">{text.formDescription}</p>
     </CardHeader>
-    <CardContent className="p-8">
+    <CardContent className="p-5 sm:p-8">
       <form onSubmit={(event) => void onSubmit(event)} className="space-y-8">
         <div className="group relative space-y-2">
           <label

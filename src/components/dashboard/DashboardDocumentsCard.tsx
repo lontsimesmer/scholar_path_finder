@@ -63,7 +63,7 @@ export const DashboardDocumentsCard = ({
 
   return (
     <Card className="overflow-hidden rounded-[2.5rem] border-border/30 shadow-strong">
-      <CardHeader className="flex flex-col gap-4 border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-8 pb-8 pt-10 sm:flex-row sm:items-center sm:justify-between md:px-8 md:pb-8 md:pt-10">
+      <CardHeader className="flex flex-col gap-4 border-b border-border/30 bg-gradient-to-r from-white to-secondary/20 px-5 pb-5 pt-6 sm:flex-row sm:items-center sm:justify-between md:px-8 md:pb-8 md:pt-10">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm">
             <FileText size={20} />
@@ -125,7 +125,7 @@ export const DashboardDocumentsCard = ({
           </DialogContent>
         </Dialog>
       </CardHeader>
-      <CardContent className="p-8 md:pt-8 lg:p-10 lg:pt-10">
+      <CardContent className="p-5 md:p-8 md:pt-8 lg:p-10 lg:pt-10">
         {documentRequests.filter((request) => request.status === "pending").length > 0 ? (
           <div className="mb-8 rounded-[2rem] border border-amber-200 bg-amber-50/70 p-5">
             <div className="mb-4">

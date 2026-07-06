@@ -210,9 +210,9 @@ const Login = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/5 flex items-center justify-center px-4 py-20">
+    <div className="min-h-screen bg-secondary/5 flex items-center justify-center px-4 py-12 sm:py-20">
       <div className="section-container max-w-6xl">
-        <div className="grid gap-12 lg:grid-cols-[1fr_0.8fr] items-center">
+        <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:gap-12 items-center">
           
           {/* Info Side */}
           <div className="hidden lg:block space-y-12">
@@ -248,14 +248,14 @@ const Login = () => {
 
           {/* Form Side */}
           <ScrollReveal animation="scale-in">
-            <Card className="border-none bg-white shadow-strong rounded-[3rem] overflow-hidden">
-              <CardHeader className="p-10 lg:p-14 pb-0 text-center space-y-4">
+            <Card className="border-none bg-white shadow-strong rounded-[2rem] sm:rounded-[3rem] overflow-hidden">
+              <CardHeader className="p-6 pt-8 sm:p-8 lg:p-14 lg:pb-0 text-center space-y-4">
                 <div className="lg:hidden flex justify-center mb-4"><BrandMark size="lg" /></div>
-                <CardTitle className="font-display text-3xl font-bold tracking-tight">{t.login.title}</CardTitle>
+                <CardTitle className="font-display text-2xl sm:text-3xl font-bold tracking-tight">{t.login.title}</CardTitle>
                 <p className="text-muted-foreground text-sm">{t.login.subtitle}</p>
               </CardHeader>
-              
-              <CardContent className="p-10 lg:p-14 pt-8 space-y-8">
+
+              <CardContent className="p-6 pt-4 sm:p-8 sm:pt-6 lg:p-14 lg:pt-8 space-y-8">
                 <Tabs defaultValue="signin" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-secondary/20 p-1 rounded-2xl h-12 mb-10">
                     <TabsTrigger value="signin" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-sm font-bold text-xs uppercase tracking-widest">{t.login.signInTab}</TabsTrigger>
