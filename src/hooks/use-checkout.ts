@@ -20,9 +20,14 @@ interface UseCheckoutOptions {
     profileRequiredTitle: string;
     unavailableDescription: string;
     unavailableTitle: string;
+    wrongAccountTitle: string;
+    wrongAccountDescription: string;
   };
   toast: (options: { title: string; description?: string; variant?: "default" | "destructive" }) => void;
 }
+
+const normalizeEmail = (email: string | null | undefined) =>
+  (email ?? "").trim().toLowerCase();
 
 export const useCheckout = ({
   navigate,
@@ -132,6 +137,36 @@ export const useCheckout = ({
       }
     };
 
+    const handleSessionEmailMismatch = async (sessionEmail: string | null | undefined) => {
+      if (hasRedirected) return;
+      hasRedirected = true;
+      logger.warn("Checkout opened while signed in as a different account, signing out", {
+        sessionEmail,
+        requestedEmail,
+      });
+      toast({
+        title: text.wrongAccountTitle,
+        description: text.wrongAccountDescription,
+        variant: "destructive",
+      });
+      try {
+        await supabase.auth.signOut();
+      } catch (error: unknown) {
+        logger.error("Failed to sign out mismatched checkout session", {
+          message: getErrorMessage(error),
+        });
+      }
+      const loginSearchParams = new URLSearchParams({ redirect: redirectTarget });
+      if (requestedEmail) {
+        loginSearchParams.set("email", requestedEmail);
+      }
+      navigate(`/login?${loginSearchParams.toString()}`, { replace: true });
+    };
+
+    const isSessionForRequestedLead = (sessionEmail: string | null | undefined) =>
+      !requestedEmail ||
+      normalizeEmail(sessionEmail) === normalizeEmail(requestedEmail);
+
     const checkAuth = async () => {
       try {
         const {
@@ -139,6 +174,10 @@ export const useCheckout = ({
         } = await supabase.auth.getSession();
 
         if (session) {
+          if (!isSessionForRequestedLead(session.user.email)) {
+            await handleSessionEmailMismatch(session.user.email);
+            return;
+          }
           logger.info("Checkout session validated", { userId: session.user.id });
           await validateProcedureProfile(session.user);
           return;
@@ -166,6 +205,10 @@ export const useCheckout = ({
       }
 
       if (session) {
+        if (!isSessionForRequestedLead(session.user.email)) {
+          void handleSessionEmailMismatch(session.user.email);
+          return;
+        }
         void validateProcedureProfile(session.user);
         return;
       }
@@ -183,6 +226,8 @@ export const useCheckout = ({
     text.profileRequiredTitle,
     text.unavailableDescription,
     text.unavailableTitle,
+    text.wrongAccountDescription,
+    text.wrongAccountTitle,
     toast,
   ]);
 

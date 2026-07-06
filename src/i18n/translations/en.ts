@@ -349,6 +349,8 @@ export const en = {
     unavailableDescription: "Start from the contact form so we can attach your payment to a lead.",
     profileRequiredTitle: "Validate your profile first",
     profileRequiredDescription: "Complete and confirm your first name, last name, and date of birth before continuing to payment.",
+    wrongAccountTitle: "This payment link belongs to another account",
+    wrongAccountDescription: "You were signed in with a different account. Sign back in with the lead's email to continue.",
     loading: "Preparing your secure checkout...",
     payment: {
       missingLeadTitle: "Missing payment file",

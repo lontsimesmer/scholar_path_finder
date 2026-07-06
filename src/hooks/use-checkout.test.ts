@@ -40,6 +40,8 @@ const text = {
   profileRequiredTitle: "Profil requis",
   unavailableDescription: "Paiement indisponible",
   unavailableTitle: "Indisponible",
+  wrongAccountTitle: "Ce lien appartient a un autre compte",
+  wrongAccountDescription: "Reconnectez-vous avec la bonne adresse",
 };
 
 const renderCheckoutHook = (overrides = {}) => {
@@ -122,6 +124,45 @@ describe("useCheckout", () => {
         email: "student@example.com",
       },
     });
+  });
+
+  it("signs out and redirects to login when the session belongs to a different email", async () => {
+    const user = { id: "admin-1", email: "admin@example.com" };
+    mocks.getSession.mockResolvedValue({ data: { session: { user } } });
+
+    const { navigate, toast } = renderCheckoutHook();
+
+    await waitFor(() => {
+      expect(toast).toHaveBeenCalledWith({
+        description: "Reconnectez-vous avec la bonne adresse",
+        title: "Ce lien appartient a un autre compte",
+        variant: "destructive",
+      });
+    });
+    expect(mocks.signOut).toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith(
+      "/login?redirect=%2Fcheckout%3FleadId%3Dlead-1%26email%3Dstudent%2540example.com&email=student%40example.com",
+      { replace: true },
+    );
+    expect(mocks.ensureStudentProfile).not.toHaveBeenCalled();
+  });
+
+  it("treats the session as valid when the email matches with different casing or whitespace", async () => {
+    const user = { id: "student-1", email: "  Student@Example.com  " };
+    mocks.getSession.mockResolvedValue({ data: { session: { user } } });
+    mocks.ensureStudentProfile.mockResolvedValue({
+      first_name: "Amina",
+      last_name: "Talla",
+    });
+    mocks.hasValidatedProcedureProfile.mockReturnValue(true);
+
+    const { result } = renderCheckoutHook();
+
+    await waitFor(() => {
+      expect(result.current.viewModel.isLoading).toBe(false);
+    });
+    expect(mocks.signOut).not.toHaveBeenCalled();
+    expect(mocks.ensureStudentProfile).toHaveBeenCalled();
   });
 
   it("blocks checkout until the profile is completed", async () => {
