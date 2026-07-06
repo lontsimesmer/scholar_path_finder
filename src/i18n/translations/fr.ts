@@ -745,6 +745,7 @@ export const fr = {
       operations: "Opérations",
       payments: "Paiements",
       content: "Contenu",
+      system: "Système",
     },
     items: {
       dashboard: "Tableau de bord",
@@ -754,6 +755,7 @@ export const fr = {
       manualPayments: "Paiements manuels",
       blog: "Blog",
       faq: "FAQ",
+      team: "Équipe admin",
     },
     signOut: "Déconnexion",
   },
@@ -1342,6 +1344,68 @@ export const fr = {
       publishSuccess: "Question publiée",
       unpublishSuccess: "Question dépubliée",
       errorTitle: "Action impossible",
+    },
+  },
+
+  adminTeam: {
+    breadcrumbDashboard: "Tableau de bord",
+    breadcrumbCurrent: "Équipe admin",
+    title: "Équipe administrateur",
+    subtitle:
+      "Gérez la liste des personnes disposant d'un accès administrateur. Les nouveaux membres reçoivent un email pour définir leur mot de passe.",
+    metrics: {
+      total: "Administrateurs",
+      totalDescription: "Comptes ayant accès à l'espace administrateur.",
+      invited: "Autres membres",
+      invitedDescription: "Administrateurs autres que vous.",
+    },
+    filters: {
+      searchPlaceholder: "Rechercher un email...",
+    },
+    columns: {
+      email: "Adresse email",
+      createdAt: "Ajouté le",
+      actions: "Actions",
+    },
+    badges: {
+      you: "Vous",
+    },
+    actions: {
+      invite: "Inviter un admin",
+      remove: "Retirer",
+    },
+    empty: "Aucun administrateur ne correspond à la recherche.",
+    loading: "Chargement...",
+    inviteDialog: {
+      title: "Inviter un nouvel administrateur",
+      description:
+        "Un email d'invitation sera envoyé pour définir un mot de passe et activer l'accès administrateur.",
+      emailLabel: "Adresse email",
+      emailPlaceholder: "nouveau.admin@exemple.com",
+      submit: "Envoyer l'invitation",
+      submitting: "Envoi...",
+      cancel: "Annuler",
+      invalidEmail: "Veuillez saisir une adresse email valide.",
+    },
+    removeDialog: {
+      title: "Retirer ce membre de l'équipe ?",
+      description:
+        "L'accès administrateur de {email} sera immédiatement révoqué. Le compte utilisateur reste actif mais perd les privilèges.",
+      confirm: "Retirer",
+      cancel: "Annuler",
+    },
+    toasts: {
+      inviteSuccessTitle: "Invitation envoyée",
+      inviteSuccessDescription:
+        "L'utilisateur recevra un email pour définir son mot de passe et accéder à l'espace administrateur.",
+      removeSuccessTitle: "Accès administrateur retiré",
+      errorTitle: "Action impossible",
+      errorAlreadyAdmin: "Cette adresse email est déjà administrateur.",
+      errorInvalidEmail: "Adresse email invalide.",
+      errorSelfRemove: "Vous ne pouvez pas vous retirer vous-même.",
+      errorRateLimit:
+        "Trop d'invitations envoyées récemment. Réessayez dans quelques minutes.",
+      errorGeneric: "Une erreur inattendue est survenue. Réessayez.",
     },
   },
 

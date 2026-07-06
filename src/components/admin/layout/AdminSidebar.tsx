@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   LogOut,
   Receipt,
+  Shield,
   ShieldCheck,
   UserPlus,
   Users,
@@ -41,6 +42,7 @@ type AdminSidebarText = {
     operations: string;
     payments: string;
     content: string;
+    system: string;
   };
   items: {
     dashboard: string;
@@ -50,6 +52,7 @@ type AdminSidebarText = {
     manualPayments: string;
     blog: string;
     faq: string;
+    team: string;
   };
   signOut: string;
 };
@@ -84,6 +87,12 @@ export const AdminSidebar = ({ onSignOut, adminEmail, onNavigate }: AdminSidebar
       items: [
         { href: "/admin/blog", label: text.items.blog, icon: FileText },
         { href: "/admin/faq", label: text.items.faq, icon: HelpCircle },
+      ],
+    },
+    {
+      label: text.sections.system,
+      items: [
+        { href: "/admin/team", label: text.items.team, icon: Shield },
       ],
     },
   ];

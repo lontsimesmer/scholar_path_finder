@@ -744,6 +744,7 @@ export const en = {
       operations: "Operations",
       payments: "Payments",
       content: "Content",
+      system: "System",
     },
     items: {
       dashboard: "Dashboard",
@@ -753,6 +754,7 @@ export const en = {
       manualPayments: "Manual payments",
       blog: "Blog",
       faq: "FAQ",
+      team: "Admin team",
     },
     signOut: "Sign out",
   },
@@ -1336,6 +1338,67 @@ export const en = {
       publishSuccess: "Entry published",
       unpublishSuccess: "Entry unpublished",
       errorTitle: "Action failed",
+    },
+  },
+
+  adminTeam: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "Admin team",
+    title: "Admin team",
+    subtitle:
+      "Manage who has administrator access. New members receive an email to set their password.",
+    metrics: {
+      total: "Administrators",
+      totalDescription: "Accounts with access to the admin area.",
+      invited: "Other members",
+      invitedDescription: "Administrators other than you.",
+    },
+    filters: {
+      searchPlaceholder: "Search an email...",
+    },
+    columns: {
+      email: "Email address",
+      createdAt: "Added on",
+      actions: "Actions",
+    },
+    badges: {
+      you: "You",
+    },
+    actions: {
+      invite: "Invite admin",
+      remove: "Remove",
+    },
+    empty: "No administrator matches the search.",
+    loading: "Loading...",
+    inviteDialog: {
+      title: "Invite a new administrator",
+      description:
+        "An invitation email will be sent so they can set a password and activate admin access.",
+      emailLabel: "Email address",
+      emailPlaceholder: "new.admin@example.com",
+      submit: "Send invitation",
+      submitting: "Sending...",
+      cancel: "Cancel",
+      invalidEmail: "Please enter a valid email address.",
+    },
+    removeDialog: {
+      title: "Remove this member from the team?",
+      description:
+        "Admin access for {email} will be revoked immediately. The user account stays active but loses its privileges.",
+      confirm: "Remove",
+      cancel: "Cancel",
+    },
+    toasts: {
+      inviteSuccessTitle: "Invitation sent",
+      inviteSuccessDescription:
+        "The user will receive an email to set their password and access the admin area.",
+      removeSuccessTitle: "Admin access revoked",
+      errorTitle: "Action failed",
+      errorAlreadyAdmin: "This email is already an administrator.",
+      errorInvalidEmail: "Invalid email address.",
+      errorSelfRemove: "You cannot remove yourself.",
+      errorRateLimit: "Too many invitations sent recently. Please try again in a few minutes.",
+      errorGeneric: "An unexpected error occurred. Please try again.",
     },
   },
 
