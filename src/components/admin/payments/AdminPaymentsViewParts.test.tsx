@@ -1,4 +1,3 @@
-import { MemoryRouter } from "react-router-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -52,7 +51,10 @@ const text: AdminPaymentsText = {
   },
   noLead: "Aucun lead",
   noStudent: "Aucun etudiant",
-  openCheckout: "Ouvrir checkout",
+  copyCheckoutLink: "Copier lien",
+  linkCopiedTitle: "Lien copie",
+  linkCopiedDescription: "Envoyez-le au lead",
+  linkCopyErrorTitle: "Copie impossible",
   openLeads: "Ouvrir leads",
   searchPlaceholder: "Rechercher une transaction",
   subtitle: "Suivi des paiements",
@@ -118,40 +120,42 @@ describe("AdminPayments view parts", () => {
     expect(screen.getByText("25 000 XAF")).toBeInTheDocument();
   });
 
-  it("renders transactions and opens external payment urls", () => {
+  it("renders transactions, copies the checkout link and opens external payment urls", () => {
     const onOpenPaymentUrl = vi.fn();
+    const onCopyCheckoutLink = vi.fn();
     render(
-      <MemoryRouter>
-        <AdminPaymentsTable
-          amountFormatter={new Intl.NumberFormat("fr-FR")}
-          dateFormatter={new Intl.DateTimeFormat("fr-FR", { dateStyle: "short" })}
-          filteredTransactions={[transaction]}
-          isLoading={false}
-          leadById={{ "lead-1": lead }}
-          noStudentLabel="Aucun etudiant"
-          onOpenPaymentUrl={onOpenPaymentUrl}
-          profileById={{
-            "student-1": {
-              id: "student-1",
-              email: "student@example.com",
-              first_name: "Ada",
-              last_name: "Lovelace",
-            },
-          }}
-          text={text}
-        />
-      </MemoryRouter>,
+      <AdminPaymentsTable
+        amountFormatter={new Intl.NumberFormat("fr-FR")}
+        dateFormatter={new Intl.DateTimeFormat("fr-FR", { dateStyle: "short" })}
+        filteredTransactions={[transaction]}
+        isLoading={false}
+        leadById={{ "lead-1": lead }}
+        noStudentLabel="Aucun etudiant"
+        onCopyCheckoutLink={onCopyCheckoutLink}
+        onOpenPaymentUrl={onOpenPaymentUrl}
+        profileById={{
+          "student-1": {
+            id: "student-1",
+            email: "student@example.com",
+            first_name: "Ada",
+            last_name: "Lovelace",
+          },
+        }}
+        text={text}
+      />,
     );
 
     expect(screen.getByText("SIM-847c41dc78314fc89d02b54ba5977")).toBeInTheDocument();
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ouvrir checkout" })).toHaveAttribute(
-      "href",
-      "/checkout?leadId=lead-1&email=lead%40example.com",
+
+    fireEvent.click(screen.getByRole("button", { name: /Copier lien/i }));
+    expect(onCopyCheckoutLink).toHaveBeenCalledWith(lead);
+
+    const openPaymentButton = screen.getAllByRole("button").find(
+      (button) => button.textContent?.trim() === "",
     );
-
-    fireEvent.click(screen.getByRole("button"));
-
+    expect(openPaymentButton).toBeDefined();
+    fireEvent.click(openPaymentButton!);
     expect(onOpenPaymentUrl).toHaveBeenCalledWith("https://pay.example/tx");
   }, 10_000);
 
@@ -162,24 +166,17 @@ describe("AdminPayments view parts", () => {
       filteredTransactions: [],
       leadById: {},
       noStudentLabel: "Aucun etudiant",
+      onCopyCheckoutLink: vi.fn(),
       onOpenPaymentUrl: vi.fn(),
       profileById: {},
       text,
     };
 
-    const { rerender } = render(
-      <MemoryRouter>
-        <AdminPaymentsTable {...props} isLoading />
-      </MemoryRouter>,
-    );
+    const { rerender } = render(<AdminPaymentsTable {...props} isLoading />);
 
     expect(document.querySelector(".animate-spin")).toBeInTheDocument();
 
-    rerender(
-      <MemoryRouter>
-        <AdminPaymentsTable {...props} isLoading={false} />
-      </MemoryRouter>,
-    );
+    rerender(<AdminPaymentsTable {...props} isLoading={false} />);
 
     expect(screen.getByText("Aucune transaction")).toBeInTheDocument();
   });

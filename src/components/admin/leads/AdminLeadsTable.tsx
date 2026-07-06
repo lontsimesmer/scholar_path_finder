@@ -1,5 +1,4 @@
-import { ExternalLink, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Copy, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +23,16 @@ type AdminLeadsTableProps = {
   leads: LeadRecord[];
   text: AdminLeadsText;
   dateFormatter: Intl.DateTimeFormat;
+  onCopyCheckoutLink: (lead: LeadRecord) => void;
 };
 
-export function AdminLeadsTable({ isLoading, leads, text, dateFormatter }: AdminLeadsTableProps) {
+export function AdminLeadsTable({
+  isLoading,
+  leads,
+  text,
+  dateFormatter,
+  onCopyCheckoutLink,
+}: AdminLeadsTableProps) {
   return (
     <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
       <Table>
@@ -89,11 +95,14 @@ export function AdminLeadsTable({ isLoading, leads, text, dateFormatter }: Admin
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-end">
-                    <Button asChild size="sm" variant="outline" className="rounded-xl">
-                      <Link to={`/checkout?leadId=${encodeURIComponent(lead.id)}&email=${encodeURIComponent(lead.email)}`}>
-                        {text.openCheckout}
-                        <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                      </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => onCopyCheckoutLink(lead)}
+                    >
+                      <Copy className="mr-2 h-3.5 w-3.5" />
+                      {text.copyCheckoutLink}
                     </Button>
                   </div>
                 </TableCell>

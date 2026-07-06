@@ -1,7 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildAdminLeadStats,
+  buildLeadCheckoutLink,
+  copyLeadCheckoutLink,
   filterAdminLeads,
   getAdminLeadPaymentBadgeClassName,
   getAdminLeadPaymentLabel,
@@ -90,5 +92,78 @@ describe("admin leads helpers", () => {
     expect(getAdminLeadPaymentBadgeClassName("paid")).toContain("text-success");
     expect(getAdminLeadPaymentBadgeClassName("pending")).toContain("warning");
     expect(getAdminLeadPaymentBadgeClassName(null)).toContain("muted");
+  });
+
+  describe("buildLeadCheckoutLink", () => {
+    it("encodes the lead identifier and email in the checkout url", () => {
+      expect(
+        buildLeadCheckoutLink(
+          { leadId: "lead-123", email: "Ada@Example.com" },
+          "https://powerprestation.com",
+        ),
+      ).toBe("https://powerprestation.com/checkout?leadId=lead-123&email=Ada%40Example.com");
+    });
+
+    it("trims a trailing slash from the origin", () => {
+      expect(
+        buildLeadCheckoutLink(
+          { leadId: "lead-9", email: "a@b.co" },
+          "https://powerprestation.com/",
+        ),
+      ).toBe("https://powerprestation.com/checkout?leadId=lead-9&email=a%40b.co");
+    });
+  });
+
+  describe("copyLeadCheckoutLink", () => {
+    const writeText = vi.fn();
+    const originalNavigator = globalThis.navigator;
+
+    beforeEach(() => {
+      writeText.mockReset();
+      Object.defineProperty(globalThis, "navigator", {
+        configurable: true,
+        value: { clipboard: { writeText } },
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(globalThis, "navigator", {
+        configurable: true,
+        value: originalNavigator,
+      });
+    });
+
+    it("writes the checkout url to the clipboard and returns true", async () => {
+      writeText.mockResolvedValue(undefined);
+      const result = await copyLeadCheckoutLink(
+        { id: "lead-42", email: "student@example.com" },
+        "https://powerprestation.com",
+      );
+      expect(result).toBe(true);
+      expect(writeText).toHaveBeenCalledWith(
+        "https://powerprestation.com/checkout?leadId=lead-42&email=student%40example.com",
+      );
+    });
+
+    it("returns false when the clipboard write throws", async () => {
+      writeText.mockRejectedValue(new Error("blocked"));
+      const result = await copyLeadCheckoutLink(
+        { id: "lead-42", email: "student@example.com" },
+        "https://powerprestation.com",
+      );
+      expect(result).toBe(false);
+    });
+
+    it("returns false when the clipboard api is unavailable", async () => {
+      Object.defineProperty(globalThis, "navigator", {
+        configurable: true,
+        value: {},
+      });
+      const result = await copyLeadCheckoutLink(
+        { id: "lead-42", email: "student@example.com" },
+        "https://powerprestation.com",
+      );
+      expect(result).toBe(false);
+    });
   });
 });

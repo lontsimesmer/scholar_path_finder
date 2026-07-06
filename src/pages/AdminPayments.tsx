@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 
@@ -8,8 +8,10 @@ import { AdminPaymentsMetrics } from "@/components/admin/payments/AdminPaymentsM
 import { AdminPaymentsTable } from "@/components/admin/payments/AdminPaymentsTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
 import { getAdminSession } from "@/lib/admin-session";
+import { copyLeadCheckoutLink, type LeadRecord } from "@/lib/admin-leads";
 import {
   AdminPaymentsText,
   buildPaymentStats,
@@ -20,6 +22,7 @@ import { useAdminPayments } from "@/hooks/use-admin-payments";
 const AdminPayments = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const adminPaymentsText = t.adminPayments as AdminPaymentsText;
   const {
     channelFilter,
@@ -91,6 +94,29 @@ const AdminPayments = () => {
 
   const stats = useMemo(() => buildPaymentStats(transactions), [transactions]);
 
+  const handleCopyCheckoutLink = useCallback(
+    async (lead: LeadRecord) => {
+      const ok = await copyLeadCheckoutLink(lead, window.location.origin);
+      if (ok) {
+        toast({
+          title: adminPaymentsText.linkCopiedTitle,
+          description: adminPaymentsText.linkCopiedDescription,
+        });
+      } else {
+        toast({
+          title: adminPaymentsText.linkCopyErrorTitle,
+          variant: "destructive",
+        });
+      }
+    },
+    [
+      adminPaymentsText.linkCopiedDescription,
+      adminPaymentsText.linkCopiedTitle,
+      adminPaymentsText.linkCopyErrorTitle,
+      toast,
+    ],
+  );
+
   return (
     <AdminLayout
       title={adminPaymentsText.title}
@@ -130,6 +156,7 @@ const AdminPayments = () => {
               isLoading={isLoading}
               leadById={leadById}
               noStudentLabel={adminPaymentsText.noStudent}
+              onCopyCheckoutLink={handleCopyCheckoutLink}
               onOpenPaymentUrl={(url) => window.open(url, "_blank", "noopener,noreferrer")}
               profileById={profileById}
               text={adminPaymentsText}

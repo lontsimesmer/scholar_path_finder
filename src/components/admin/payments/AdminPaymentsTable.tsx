@@ -1,5 +1,4 @@
-import { ExternalLink, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Copy, ExternalLink, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +28,7 @@ interface AdminPaymentsTableProps {
   leadById: Record<string, LeadRecord>;
   noStudentLabel: string;
   onOpenPaymentUrl: (url: string) => void;
+  onCopyCheckoutLink: (lead: LeadRecord) => void;
   profileById: Record<string, StudentProfileLite>;
   text: AdminPaymentsText;
 }
@@ -41,6 +41,7 @@ export const AdminPaymentsTable = ({
   leadById,
   noStudentLabel,
   onOpenPaymentUrl,
+  onCopyCheckoutLink,
   profileById,
   text,
 }: AdminPaymentsTableProps) => (
@@ -134,12 +135,14 @@ export const AdminPaymentsTable = ({
                 <TableCell>
                   <div className="flex justify-end gap-2">
                     {lead ? (
-                      <Button asChild size="sm" variant="outline" className="rounded-xl">
-                        <Link
-                          to={`/checkout?leadId=${encodeURIComponent(lead.id)}&email=${encodeURIComponent(lead.email)}`}
-                        >
-                          {text.openCheckout}
-                        </Link>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => onCopyCheckoutLink(lead)}
+                      >
+                        <Copy className="mr-2 h-3.5 w-3.5" />
+                        {text.copyCheckoutLink}
                       </Button>
                     ) : null}
                     {transaction.payment_url ? (

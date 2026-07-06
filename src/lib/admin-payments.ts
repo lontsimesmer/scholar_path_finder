@@ -59,7 +59,10 @@ export interface AdminPaymentsText {
   };
   noLead: string;
   noStudent: string;
-  openCheckout: string;
+  copyCheckoutLink: string;
+  linkCopiedTitle: string;
+  linkCopiedDescription: string;
+  linkCopyErrorTitle: string;
   openLeads: string;
   searchPlaceholder: string;
   subtitle: string;

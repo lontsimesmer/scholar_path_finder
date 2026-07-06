@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CreditCard } from "lucide-react";
 
@@ -8,14 +8,22 @@ import { AdminLeadsMetrics } from "@/components/admin/leads/AdminLeadsMetrics";
 import { AdminLeadsTable } from "@/components/admin/leads/AdminLeadsTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import { useAdminLeads } from "@/hooks/use-admin-leads";
 import { useLanguage } from "@/i18n/language";
 import { getAdminSession } from "@/lib/admin-session";
-import { AdminLeadsText, buildAdminLeadStats, filterAdminLeads } from "@/lib/admin-leads";
+import {
+  AdminLeadsText,
+  buildAdminLeadStats,
+  copyLeadCheckoutLink,
+  filterAdminLeads,
+  type LeadRecord,
+} from "@/lib/admin-leads";
 
 const AdminLeads = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
+  const { toast } = useToast();
   const text = t.adminLeads as AdminLeadsText;
   const {
     isLoading,
@@ -73,6 +81,24 @@ const AdminLeads = () => {
 
   const stats = useMemo(() => buildAdminLeadStats(leads), [leads]);
 
+  const handleCopyCheckoutLink = useCallback(
+    async (lead: LeadRecord) => {
+      const ok = await copyLeadCheckoutLink(lead, window.location.origin);
+      if (ok) {
+        toast({
+          title: text.linkCopiedTitle,
+          description: text.linkCopiedDescription,
+        });
+      } else {
+        toast({
+          title: text.linkCopyErrorTitle,
+          variant: "destructive",
+        });
+      }
+    },
+    [text.linkCopiedDescription, text.linkCopiedTitle, text.linkCopyErrorTitle, toast],
+  );
+
   return (
     <AdminLayout
       title={text.title}
@@ -106,6 +132,7 @@ const AdminLeads = () => {
               leads={filteredLeads}
               text={text}
               dateFormatter={dateFormatter}
+              onCopyCheckoutLink={handleCopyCheckoutLink}
             />
           </CardContent>
         </Card>
