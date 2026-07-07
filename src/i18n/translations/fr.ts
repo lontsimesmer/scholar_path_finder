@@ -790,6 +790,10 @@ export const fr = {
     paymentsDescription:
       "Surveillez les paiements en attente, acceptés ou échoués depuis un seul espace.",
     openPayments: "Ouvrir les paiements",
+    manualPaymentsTitle: "Paiements manuels (Orange Money)",
+    manualPaymentsDescription:
+      "Validez ou rejetez les preuves Orange Money soumises par les leads.",
+    openManualPayments: "Ouvrir les paiements manuels",
     crmTitle: "Gestion des Clients (CRM)",
     crmDescription: "Pilotez les dossiers étudiants, changez les statuts et validez les documents sécurisés.",
     openCrm: "Ouvrir le CRM",
@@ -810,6 +814,9 @@ export const fr = {
     reviewPaymentsTitle: "Paiements en attente",
     reviewPaymentsDescription:
       "Transactions à surveiller avant de pouvoir faire avancer la procédure.",
+    reviewManualPaymentsTitle: "Preuves à valider",
+    reviewManualPaymentsDescription:
+      "Preuves de paiement Orange Money soumises et en attente de décision.",
     publicSite: "Site Public",
     viewSite: "Voir le site",
     seoHealth: "SEO Health",
@@ -837,6 +844,7 @@ export const fr = {
       totalLeads: "Leads entrants",
       paidConsultations: "Consultations payées",
       pendingPayments: "Paiements en attente",
+      pendingManualPayments: "Preuves à valider",
       pendingDocuments: "Documents en attente",
       publishedPosts: "Articles publiés",
       activeStudentsDescription:
@@ -847,6 +855,8 @@ export const fr = {
         "Leads dont le paiement de consultation est confirmé.",
       pendingPaymentsDescription:
         "Transactions qui demandent encore une surveillance ou une confirmation.",
+      pendingManualPaymentsDescription:
+        "Preuves Orange Money soumises par les leads, en attente de validation.",
       pendingDocumentsDescription:
         "Fichiers transmis qui attendent encore une décision de l'équipe.",
       publishedPostsDescription:

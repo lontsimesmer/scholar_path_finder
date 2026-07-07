@@ -19,10 +19,15 @@ const text = {
   paymentsTitle: "Paiements",
   paymentsDescription: "Suivi paiements",
   openPayments: "Ouvrir paiements",
+  manualPaymentsTitle: "Paiements manuels",
+  manualPaymentsDescription: "Preuves Orange Money",
+  openManualPayments: "Ouvrir paiements manuels",
   reviewDocumentsTitle: "Documents a traiter",
   reviewDocumentsDescription: "Documents en attente",
   reviewPaymentsTitle: "Paiements en attente",
   reviewPaymentsDescription: "Paiements a surveiller",
+  reviewManualPaymentsTitle: "Preuves a valider",
+  reviewManualPaymentsDescription: "Preuves en attente",
   metrics: {
     activeStudents: "Dossiers actifs",
     activeStudentsDescription: "Etudiants suivis",
@@ -32,6 +37,8 @@ const text = {
     pendingDocumentsDescription: "Documents a traiter",
     pendingPayments: "Paiements en attente",
     pendingPaymentsDescription: "Paiements a verifier",
+    pendingManualPayments: "Preuves en attente",
+    pendingManualPaymentsDescription: "Preuves Orange Money a valider",
     publishedPosts: "Articles publies",
     publishedPostsDescription: "Articles visibles",
     totalLeads: "Leads entrants",
@@ -52,6 +59,7 @@ describe("admin dashboard helpers", () => {
       paidConsultations: 2,
       pendingDocuments: 4,
       pendingPayments: 1,
+      pendingManualPayments: 6,
       publishedPosts: 5,
       totalLeads: 7,
     };
@@ -59,11 +67,18 @@ describe("admin dashboard helpers", () => {
     expect(buildAdminDashboardMetrics(text, stats, false)).toMatchObject([
       { title: "Dossiers actifs", value: 3 },
       { title: "Leads entrants", value: 7 },
+      { title: "Preuves en attente", tone: "warning", value: 6 },
       { title: "Documents en attente", tone: "neutral", value: 4 },
       { title: "Articles publies", value: 5 },
     ]);
 
     expect(buildAdminDashboardActionItems(text, stats)).toEqual([
+      {
+        description: "Preuves en attente",
+        href: "/admin/manual-payments",
+        title: "Preuves a valider",
+        value: 6,
+      },
       {
         description: "Documents en attente",
         href: "/admin/crm",
@@ -75,6 +90,12 @@ describe("admin dashboard helpers", () => {
     expect(buildAdminDashboardOperations(text, stats, true)).toMatchObject([
       { cta: "Ouvrir CRM", href: "/admin/crm", title: "CRM", value: "..." },
       { cta: "Ouvrir leads", href: "/admin/leads", title: "Leads", value: "..." },
+      {
+        cta: "Ouvrir paiements manuels",
+        href: "/admin/manual-payments",
+        title: "Paiements manuels",
+        value: "...",
+      },
     ]);
   });
 });
