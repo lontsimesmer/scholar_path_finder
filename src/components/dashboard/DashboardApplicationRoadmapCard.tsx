@@ -5,7 +5,7 @@ import { Application, DashboardText } from "@/lib/dashboard";
 import { cn } from "@/lib/utils";
 
 interface DashboardApplicationRoadmapCardProps {
-  application: Application;
+  application: Application | null;
   currentStatusIndex: number;
   roadmapSteps: string[];
   text: DashboardText;
@@ -47,7 +47,7 @@ export const DashboardApplicationRoadmapCard = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 p-5 md:space-y-8 md:p-8 md:pt-8 lg:p-12 lg:pt-12">
-        {application.notes ? (
+        {application?.notes ? (
           <div className="flex gap-3 rounded-[1.5rem] border border-primary/10 bg-gradient-to-r from-primary/[0.06] to-primary/[0.02] p-4 sm:gap-4 sm:p-6 animate-in fade-in slide-in-from-top-2 duration-700">
             <MessageSquare className="h-6 w-6 shrink-0 text-primary" />
             <div className="space-y-1">

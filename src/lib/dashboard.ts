@@ -104,6 +104,13 @@ export interface DashboardText {
   validateProfile: string;
   validationInProgress: string;
   welcome: string;
+  checklistPendingSummary: string;
+  checklistRequestedBadge: string;
+  checklistSpontaneousBadge: string;
+  checklistStatusRequested: string;
+  checklistStatusWaiting: string;
+  checklistStatusApproved: string;
+  checklistStatusRejected: string;
 }
 
 export interface DashboardViewModel {
@@ -142,6 +149,8 @@ export interface DashboardViewModel {
 }
 
 export const dashboardRoadmapSteps = [
+  "profile_submitted",
+  "payment_confirmed",
   "consultation_paid",
   "profile_evaluation",
   "university_selection",
@@ -151,6 +160,79 @@ export const dashboardRoadmapSteps = [
   "visa_granted",
   "completed",
 ];
+
+export type DocumentChecklistItemStatus =
+  | "requested"
+  | "waiting_review"
+  | "approved"
+  | "rejected";
+
+export interface DocumentChecklistItem {
+  key: string;
+  title: string;
+  description: string | null;
+  status: DocumentChecklistItemStatus;
+  isRequested: boolean;
+  requestId: string | null;
+  document: StudentDocument | null;
+}
+
+export function buildDocumentChecklist(
+  requests: StudentDocumentRequest[],
+  documents: StudentDocument[],
+): DocumentChecklistItem[] {
+  const documentById = new Map(documents.map((doc) => [doc.id, doc]));
+  const usedDocumentIds = new Set<string>();
+
+  const requested = requests
+    .filter((request) => request.status !== "cancelled")
+    .map<DocumentChecklistItem>((request) => {
+      const doc = request.fulfilled_document_id
+        ? documentById.get(request.fulfilled_document_id) ?? null
+        : null;
+      if (doc) {
+        usedDocumentIds.add(doc.id);
+      }
+      const status: DocumentChecklistItemStatus = doc
+        ? doc.status === "approved"
+          ? "approved"
+          : doc.status === "rejected"
+            ? "rejected"
+            : "waiting_review"
+        : "requested";
+      return {
+        key: `request-${request.id}`,
+        title: request.title,
+        description: request.description ?? null,
+        status,
+        isRequested: true,
+        requestId: request.id,
+        document: doc,
+      };
+    });
+
+  const spontaneous = documents
+    .filter((doc) => !usedDocumentIds.has(doc.id))
+    .map<DocumentChecklistItem>((doc) => {
+      const status: DocumentChecklistItemStatus =
+        doc.status === "approved"
+          ? "approved"
+          : doc.status === "rejected"
+            ? "rejected"
+            : "waiting_review";
+      return {
+        key: `document-${doc.id}`,
+        title: doc.title || doc.name || "",
+        description: null,
+        status,
+        isRequested: false,
+        requestId: null,
+        document: doc,
+      };
+    });
+
+  return [...requested, ...spontaneous];
+}
 
 export const sanitizeDashboardRedirect = (value: string | null) => {
   if (!value || !value.startsWith("/")) {
