@@ -32,6 +32,7 @@ export function useAdminDashboard() {
           totalLeadsResult,
           paidConsultationsResult,
           pendingPaymentsResult,
+          pendingManualPaymentsResult,
           pendingDocumentsResult,
         ] = await Promise.all([
           supabase.from("student_applications").select("*", { count: "exact", head: true }),
@@ -39,6 +40,10 @@ export function useAdminDashboard() {
           supabase.from("leads").select("*", { count: "exact", head: true }),
           supabase.from("leads").select("*", { count: "exact", head: true }).eq("payment_status", "paid"),
           supabase.from("payment_transactions").select("*", { count: "exact", head: true }).in("local_status", ["initialized", "pending"]),
+          supabase
+            .from("manual_payment_submissions")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "pending_review"),
           supabase.from("student_documents").select("*", { count: "exact", head: true }).eq("status", "pending"),
         ]);
 
@@ -48,6 +53,7 @@ export function useAdminDashboard() {
           totalLeadsResult.error ||
           paidConsultationsResult.error ||
           pendingPaymentsResult.error ||
+          pendingManualPaymentsResult.error ||
           pendingDocumentsResult.error;
 
         if (firstError) {
@@ -64,6 +70,7 @@ export function useAdminDashboard() {
           totalLeads: totalLeadsResult.count || 0,
           paidConsultations: paidConsultationsResult.count || 0,
           pendingPayments: pendingPaymentsResult.count || 0,
+          pendingManualPayments: pendingManualPaymentsResult.count || 0,
           pendingDocuments: pendingDocumentsResult.count || 0,
         });
         logger.info("Admin dashboard metrics loaded");

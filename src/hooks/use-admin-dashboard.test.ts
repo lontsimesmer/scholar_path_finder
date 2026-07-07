@@ -86,6 +86,9 @@ describe("useAdminDashboard", () => {
       if (table === "student_documents") {
         return { select: () => ({ eq: vi.fn().mockResolvedValue(createCountQuery(5)) }) };
       }
+      if (table === "manual_payment_submissions") {
+        return { select: () => ({ eq: vi.fn().mockResolvedValue(createCountQuery(6)) }) };
+      }
       throw new Error(`Unexpected table ${table}`);
     });
 
@@ -98,6 +101,7 @@ describe("useAdminDashboard", () => {
       activeStudents: 3,
       paidConsultations: 4,
       pendingDocuments: 5,
+      pendingManualPayments: 6,
       pendingPayments: 1,
       publishedPosts: 2,
       totalLeads: 8,

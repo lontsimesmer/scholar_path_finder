@@ -1,4 +1,4 @@
-import { BookOpenText, FileSearch, ShieldCheck, Users } from "lucide-react";
+import { BookOpenText, FileSearch, ShieldCheck, Users, Wallet } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
 
@@ -8,6 +8,7 @@ export interface AdminDashboardStats {
   totalLeads: number;
   paidConsultations: number;
   pendingPayments: number;
+  pendingManualPayments: number;
   pendingDocuments: number;
 }
 
@@ -33,6 +34,9 @@ export interface AdminDashboardText {
   paymentsTitle: string;
   paymentsDescription: string;
   openPayments: string;
+  manualPaymentsTitle: string;
+  manualPaymentsDescription: string;
+  openManualPayments: string;
   operationalOverview: string;
   operationalDescription: string;
   actionRequiredTitle: string;
@@ -41,6 +45,8 @@ export interface AdminDashboardText {
   reviewDocumentsDescription: string;
   reviewPaymentsTitle: string;
   reviewPaymentsDescription: string;
+  reviewManualPaymentsTitle: string;
+  reviewManualPaymentsDescription: string;
   pricing: {
     title: string;
     description: string;
@@ -62,12 +68,14 @@ export interface AdminDashboardText {
     totalLeads: string;
     paidConsultations: string;
     pendingPayments: string;
+    pendingManualPayments: string;
     pendingDocuments: string;
     publishedPosts: string;
     activeStudentsDescription: string;
     totalLeadsDescription: string;
     paidConsultationsDescription: string;
     pendingPaymentsDescription: string;
+    pendingManualPaymentsDescription: string;
     pendingDocumentsDescription: string;
     publishedPostsDescription: string;
   };
@@ -79,6 +87,7 @@ export const defaultAdminDashboardStats: AdminDashboardStats = {
   totalLeads: 0,
   paidConsultations: 0,
   pendingPayments: 0,
+  pendingManualPayments: 0,
   pendingDocuments: 0,
 };
 
@@ -130,6 +139,13 @@ export const buildAdminDashboardMetrics = (
     icon: FileSearch,
   },
   {
+    title: text.metrics.pendingManualPayments,
+    value: formatAdminMetricValue(isLoading, stats.pendingManualPayments),
+    description: text.metrics.pendingManualPaymentsDescription,
+    icon: Wallet,
+    tone: "warning",
+  },
+  {
     title: text.metrics.pendingDocuments,
     value: formatAdminMetricValue(isLoading, stats.pendingDocuments),
     description: text.metrics.pendingDocumentsDescription,
@@ -148,6 +164,12 @@ export const buildAdminDashboardActionItems = (
   text: AdminDashboardText,
   stats: AdminDashboardStats,
 ): AdminDashboardActionItem[] => [
+  {
+    title: text.reviewManualPaymentsTitle,
+    description: text.reviewManualPaymentsDescription,
+    value: stats.pendingManualPayments,
+    href: "/admin/manual-payments",
+  },
   {
     title: text.reviewDocumentsTitle,
     description: text.reviewDocumentsDescription,
@@ -178,6 +200,16 @@ export const buildAdminDashboardOperations = (
     value: formatAdminMetricValue(isLoading, stats.totalLeads),
     icon: FileSearch,
     iconClassName: "bg-success/10 text-success",
+    buttonVariant: "outline",
+  },
+  {
+    title: text.manualPaymentsTitle,
+    description: text.manualPaymentsDescription,
+    href: "/admin/manual-payments",
+    cta: text.openManualPayments,
+    value: formatAdminMetricValue(isLoading, stats.pendingManualPayments),
+    icon: Wallet,
+    iconClassName: "bg-warning/10 text-warning",
     buttonVariant: "outline",
   },
 ];

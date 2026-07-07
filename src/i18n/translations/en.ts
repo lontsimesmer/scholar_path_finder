@@ -789,6 +789,10 @@ export const en = {
     paymentsDescription:
       "Track pending, accepted, and failed payment attempts in one place.",
     openPayments: "Open payments",
+    manualPaymentsTitle: "Manual payments (Orange Money)",
+    manualPaymentsDescription:
+      "Approve or reject Orange Money receipts submitted by leads.",
+    openManualPayments: "Open manual payments",
     crmTitle: "Client Management (CRM)",
     crmDescription: "Manage student files, update statuses, and validate secured documents.",
     openCrm: "Open CRM",
@@ -808,6 +812,9 @@ export const en = {
     reviewPaymentsTitle: "Payments still pending",
     reviewPaymentsDescription:
       "Transactions that need monitoring before the procedure can move forward.",
+    reviewManualPaymentsTitle: "Receipts to review",
+    reviewManualPaymentsDescription:
+      "Orange Money receipts submitted by leads that are still awaiting a decision.",
     publicSite: "Public Site",
     viewSite: "View site",
     seoHealth: "SEO Health",
@@ -835,6 +842,7 @@ export const en = {
       totalLeads: "Incoming Leads",
       paidConsultations: "Paid Consultations",
       pendingPayments: "Pending Payments",
+      pendingManualPayments: "Receipts to review",
       pendingDocuments: "Pending Documents",
       publishedPosts: "Published Articles",
       activeStudentsDescription:
@@ -845,6 +853,8 @@ export const en = {
         "Leads whose consultation payment has been confirmed.",
       pendingPaymentsDescription:
         "Transactions that still require monitoring or confirmation.",
+      pendingManualPaymentsDescription:
+        "Orange Money receipts submitted by leads awaiting an admin decision.",
       pendingDocumentsDescription:
         "Uploaded files that still need a review decision.",
       publishedPostsDescription:
