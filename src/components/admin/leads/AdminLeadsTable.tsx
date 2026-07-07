@@ -1,4 +1,4 @@
-import { Copy, Loader2 } from "lucide-react";
+import { Copy, Loader2, Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,8 @@ import {
 import {
   AdminLeadsText,
   LeadRecord,
+  MAX_FOLLOW_UP_COUNT,
+  canResendFollowUp,
   getAdminLeadPaymentBadgeClassName,
   getAdminLeadPaymentLabel,
   getAdminLeadPipelineLabel,
@@ -23,7 +25,9 @@ type AdminLeadsTableProps = {
   leads: LeadRecord[];
   text: AdminLeadsText;
   dateFormatter: Intl.DateTimeFormat;
+  isResending: boolean;
   onCopyCheckoutLink: (lead: LeadRecord) => void;
+  onResendFollowUp: (lead: LeadRecord) => void;
 };
 
 export function AdminLeadsTable({
@@ -31,7 +35,9 @@ export function AdminLeadsTable({
   leads,
   text,
   dateFormatter,
+  isResending,
   onCopyCheckoutLink,
+  onResendFollowUp,
 }: AdminLeadsTableProps) {
   return (
     <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
@@ -94,7 +100,30 @@ export function AdminLeadsTable({
                   {dateFormatter.format(new Date(lead.created_at))}
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end">
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {(() => {
+                      const canResend = canResendFollowUp(lead);
+                      const disabledReason = !canResend
+                        ? lead.payment_status === "paid"
+                          ? text.resendFollowUpTooltipPaid
+                          : (lead.follow_up_count ?? 0) >= MAX_FOLLOW_UP_COUNT
+                            ? text.resendFollowUpTooltipLimit
+                            : undefined
+                        : undefined;
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-xl"
+                          disabled={!canResend || isResending}
+                          onClick={() => onResendFollowUp(lead)}
+                          title={disabledReason}
+                        >
+                          <Send className="mr-2 h-3.5 w-3.5" />
+                          {text.resendFollowUp}
+                        </Button>
+                      );
+                    })()}
                     <Button
                       size="sm"
                       variant="outline"

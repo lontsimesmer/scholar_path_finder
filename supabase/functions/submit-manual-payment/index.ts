@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
+import { notifyAdmins } from "../_shared/admin-notifications.ts";
 import {
   createServiceRoleClient,
   requireAuthenticatedUser,
@@ -216,6 +217,26 @@ serve(async (req) => {
         amount: instructions.amount,
         currency: instructions.currency,
       },
+    });
+
+    const siteUrl = Deno.env.get("SITE_URL")?.trim().replace(/\/+$/, "") || "";
+    await notifyAdmins(supabase, {
+      subject: `Preuve Orange Money à valider — ${leadRecord.email}`,
+      eventLabel: "Preuve de paiement soumise",
+      headline: `Nouvelle preuve Orange Money à valider`,
+      lines: [
+        `Lead : ${leadRecord.email}`,
+        `Expéditeur : ${senderName} (${senderPhone})`,
+        `Montant : ${instructions.amount} ${instructions.currency}`,
+        providerReference ? `Référence fournisseur : ${providerReference}` : "Référence fournisseur : non fournie",
+        notes ? `Notes : ${notes}` : "Notes : aucune",
+      ],
+      ctaLabel: "Ouvrir la validation",
+      ctaHref: siteUrl
+        ? `${siteUrl}/admin/manual-payments?submissionId=${submission.id}`
+        : undefined,
+      footerNote: `Lead ID : ${leadId} · Submission ID : ${submission.id}`,
+      tag: "admin-notification/manual-payment-submitted",
     });
 
     logger.info("Manual payment submission created", {

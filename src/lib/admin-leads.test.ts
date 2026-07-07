@@ -3,14 +3,29 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildAdminLeadStats,
   buildLeadCheckoutLink,
+  canResendFollowUp,
   copyLeadCheckoutLink,
   filterAdminLeads,
   getAdminLeadPaymentBadgeClassName,
   getAdminLeadPaymentLabel,
   getAdminLeadPipelineLabel,
+  MAX_FOLLOW_UP_COUNT,
+  resendLeadFollowUp,
   type AdminLeadsText,
   type LeadRecord,
 } from "@/lib/admin-leads";
+
+const invokeMock = vi.hoisted(() => ({
+  invoke: vi.fn(),
+}));
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    functions: {
+      invoke: invokeMock.invoke,
+    },
+  },
+}));
 
 const createLead = (overrides: Partial<LeadRecord>): LeadRecord =>
   ({
@@ -164,6 +179,76 @@ describe("admin leads helpers", () => {
         "https://powerprestation.com",
       );
       expect(result).toBe(false);
+    });
+  });
+
+  describe("canResendFollowUp", () => {
+    it("returns true for an unpaid lead within the limit", () => {
+      expect(
+        canResendFollowUp(createLead({ payment_status: "unpaid", follow_up_count: 3 })),
+      ).toBe(true);
+    });
+
+    it("returns false for a paid lead", () => {
+      expect(canResendFollowUp(createLead({ payment_status: "paid" }))).toBe(false);
+    });
+
+    it("returns false when the follow-up limit is reached", () => {
+      expect(
+        canResendFollowUp(createLead({ follow_up_count: MAX_FOLLOW_UP_COUNT })),
+      ).toBe(false);
+    });
+  });
+
+  describe("resendLeadFollowUp", () => {
+    beforeEach(() => {
+      invokeMock.invoke.mockReset();
+    });
+
+    it("calls the admin-lead-followup edge function with the lead id", async () => {
+      invokeMock.invoke.mockResolvedValue({
+        data: {
+          ok: true,
+          lead: { id: "lead-9", follow_up_count: 4 },
+        },
+        error: null,
+      });
+
+      const result = await resendLeadFollowUp("lead-9");
+
+      expect(invokeMock.invoke).toHaveBeenCalledWith("admin-lead-followup", {
+        method: "POST",
+        body: { leadId: "lead-9" },
+      });
+      expect(result).toEqual({
+        success: true,
+        lead: { id: "lead-9", follow_up_count: 4 },
+      });
+    });
+
+    it("returns the cooldown error message from the edge function", async () => {
+      invokeMock.invoke.mockResolvedValue({
+        data: null,
+        error: new Error("Cooldown active: try again in 12 minute(s)"),
+      });
+
+      const result = await resendLeadFollowUp("lead-1");
+
+      expect(result).toEqual({
+        success: false,
+        message: "Cooldown active: try again in 12 minute(s)",
+      });
+    });
+
+    it("returns a generic message when the response is missing", async () => {
+      invokeMock.invoke.mockResolvedValue({ data: { ok: false }, error: null });
+
+      const result = await resendLeadFollowUp("lead-1");
+
+      expect(result).toEqual({
+        success: false,
+        message: "Empty response from admin-lead-followup",
+      });
     });
   });
 });

@@ -28,6 +28,7 @@ const AdminPayments = lazy(() => import("./pages/AdminPayments"));
 const AdminManualPayments = lazy(() => import("./pages/AdminManualPayments"));
 const AdminFAQ = lazy(() => import("./pages/AdminFAQ"));
 const AdminTeam = lazy(() => import("./pages/AdminTeam"));
+const AdminNotifications = lazy(() => import("./pages/AdminNotifications"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/admin/manual-payments" element={<AdminManualPayments />} />
               <Route path="/admin/faq" element={<AdminFAQ />} />
               <Route path="/admin/team" element={<AdminTeam />} />
+              <Route path="/admin/notifications" element={<AdminNotifications />} />
               <Route path="/admin/students/:studentId" element={<AdminCRMStudent />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />

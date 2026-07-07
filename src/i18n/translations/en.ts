@@ -757,6 +757,7 @@ export const en = {
       blog: "Blog",
       faq: "FAQ",
       team: "Admin team",
+      notifications: "Notifications",
     },
     signOut: "Sign out",
   },
@@ -1079,6 +1080,16 @@ export const en = {
     linkCopiedTitle: "Link copied",
     linkCopiedDescription: "Send it to the lead via WhatsApp, SMS or email so they can complete the payment.",
     linkCopyErrorTitle: "Copy failed. Select and copy the link manually.",
+    resendFollowUp: "Resend follow-up",
+    resendFollowUpTooltipPaid: "This lead already paid.",
+    resendFollowUpTooltipLimit: "Follow-up limit reached.",
+    resendFollowUpSuccessTitle: "Follow-up sent",
+    resendFollowUpSuccessDescription: "Email sent to {email}. Next follow-up available in 30 min.",
+    resendFollowUpErrorTitle: "Cannot send follow-up",
+    resendFollowUpErrorCooldown: "You already resent this lead recently. Try again in a few minutes.",
+    resendFollowUpErrorPaid: "This lead already paid.",
+    resendFollowUpErrorLimit: "This lead has reached the follow-up limit.",
+    resendFollowUpErrorGeneric: "An unexpected error occurred.",
     metrics: {
       total: "Total Leads",
       paid: "Paid Consultations",
@@ -1406,6 +1417,60 @@ export const en = {
       errorInvalidEmail: "Invalid email address.",
       errorSelfRemove: "You cannot remove yourself.",
       errorRateLimit: "Too many invitations sent recently. Please try again in a few minutes.",
+      errorGeneric: "An unexpected error occurred. Please try again.",
+    },
+  },
+
+  adminNotifications: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "Notifications",
+    title: "Email notifications",
+    subtitle:
+      "Manage which addresses receive an email on new lead signups and payment events.",
+    metrics: {
+      total: "Recipients",
+      totalDescription: "Email addresses subscribed to admin notifications.",
+    },
+    filters: {
+      searchPlaceholder: "Search an email...",
+    },
+    columns: {
+      email: "Email address",
+      actions: "Actions",
+    },
+    actions: {
+      add: "Add an email",
+      remove: "Remove",
+    },
+    empty: "No address matches the search.",
+    loading: "Loading...",
+    addDialog: {
+      title: "Add a recipient",
+      description:
+        "This address will receive an email on new lead signups and payment events.",
+      emailLabel: "Email address",
+      emailPlaceholder: "team@example.com",
+      submit: "Add",
+      submitting: "Adding...",
+      cancel: "Cancel",
+      invalidEmail: "Please enter a valid email address.",
+    },
+    removeDialog: {
+      title: "Remove this recipient?",
+      description:
+        "{email} will no longer receive operational notifications. You can add them back at any time.",
+      confirm: "Remove",
+      cancel: "Cancel",
+    },
+    toasts: {
+      addSuccessTitle: "Recipient added",
+      addSuccessDescription: "This address will receive the next notifications.",
+      removeSuccessTitle: "Recipient removed",
+      errorTitle: "Action failed",
+      errorAlreadyRecipient: "This email is already a recipient.",
+      errorInvalidEmail: "Invalid email address.",
+      errorLastRecipient:
+        "You cannot remove the last recipient. Add another address first.",
       errorGeneric: "An unexpected error occurred. Please try again.",
     },
   },

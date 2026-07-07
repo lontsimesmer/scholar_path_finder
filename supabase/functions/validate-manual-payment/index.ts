@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
+import { notifyAdmins } from "../_shared/admin-notifications.ts";
 import { createServiceRoleClient, requireAdminUser } from "../_shared/auth-utils.ts";
 import {
   createStudentNotification,
@@ -139,6 +140,19 @@ serve(async (req) => {
         },
       });
 
+      await notifyAdmins(supabase, {
+        subject: `Preuve Orange Money approuvée — ${leadRecord.email}`,
+        eventLabel: "Preuve approuvée",
+        headline: `Preuve Orange Money approuvée par ${admin.email}`,
+        lines: [
+          `Lead : ${leadRecord.email}`,
+          `Montant : ${submission.amount} ${submission.currency}`,
+          `Référence transaction : ${transactionId}`,
+        ],
+        footerNote: `Lead ID : ${submission.lead_id} · Submission ID : ${submission.id}`,
+        tag: "admin-notification/manual-payment-approved",
+      });
+
       logger.info("Manual payment approved", {
         submissionId: submission.id,
         adminEmail: admin.email,
@@ -201,6 +215,19 @@ serve(async (req) => {
         submissionId: submission.id,
         leadId: submission.lead_id,
       },
+    });
+
+    await notifyAdmins(supabase, {
+      subject: `Preuve Orange Money refusée — ${leadRecord.email}`,
+      eventLabel: "Preuve refusée",
+      headline: `Preuve Orange Money refusée par ${admin.email}`,
+      lines: [
+        `Lead : ${leadRecord.email}`,
+        `Montant : ${submission.amount} ${submission.currency}`,
+        comment ? `Motif : ${comment}` : "Motif : non renseigné",
+      ],
+      footerNote: `Lead ID : ${submission.lead_id} · Submission ID : ${submission.id}`,
+      tag: "admin-notification/manual-payment-rejected",
     });
 
     logger.info("Manual payment rejected", {
