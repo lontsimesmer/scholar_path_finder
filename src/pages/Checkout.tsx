@@ -33,6 +33,8 @@ const Checkout = () => {
       profileRequiredTitle: t.checkout.profileRequiredTitle,
       unavailableDescription: t.checkout.unavailableDescription,
       unavailableTitle: t.checkout.unavailableTitle,
+      wrongAccountTitle: t.checkout.wrongAccountTitle,
+      wrongAccountDescription: t.checkout.wrongAccountDescription,
     },
     toast,
   });

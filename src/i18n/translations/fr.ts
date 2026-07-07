@@ -350,6 +350,8 @@ export const fr = {
     unavailableDescription: "Veuillez commencer par le formulaire de contact afin que nous puissions lier votre paiement à votre dossier.",
     profileRequiredTitle: "Profil à valider",
     profileRequiredDescription: "Renseignez puis confirmez votre prénom, votre nom et votre date de naissance avant de continuer vers le paiement.",
+    wrongAccountTitle: "Ce lien de paiement appartient à un autre compte",
+    wrongAccountDescription: "Vous étiez connecté(e) avec un autre compte. Reconnectez-vous avec l'adresse du dossier pour continuer.",
     loading: "Préparation de votre paiement sécurisé...",
     payment: {
       missingLeadTitle: "Dossier de paiement introuvable",
