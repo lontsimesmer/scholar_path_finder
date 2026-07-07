@@ -1,6 +1,14 @@
+import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { getErrorMessage } from "@/lib/logger";
 
 export type LeadRecord = Tables<"leads">;
+
+export const MAX_FOLLOW_UP_COUNT = 14;
+
+export type ResendLeadFollowUpResult =
+  | { success: true; lead: Partial<LeadRecord> }
+  | { success: false; message: string };
 
 export type AdminLeadsText = {
   title: string;
@@ -17,6 +25,16 @@ export type AdminLeadsText = {
   linkCopiedTitle: string;
   linkCopiedDescription: string;
   linkCopyErrorTitle: string;
+  resendFollowUp: string;
+  resendFollowUpTooltipPaid: string;
+  resendFollowUpTooltipLimit: string;
+  resendFollowUpSuccessTitle: string;
+  resendFollowUpSuccessDescription: string;
+  resendFollowUpErrorTitle: string;
+  resendFollowUpErrorCooldown: string;
+  resendFollowUpErrorPaid: string;
+  resendFollowUpErrorLimit: string;
+  resendFollowUpErrorGeneric: string;
   metrics: {
     total: string;
     paid: string;
@@ -149,5 +167,43 @@ export async function copyLeadCheckoutLink(
     return true;
   } catch {
     return false;
+  }
+}
+
+export function canResendFollowUp(lead: LeadRecord): boolean {
+  if (lead.payment_status === "paid") return false;
+  if ((lead.follow_up_count ?? 0) >= MAX_FOLLOW_UP_COUNT) return false;
+  return true;
+}
+
+export async function resendLeadFollowUp(
+  leadId: string,
+): Promise<ResendLeadFollowUpResult> {
+  try {
+    const { data, error } = await supabase.functions.invoke<{
+      ok?: boolean;
+      lead?: Partial<LeadRecord>;
+      error?: string;
+    }>("admin-lead-followup", {
+      method: "POST",
+      body: { leadId },
+    });
+
+    if (error) {
+      const message = getErrorMessage(error, "Failed to resend follow-up");
+      return { success: false, message };
+    }
+    if (!data?.ok || !data.lead) {
+      return {
+        success: false,
+        message: data?.error ?? "Empty response from admin-lead-followup",
+      };
+    }
+    return { success: true, lead: data.lead };
+  } catch (error) {
+    return {
+      success: false,
+      message: getErrorMessage(error, "Failed to resend follow-up"),
+    };
   }
 }

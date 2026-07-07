@@ -1,4 +1,4 @@
-import { BookOpenText, CircleDollarSign, CreditCard, FileSearch, ShieldCheck, Users } from "lucide-react";
+import { BookOpenText, FileSearch, ShieldCheck, Users } from "lucide-react";
 
 import { LucideIcon } from "lucide-react";
 
@@ -130,20 +130,6 @@ export const buildAdminDashboardMetrics = (
     icon: FileSearch,
   },
   {
-    title: text.metrics.paidConsultations,
-    value: formatAdminMetricValue(isLoading, stats.paidConsultations),
-    description: text.metrics.paidConsultationsDescription,
-    icon: CircleDollarSign,
-    tone: "success",
-  },
-  {
-    title: text.metrics.pendingPayments,
-    value: formatAdminMetricValue(isLoading, stats.pendingPayments),
-    description: text.metrics.pendingPaymentsDescription,
-    icon: CreditCard,
-    tone: "warning",
-  },
-  {
     title: text.metrics.pendingDocuments,
     value: formatAdminMetricValue(isLoading, stats.pendingDocuments),
     description: text.metrics.pendingDocumentsDescription,
@@ -162,12 +148,6 @@ export const buildAdminDashboardActionItems = (
   text: AdminDashboardText,
   stats: AdminDashboardStats,
 ): AdminDashboardActionItem[] => [
-  {
-    title: text.reviewPaymentsTitle,
-    description: text.reviewPaymentsDescription,
-    value: stats.pendingPayments,
-    href: "/admin/payments",
-  },
   {
     title: text.reviewDocumentsTitle,
     description: text.reviewDocumentsDescription,
@@ -198,16 +178,6 @@ export const buildAdminDashboardOperations = (
     value: formatAdminMetricValue(isLoading, stats.totalLeads),
     icon: FileSearch,
     iconClassName: "bg-success/10 text-success",
-    buttonVariant: "outline",
-  },
-  {
-    title: text.paymentsTitle,
-    description: text.paymentsDescription,
-    href: "/admin/payments",
-    cta: text.openPayments,
-    value: formatAdminMetricValue(isLoading, stats.pendingPayments),
-    icon: CreditCard,
-    iconClassName: "bg-warning/10 text-warning",
     buttonVariant: "outline",
   },
 ];

@@ -59,19 +59,11 @@ describe("admin dashboard helpers", () => {
     expect(buildAdminDashboardMetrics(text, stats, false)).toMatchObject([
       { title: "Dossiers actifs", value: 3 },
       { title: "Leads entrants", value: 7 },
-      { title: "Consultations payees", tone: "success", value: 2 },
-      { title: "Paiements en attente", tone: "warning", value: 1 },
       { title: "Documents en attente", tone: "neutral", value: 4 },
       { title: "Articles publies", value: 5 },
     ]);
 
     expect(buildAdminDashboardActionItems(text, stats)).toEqual([
-      {
-        description: "Paiements a surveiller",
-        href: "/admin/payments",
-        title: "Paiements en attente",
-        value: 1,
-      },
       {
         description: "Documents en attente",
         href: "/admin/crm",
@@ -83,7 +75,6 @@ describe("admin dashboard helpers", () => {
     expect(buildAdminDashboardOperations(text, stats, true)).toMatchObject([
       { cta: "Ouvrir CRM", href: "/admin/crm", title: "CRM", value: "..." },
       { cta: "Ouvrir leads", href: "/admin/leads", title: "Leads", value: "..." },
-      { cta: "Ouvrir paiements", href: "/admin/payments", title: "Paiements", value: "..." },
     ]);
   });
 });

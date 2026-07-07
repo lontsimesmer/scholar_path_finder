@@ -1,10 +1,14 @@
 import { useCallback, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { LeadRecord } from "@/lib/admin-leads";
+import { LeadRecord, resendLeadFollowUp } from "@/lib/admin-leads";
 import { createLogger, getErrorMessage } from "@/lib/logger";
 
 const logger = createLogger("AdminLeads");
+
+type ResendResult =
+  | { success: true }
+  | { success: false; message: string };
 
 export function useAdminLeads() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,6 +16,7 @@ export function useAdminLeads() {
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [pipelineFilter, setPipelineFilter] = useState("all");
+  const [isResending, setIsResending] = useState(false);
 
   const loadLeads = useCallback(async () => {
     setIsLoading(true);
@@ -38,8 +43,23 @@ export function useAdminLeads() {
     }
   }, []);
 
+  const resendFollowUp = useCallback(async (leadId: string): Promise<ResendResult> => {
+    setIsResending(true);
+    const result = await resendLeadFollowUp(leadId);
+    if (result.success && result.lead) {
+      setLeads((current) =>
+        current.map((lead) => (lead.id === leadId ? { ...lead, ...result.lead } : lead)),
+      );
+    }
+    setIsResending(false);
+    return result.success
+      ? { success: true }
+      : { success: false, message: result.message };
+  }, []);
+
   return {
     isLoading,
+    isResending,
     leads,
     searchQuery,
     paymentFilter,
@@ -48,5 +68,6 @@ export function useAdminLeads() {
     setPaymentFilter,
     setPipelineFilter,
     loadLeads,
+    resendFollowUp,
   };
 }

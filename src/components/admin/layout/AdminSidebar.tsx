@@ -1,9 +1,9 @@
 import {
+  Bell,
   FileText,
   HelpCircle,
   LayoutDashboard,
   LogOut,
-  Receipt,
   Shield,
   ShieldCheck,
   UserPlus,
@@ -53,6 +53,7 @@ type AdminSidebarText = {
     blog: string;
     faq: string;
     team: string;
+    notifications: string;
   };
   signOut: string;
 };
@@ -78,7 +79,6 @@ export const AdminSidebar = ({ onSignOut, adminEmail, onNavigate }: AdminSidebar
     {
       label: text.sections.payments,
       items: [
-        { href: "/admin/payments", label: text.items.payments, icon: Receipt },
         { href: "/admin/manual-payments", label: text.items.manualPayments, icon: ShieldCheck },
       ],
     },
@@ -93,6 +93,7 @@ export const AdminSidebar = ({ onSignOut, adminEmail, onNavigate }: AdminSidebar
       label: text.sections.system,
       items: [
         { href: "/admin/team", label: text.items.team, icon: Shield },
+        { href: "/admin/notifications", label: text.items.notifications, icon: Bell },
       ],
     },
   ];

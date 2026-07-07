@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+import { notifyAdmins } from "./admin-notifications.ts";
 import { ensureConsultationApplication } from "./student-applications.ts";
 import {
   type CinetPayChannel,
@@ -262,6 +263,32 @@ export const reconcilePaymentVerification = async (
     }
 
     await ensureConsultationApplication(supabase, transaction.student_id);
+
+    const { data: paidLead } = await supabase
+      .from("leads")
+      .select("name, email, phone")
+      .eq("id", transaction.lead_id)
+      .maybeSingle();
+    const { data: paidTransaction } = await supabase
+      .from("payment_transactions")
+      .select("amount, currency, channel, provider, customer_email")
+      .eq("transaction_id", transaction.transaction_id)
+      .maybeSingle();
+
+    await notifyAdmins(supabase, {
+      subject: `Paiement CinetPay confirmé — ${paidLead?.name ?? paidLead?.email ?? transaction.lead_id}`,
+      eventLabel: "Paiement confirmé",
+      headline: `Paiement CinetPay confirmé pour ${paidLead?.name ?? paidLead?.email ?? "un lead"}`,
+      lines: [
+        `Lead : ${paidLead?.name ?? "?"} (${paidLead?.email ?? paidTransaction?.customer_email ?? "email inconnu"})`,
+        paidLead?.phone ? `Téléphone : ${paidLead.phone}` : "Téléphone : non renseigné",
+        `Montant : ${paidTransaction?.amount ?? "?"} ${paidTransaction?.currency ?? ""}`.trim(),
+        `Canal : ${paidTransaction?.channel ?? "?"} · ${paidTransaction?.provider ?? "cinetpay"}`,
+        `Référence transaction : ${transaction.transaction_id}`,
+      ],
+      footerNote: `Lead ID : ${transaction.lead_id}`,
+      tag: "admin-notification/cinetpay-paid",
+    });
   } else if (nextStatus === "refused" || nextStatus === "failed") {
     const { data: lead, error: leadSelectError } = await supabase
       .from("leads")

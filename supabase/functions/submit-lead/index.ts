@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
+import { notifyAdmins } from "../_shared/admin-notifications.ts";
 import { normalizeEmail, tryGetAuthenticatedUser } from "../_shared/auth-utils.ts";
 import {
   buildVerificationAccessToken,
@@ -564,26 +565,20 @@ const handler = async (req: Request): Promise<Response> => {
       { emailType: "welcome", leadId: lead.id },
     );
 
-    const adminNotificationRecipient =
-      Deno.env.get("ADMIN_NOTIFICATION_EMAIL")?.trim() || "powerprestationint@gmail.com";
-
-    await sendEmailIfConfigured(
-      {
-        to: [adminNotificationRecipient],
-        subject: `New Lead: ${escapeHtml(normalizedName)}`,
-        html: `
-          <h2>New Lead Submission</h2>
-          <p><strong>Name:</strong> ${escapeHtml(normalizedName)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(normalizedEmail)}</p>
-          <p><strong>Phone:</strong> ${escapeHtml(normalizedPhone || "Not provided")}</p>
-          <p><strong>Message:</strong></p>
-          <p>${escapeHtml(normalizedMessage)}</p>
-          <hr>
-          <p><a href="${checkoutUrl}">View Checkout Link</a></p>
-        `,
-      },
-      { emailType: "admin_notification", leadId: lead.id },
-    );
+    await notifyAdmins(supabase, {
+      subject: `Nouveau lead : ${normalizedName}`,
+      eventLabel: "Nouvelle inscription",
+      headline: `Nouveau lead : ${normalizedName}`,
+      lines: [
+        `Email : ${normalizedEmail}`,
+        `Téléphone : ${normalizedPhone || "Non renseigné"}`,
+        `Message : ${normalizedMessage}`,
+      ],
+      ctaLabel: "Voir le lien de paiement",
+      ctaHref: checkoutUrl,
+      footerNote: `Lead ID : ${lead.id}`,
+      tag: "admin-notification/new-lead",
+    });
 
     if (normalizedPhone) {
       try {

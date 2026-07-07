@@ -758,6 +758,7 @@ export const fr = {
       blog: "Blog",
       faq: "FAQ",
       team: "Équipe admin",
+      notifications: "Notifications",
     },
     signOut: "Déconnexion",
   },
@@ -1081,6 +1082,16 @@ export const fr = {
     linkCopiedTitle: "Lien copié",
     linkCopiedDescription: "Envoyez-le au lead par WhatsApp, SMS ou email pour qu'il finalise son paiement.",
     linkCopyErrorTitle: "Copie impossible. Sélectionnez et copiez le lien manuellement.",
+    resendFollowUp: "Relancer par email",
+    resendFollowUpTooltipPaid: "Ce lead a déjà payé.",
+    resendFollowUpTooltipLimit: "Limite de relances atteinte.",
+    resendFollowUpSuccessTitle: "Relance envoyée",
+    resendFollowUpSuccessDescription: "Email envoyé à {email}. Prochaine relance disponible dans 30 min.",
+    resendFollowUpErrorTitle: "Relance impossible",
+    resendFollowUpErrorCooldown: "Vous avez déjà relancé ce lead récemment. Réessayez dans quelques minutes.",
+    resendFollowUpErrorPaid: "Ce lead a déjà payé.",
+    resendFollowUpErrorLimit: "Ce lead a atteint la limite de relances.",
+    resendFollowUpErrorGeneric: "Une erreur inattendue est survenue.",
     metrics: {
       total: "Total leads",
       paid: "Consultations payées",
@@ -1413,6 +1424,61 @@ export const fr = {
       errorSelfRemove: "Vous ne pouvez pas vous retirer vous-même.",
       errorRateLimit:
         "Trop d'invitations envoyées récemment. Réessayez dans quelques minutes.",
+      errorGeneric: "Une erreur inattendue est survenue. Réessayez.",
+    },
+  },
+
+  adminNotifications: {
+    breadcrumbDashboard: "Tableau de bord",
+    breadcrumbCurrent: "Notifications",
+    title: "Notifications par email",
+    subtitle:
+      "Gérez la liste des adresses qui reçoivent un email lors d'une nouvelle inscription ou d'un événement de paiement.",
+    metrics: {
+      total: "Destinataires",
+      totalDescription: "Adresses email actives pour les notifications.",
+    },
+    filters: {
+      searchPlaceholder: "Rechercher un email...",
+    },
+    columns: {
+      email: "Adresse email",
+      actions: "Actions",
+    },
+    actions: {
+      add: "Ajouter un email",
+      remove: "Retirer",
+    },
+    empty: "Aucune adresse ne correspond à la recherche.",
+    loading: "Chargement...",
+    addDialog: {
+      title: "Ajouter un destinataire",
+      description:
+        "Cette adresse recevra un email lors d'une nouvelle inscription ou d'un événement de paiement.",
+      emailLabel: "Adresse email",
+      emailPlaceholder: "equipe@exemple.com",
+      submit: "Ajouter",
+      submitting: "Ajout...",
+      cancel: "Annuler",
+      invalidEmail: "Veuillez saisir une adresse email valide.",
+    },
+    removeDialog: {
+      title: "Retirer ce destinataire ?",
+      description:
+        "{email} ne recevra plus les notifications opérationnelles. Vous pouvez le rajouter à tout moment.",
+      confirm: "Retirer",
+      cancel: "Annuler",
+    },
+    toasts: {
+      addSuccessTitle: "Destinataire ajouté",
+      addSuccessDescription:
+        "Cette adresse recevra les prochaines notifications par email.",
+      removeSuccessTitle: "Destinataire retiré",
+      errorTitle: "Action impossible",
+      errorAlreadyRecipient: "Cette adresse est déjà destinataire.",
+      errorInvalidEmail: "Adresse email invalide.",
+      errorLastRecipient:
+        "Impossible de retirer le dernier destinataire. Ajoutez d'abord une autre adresse.",
       errorGeneric: "Une erreur inattendue est survenue. Réessayez.",
     },
   },
