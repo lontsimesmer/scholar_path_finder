@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import ScrollToHash from "@/components/ScrollToHash";
 
@@ -24,7 +24,6 @@ const AdminCRM = lazy(() => import("./pages/AdminCRM"));
 const AdminCRMStudent = lazy(() => import("./pages/AdminCRMStudent"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
-const AdminPayments = lazy(() => import("./pages/AdminPayments"));
 const AdminManualPayments = lazy(() => import("./pages/AdminManualPayments"));
 const AdminFAQ = lazy(() => import("./pages/AdminFAQ"));
 const AdminTeam = lazy(() => import("./pages/AdminTeam"));
@@ -66,7 +65,7 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/leads" element={<AdminLeads />} />
-              <Route path="/admin/payments" element={<AdminPayments />} />
+              <Route path="/admin/payments" element={<Navigate to="/admin" replace />} />
               <Route path="/admin/manual-payments" element={<AdminManualPayments />} />
               <Route path="/admin/faq" element={<AdminFAQ />} />
               <Route path="/admin/team" element={<AdminTeam />} />
