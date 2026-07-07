@@ -45,6 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
       .select("*")
       .in("status", ["pending", "follow_up"])
       .eq("payment_status", "unpaid")
+      .is("follow_up_paused_at", null)
       .lt("next_follow_up_at", now)
       .lt("follow_up_count", 14)
       .order("next_follow_up_at", { ascending: true })

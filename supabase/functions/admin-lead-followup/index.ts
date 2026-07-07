@@ -40,6 +40,7 @@ const getErrorStatus = (message: string) => {
     message === "leadId is required" ||
     message === "Lead already paid" ||
     message === "Follow-up limit reached" ||
+    message === "Follow-ups are paused for this lead" ||
     message.startsWith("Cooldown active") ||
     message === "Email delivery is not configured"
   ) {
@@ -79,7 +80,7 @@ serve(async (req) => {
     const { data: lead, error: leadError } = await supabase
       .from("leads")
       .select(
-        "id, name, email, phone, payment_status, status, follow_up_count, last_follow_up_at",
+        "id, name, email, phone, payment_status, status, follow_up_count, last_follow_up_at, follow_up_paused_at",
       )
       .eq("id", leadId)
       .maybeSingle();
@@ -92,6 +93,9 @@ serve(async (req) => {
     }
     if (lead.payment_status === "paid") {
       throw new Error("Lead already paid");
+    }
+    if (lead.follow_up_paused_at) {
+      throw new Error("Follow-ups are paused for this lead");
     }
     const currentCount = lead.follow_up_count ?? 0;
     if (currentCount >= MAX_FOLLOW_UPS) {

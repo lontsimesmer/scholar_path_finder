@@ -1,7 +1,11 @@
 import { useCallback, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { LeadRecord, resendLeadFollowUp } from "@/lib/admin-leads";
+import {
+  LeadRecord,
+  resendLeadFollowUp,
+  toggleLeadFollowUpPause,
+} from "@/lib/admin-leads";
 import { createLogger, getErrorMessage } from "@/lib/logger";
 
 const logger = createLogger("AdminLeads");
@@ -17,6 +21,7 @@ export function useAdminLeads() {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [pipelineFilter, setPipelineFilter] = useState("all");
   const [isResending, setIsResending] = useState(false);
+  const [isTogglingPause, setIsTogglingPause] = useState(false);
 
   const loadLeads = useCallback(async () => {
     setIsLoading(true);
@@ -57,9 +62,29 @@ export function useAdminLeads() {
       : { success: false, message: result.message };
   }, []);
 
+  const toggleFollowUpPause = useCallback(
+    async (input: { leadId: string; paused: boolean; reason?: string }): Promise<ResendResult> => {
+      setIsTogglingPause(true);
+      const result = await toggleLeadFollowUpPause(input);
+      if (result.success && result.lead) {
+        setLeads((current) =>
+          current.map((lead) =>
+            lead.id === input.leadId ? { ...lead, ...result.lead } : lead,
+          ),
+        );
+      }
+      setIsTogglingPause(false);
+      return result.success
+        ? { success: true }
+        : { success: false, message: result.message };
+    },
+    [],
+  );
+
   return {
     isLoading,
     isResending,
+    isTogglingPause,
     leads,
     searchQuery,
     paymentFilter,
@@ -69,5 +94,6 @@ export function useAdminLeads() {
     setPipelineFilter,
     loadLeads,
     resendFollowUp,
+    toggleFollowUpPause,
   };
 }
