@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { Loader2, Send, X } from "lucide-react";
 
 import { AdminLayout } from "@/components/admin/layout/AdminLayout";
 import { AdminLeadNotesDialog } from "@/components/admin/leads/AdminLeadNotesDialog";
@@ -16,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +29,7 @@ import { getAdminSession } from "@/lib/admin-session";
 import {
   AdminLeadsText,
   buildAdminLeadStats,
+  canResendFollowUp,
   copyLeadCheckoutLink,
   filterAdminLeads,
   isFollowUpPaused,
@@ -45,6 +49,7 @@ const mapResendError = (
 
 const AdminLeads = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const text = t.adminLeads as AdminLeadsText;
@@ -67,6 +72,8 @@ const AdminLeads = () => {
   const [notesLead, setNotesLead] = useState<LeadRecord | null>(null);
   const [pauseLead, setPauseLead] = useState<LeadRecord | null>(null);
   const [pauseReason, setPauseReason] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkSending, setIsBulkSending] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -89,6 +96,16 @@ const AdminLeads = () => {
       isActive = false;
     };
   }, [loadLeads, navigate]);
+
+  useEffect(() => {
+    const incoming = searchParams.get("search")?.trim();
+    if (!incoming) return;
+    if (incoming !== searchQuery) {
+      setSearchQuery(incoming);
+    }
+    searchParams.delete("search");
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, searchQuery, setSearchParams, setSearchQuery]);
 
   const dateFormatter = useMemo(
     () =>
@@ -161,6 +178,86 @@ const AdminLeads = () => {
     setPauseReason("");
   }, []);
 
+  const handleToggleSelect = useCallback((leadId: string) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(leadId)) {
+        next.delete(leadId);
+      } else {
+        next.add(leadId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleToggleSelectAll = useCallback(() => {
+    setSelectedIds((current) => {
+      const selectableInView = filteredLeads
+        .filter((lead) => canResendFollowUp(lead))
+        .map((lead) => lead.id);
+      const allSelected = selectableInView.every((id) => current.has(id));
+      const next = new Set(current);
+      if (allSelected) {
+        selectableInView.forEach((id) => next.delete(id));
+      } else {
+        selectableInView.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  }, [filteredLeads]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleBulkResend = useCallback(async () => {
+    if (selectedIds.size === 0) return;
+    const leadsToProcess = filteredLeads.filter(
+      (lead) => selectedIds.has(lead.id) && canResendFollowUp(lead),
+    );
+    if (leadsToProcess.length === 0) return;
+    setIsBulkSending(true);
+    let successCount = 0;
+    let failureCount = 0;
+    const failures: { email: string; message: string }[] = [];
+    for (const lead of leadsToProcess) {
+      const result = await resendFollowUp(lead.id);
+      if (result.success) {
+        successCount += 1;
+      } else {
+        failureCount += 1;
+        failures.push({ email: lead.email, message: result.message });
+      }
+    }
+    setIsBulkSending(false);
+    setSelectedIds(new Set());
+    if (failureCount === 0) {
+      toast({
+        title: text.bulk.successTitle,
+        description: text.bulk.successDescription.replace(
+          "{count}",
+          String(successCount),
+        ),
+      });
+    } else if (successCount === 0) {
+      toast({
+        title: text.bulk.errorTitle,
+        description: text.bulk.allFailedDescription.replace(
+          "{count}",
+          String(failureCount),
+        ),
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: text.bulk.partialTitle,
+        description: text.bulk.partialDescription
+          .replace("{success}", String(successCount))
+          .replace("{failure}", String(failureCount)),
+      });
+    }
+  }, [filteredLeads, resendFollowUp, selectedIds, text.bulk, toast]);
+
   const handleConfirmToggleFollowUpPause = useCallback(async () => {
     if (!pauseLead) return;
     const currentlyPaused = isFollowUpPaused(pauseLead);
@@ -203,17 +300,59 @@ const AdminLeads = () => {
               onPipelineFilterChange={setPipelineFilter}
             />
 
+            {selectedIds.size > 0 ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+                <p className="text-sm font-medium text-primary">
+                  {text.bulk.selectionSummary.replace(
+                    "{count}",
+                    String(selectedIds.size),
+                  )}
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => void handleBulkResend()}
+                    disabled={isBulkSending}
+                  >
+                    {isBulkSending ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Send className="mr-2 h-3.5 w-3.5" />
+                    )}
+                    {text.bulk.sendButton.replace(
+                      "{count}",
+                      String(selectedIds.size),
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="rounded-xl"
+                    onClick={handleClearSelection}
+                    disabled={isBulkSending}
+                  >
+                    <X className="mr-2 h-3.5 w-3.5" />
+                    {text.bulk.clearButton}
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
             <AdminLeadsTable
               isLoading={isLoading}
               leads={filteredLeads}
               text={text}
               dateFormatter={dateFormatter}
-              isResending={isResending}
+              isResending={isResending || isBulkSending}
               isTogglingPause={isTogglingPause}
+              selectedIds={selectedIds}
               onCopyCheckoutLink={handleCopyCheckoutLink}
               onResendFollowUp={handleResendFollowUp}
               onOpenNotes={handleOpenNotes}
               onToggleFollowUpPause={handleRequestToggleFollowUpPause}
+              onToggleSelect={handleToggleSelect}
+              onToggleSelectAll={handleToggleSelectAll}
             />
           </CardContent>
         </Card>

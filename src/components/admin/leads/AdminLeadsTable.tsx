@@ -1,6 +1,7 @@
 import { BellOff, BellRing, Copy, Loader2, MessageSquare, Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -28,10 +29,13 @@ type AdminLeadsTableProps = {
   dateFormatter: Intl.DateTimeFormat;
   isResending: boolean;
   isTogglingPause: boolean;
+  selectedIds: Set<string>;
   onCopyCheckoutLink: (lead: LeadRecord) => void;
   onResendFollowUp: (lead: LeadRecord) => void;
   onOpenNotes: (lead: LeadRecord) => void;
   onToggleFollowUpPause: (lead: LeadRecord) => void;
+  onToggleSelect: (leadId: string) => void;
+  onToggleSelectAll: () => void;
 };
 
 export function AdminLeadsTable({
@@ -41,16 +45,34 @@ export function AdminLeadsTable({
   dateFormatter,
   isResending,
   isTogglingPause,
+  selectedIds,
   onCopyCheckoutLink,
   onResendFollowUp,
   onOpenNotes,
   onToggleFollowUpPause,
+  onToggleSelect,
+  onToggleSelectAll,
 }: AdminLeadsTableProps) {
+  const selectableIds = leads.filter((lead) => canResendFollowUp(lead)).map((lead) => lead.id);
+  const selectableCount = selectableIds.length;
+  const selectedSelectableCount = selectableIds.filter((id) => selectedIds.has(id)).length;
+  const allSelected =
+    selectableCount > 0 && selectedSelectableCount === selectableCount;
+  const someSelected = selectedSelectableCount > 0 && !allSelected;
+
   return (
     <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-10">
+              <Checkbox
+                checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                onCheckedChange={() => onToggleSelectAll()}
+                disabled={selectableCount === 0}
+                aria-label={text.bulk.selectAllAria}
+              />
+            </TableHead>
             <TableHead>{text.columns.contact}</TableHead>
             <TableHead>{text.columns.message}</TableHead>
             <TableHead>{text.columns.payment}</TableHead>
@@ -62,19 +84,27 @@ export function AdminLeadsTable({
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-20 text-center">
+              <TableCell colSpan={7} className="py-20 text-center">
                 <Loader2 className="mx-auto animate-spin text-primary" size={32} />
               </TableCell>
             </TableRow>
           ) : leads.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-16 text-center text-muted-foreground">
+              <TableCell colSpan={7} className="py-16 text-center text-muted-foreground">
                 {text.empty}
               </TableCell>
             </TableRow>
           ) : (
             leads.map((lead) => (
               <TableRow key={lead.id} className="align-top">
+                <TableCell className="w-10">
+                  <Checkbox
+                    checked={selectedIds.has(lead.id)}
+                    onCheckedChange={() => onToggleSelect(lead.id)}
+                    disabled={!canResendFollowUp(lead)}
+                    aria-label={text.bulk.selectRowAria}
+                  />
+                </TableCell>
                 <TableCell className="min-w-[250px]">
                   <div className="space-y-1">
                     <p className="font-bold text-foreground">{lead.name}</p>

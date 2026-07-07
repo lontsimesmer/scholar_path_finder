@@ -79,6 +79,19 @@ export type AdminLeadsText = {
     resumeSuccessTitle: string;
     errorTitle: string;
   };
+  bulk: {
+    selectAllAria: string;
+    selectRowAria: string;
+    selectionSummary: string;
+    sendButton: string;
+    clearButton: string;
+    successTitle: string;
+    successDescription: string;
+    partialTitle: string;
+    partialDescription: string;
+    errorTitle: string;
+    allFailedDescription: string;
+  };
   metrics: {
     total: string;
     paid: string;

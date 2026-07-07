@@ -765,11 +765,15 @@ export const fr = {
 
   adminCommandPalette: {
     triggerHint: "Rechercher...",
-    placeholder: "Tapez une commande ou recherchez...",
+    placeholder: "Tapez une commande, un lead ou un étudiant...",
     empty: "Aucun résultat.",
+    searchingLabel: "Recherche en cours...",
+    searchHint: "Astuce : tapez ≥ 2 caractères pour chercher un lead ou un étudiant.",
     groups: {
       navigation: "Navigation",
       actions: "Actions rapides",
+      leads: "Leads",
+      students: "Étudiants",
     },
     actions: {
       newArticle: "Nouvel article",
@@ -1133,6 +1137,19 @@ export const fr = {
       pauseSuccessTitle: "Relances mises en pause",
       resumeSuccessTitle: "Relances réactivées",
       errorTitle: "Action impossible",
+    },
+    bulk: {
+      selectAllAria: "Tout sélectionner",
+      selectRowAria: "Sélectionner ce lead",
+      selectionSummary: "{count} lead(s) sélectionné(s)",
+      sendButton: "Relancer {count} lead(s)",
+      clearButton: "Vider la sélection",
+      successTitle: "Relances envoyées",
+      successDescription: "{count} email(s) de relance envoyé(s).",
+      partialTitle: "Relances partiellement envoyées",
+      partialDescription: "{success} succès, {failure} échec(s).",
+      errorTitle: "Aucune relance envoyée",
+      allFailedDescription: "{count} tentative(s) ont échoué. Vérifiez le cooldown ou l'état des leads.",
     },
     metrics: {
       total: "Total leads",
