@@ -764,11 +764,15 @@ export const en = {
 
   adminCommandPalette: {
     triggerHint: "Search...",
-    placeholder: "Type a command or search...",
+    placeholder: "Type a command, a lead or a student...",
     empty: "No results found.",
+    searchingLabel: "Searching...",
+    searchHint: "Tip: type ≥ 2 characters to search for a lead or a student.",
     groups: {
       navigation: "Navigation",
       actions: "Quick actions",
+      leads: "Leads",
+      students: "Students",
     },
     actions: {
       newArticle: "New article",
@@ -1131,6 +1135,19 @@ export const en = {
       pauseSuccessTitle: "Follow-ups paused",
       resumeSuccessTitle: "Follow-ups resumed",
       errorTitle: "Action failed",
+    },
+    bulk: {
+      selectAllAria: "Select all",
+      selectRowAria: "Select this lead",
+      selectionSummary: "{count} lead(s) selected",
+      sendButton: "Resend to {count} lead(s)",
+      clearButton: "Clear selection",
+      successTitle: "Follow-ups sent",
+      successDescription: "{count} follow-up email(s) sent.",
+      partialTitle: "Follow-ups partially sent",
+      partialDescription: "{success} succeeded, {failure} failed.",
+      errorTitle: "No follow-up sent",
+      allFailedDescription: "{count} attempt(s) failed. Check the cooldown or the leads state.",
     },
     metrics: {
       total: "Total Leads",
