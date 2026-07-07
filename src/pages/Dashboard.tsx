@@ -129,14 +129,16 @@ const Dashboard = () => {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.4fr]">
             <div className="space-y-8">
               <div className="animate-card-in" style={{ animationDelay: "80ms" }}>
-                {viewModel.application ? (
-                  <DashboardApplicationRoadmapCard
-                    application={viewModel.application}
-                    currentStatusIndex={viewModel.currentStatusIndex}
-                    roadmapSteps={viewModel.roadmapSteps}
-                    text={dashboardText}
-                  />
-                ) : (
+                <DashboardApplicationRoadmapCard
+                  application={viewModel.application}
+                  currentStatusIndex={viewModel.currentStatusIndex}
+                  roadmapSteps={viewModel.roadmapSteps}
+                  text={dashboardText}
+                />
+              </div>
+
+              {!viewModel.application ? (
+                <div className="animate-card-in" style={{ animationDelay: "130ms" }}>
                   <DashboardProcedureOverviewCard
                     application={viewModel.application}
                     canResumePayment={viewModel.canResumePayment}
@@ -146,8 +148,8 @@ const Dashboard = () => {
                     procedureLead={viewModel.procedureLead}
                     text={dashboardText}
                   />
-                )}
-              </div>
+                </div>
+              ) : null}
 
               <div className="animate-card-in" style={{ animationDelay: "180ms" }}>
                 <DashboardDocumentsCard

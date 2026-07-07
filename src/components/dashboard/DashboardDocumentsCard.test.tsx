@@ -23,6 +23,13 @@ const text = {
   selectFile: "Choisir le fichier",
   untitledDocument: "Document sans titre",
   uploadDoc: "Deposer un document",
+  checklistPendingSummary: "{count} a deposer",
+  checklistRequestedBadge: "Demande",
+  checklistSpontaneousBadge: "Libre",
+  checklistStatusRequested: "A deposer",
+  checklistStatusWaiting: "En attente",
+  checklistStatusApproved: "Valide",
+  checklistStatusRejected: "A refaire",
 } as DashboardText;
 
 const rejectedDocument: StudentDocument = {
@@ -76,8 +83,9 @@ describe("DashboardDocumentsCard", () => {
     const onRequestUpload = vi.fn();
     renderCard({ documentRequests: [pendingRequest], onRequestUpload });
 
-    expect(screen.getByText("Documents demandes")).toBeInTheDocument();
+    expect(screen.getByText("Releve de notes")).toBeInTheDocument();
     expect(screen.getByText("Ajoutez le releve le plus recent.")).toBeInTheDocument();
+    expect(screen.getByText("A deposer")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /^deposer$/i }));
 

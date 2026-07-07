@@ -136,13 +136,18 @@ export const useDashboard = ({
     );
   }, [dashboardText.notSpecified, language, profile?.birth_date]);
   const currentStatusIndex = useMemo(() => {
-    if (!application?.status) {
+    if (!profileIsLocked) {
       return 0;
     }
-
+    if (procedurePaymentStatus !== "paid") {
+      return 1;
+    }
+    if (!application?.status) {
+      return 2;
+    }
     const index = dashboardRoadmapSteps.indexOf(application.status);
-    return index >= 0 ? index : 0;
-  }, [application?.status]);
+    return index >= 0 ? index : 2;
+  }, [application?.status, procedurePaymentStatus, profileIsLocked]);
   const formattedLockedAt = useMemo(() => {
     if (!profile?.profile_locked_at) {
       return dashboardText.notSpecified;
