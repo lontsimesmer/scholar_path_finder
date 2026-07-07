@@ -10,6 +10,19 @@ export type ResendLeadFollowUpResult =
   | { success: true; lead: Partial<LeadRecord> }
   | { success: false; message: string };
 
+export type LeadAdminNote = {
+  id: string;
+  lead_id: string;
+  admin_email: string;
+  note: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ToggleLeadFollowUpPauseResult =
+  | { success: true; lead: Partial<LeadRecord> }
+  | { success: false; message: string };
+
 export type AdminLeadsText = {
   title: string;
   subtitle: string;
@@ -35,6 +48,37 @@ export type AdminLeadsText = {
   resendFollowUpErrorPaid: string;
   resendFollowUpErrorLimit: string;
   resendFollowUpErrorGeneric: string;
+  resendFollowUpErrorPaused: string;
+  notesButton: string;
+  followUpsPauseButton: string;
+  followUpsResumeButton: string;
+  followUpsPausedBadge: string;
+  notesDialog: {
+    title: string;
+    description: string;
+    placeholder: string;
+    save: string;
+    saving: string;
+    close: string;
+    empty: string;
+    loadError: string;
+    createSuccess: string;
+    createError: string;
+  };
+  pauseDialog: {
+    pauseTitle: string;
+    pauseDescription: string;
+    resumeTitle: string;
+    resumeDescription: string;
+    reasonLabel: string;
+    reasonPlaceholder: string;
+    confirmPause: string;
+    confirmResume: string;
+    cancel: string;
+    pauseSuccessTitle: string;
+    resumeSuccessTitle: string;
+    errorTitle: string;
+  };
   metrics: {
     total: string;
     paid: string;
@@ -173,7 +217,79 @@ export async function copyLeadCheckoutLink(
 export function canResendFollowUp(lead: LeadRecord): boolean {
   if (lead.payment_status === "paid") return false;
   if ((lead.follow_up_count ?? 0) >= MAX_FOLLOW_UP_COUNT) return false;
+  if (isFollowUpPaused(lead)) return false;
   return true;
+}
+
+export function isFollowUpPaused(lead: LeadRecord): boolean {
+  return Boolean(lead.follow_up_paused_at);
+}
+
+export async function fetchLeadAdminNotes(leadId: string): Promise<LeadAdminNote[]> {
+  const { data, error } = await supabase
+    .from("lead_admin_notes")
+    .select("id, lead_id, admin_email, note, created_at, updated_at")
+    .eq("lead_id", leadId)
+    .order("created_at", { ascending: false });
+  if (error) {
+    throw error;
+  }
+  return (data as LeadAdminNote[] | null) ?? [];
+}
+
+export async function createLeadAdminNote(input: {
+  leadId: string;
+  note: string;
+}): Promise<LeadAdminNote> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const adminEmail = session?.user.email?.trim();
+  if (!adminEmail) {
+    throw new Error("Admin session is required to add a note.");
+  }
+  const { data, error } = await supabase
+    .from("lead_admin_notes")
+    .insert({ lead_id: input.leadId, admin_email: adminEmail, note: input.note })
+    .select("id, lead_id, admin_email, note, created_at, updated_at")
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data as LeadAdminNote;
+}
+
+export async function toggleLeadFollowUpPause(input: {
+  leadId: string;
+  paused: boolean;
+  reason?: string;
+}): Promise<ToggleLeadFollowUpPauseResult> {
+  try {
+    const { data, error } = await supabase.functions.invoke<{
+      ok?: boolean;
+      lead?: Partial<LeadRecord>;
+      error?: string;
+    }>("admin-lead-toggle-followups", {
+      method: "POST",
+      body: {
+        leadId: input.leadId,
+        paused: input.paused,
+        reason: input.reason,
+      },
+    });
+    if (error) {
+      return { success: false, message: getErrorMessage(error, "Failed to toggle follow-ups") };
+    }
+    if (!data?.ok || !data.lead) {
+      return {
+        success: false,
+        message: data?.error ?? "Empty response from admin-lead-toggle-followups",
+      };
+    }
+    return { success: true, lead: data.lead };
+  } catch (error) {
+    return { success: false, message: getErrorMessage(error, "Failed to toggle follow-ups") };
+  }
 }
 
 export async function resendLeadFollowUp(

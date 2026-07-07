@@ -206,6 +206,9 @@ export type Database = {
           phone: string | null
           status: string
           updated_at: string
+          follow_up_paused_at: string | null
+          follow_up_paused_by: string | null
+          follow_up_paused_reason: string | null
         }
         Insert: {
           created_at?: string
@@ -224,6 +227,9 @@ export type Database = {
           phone?: string | null
           status?: string
           updated_at?: string
+          follow_up_paused_at?: string | null
+          follow_up_paused_by?: string | null
+          follow_up_paused_reason?: string | null
         }
         Update: {
           created_at?: string
@@ -242,6 +248,9 @@ export type Database = {
           phone?: string | null
           status?: string
           updated_at?: string
+          follow_up_paused_at?: string | null
+          follow_up_paused_by?: string | null
+          follow_up_paused_reason?: string | null
         }
         Relationships: []
       }
@@ -528,6 +537,41 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "student_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_admin_notes: {
+        Row: {
+          admin_email: string
+          created_at: string
+          id: string
+          lead_id: string
+          note: string
+          updated_at: string
+        }
+        Insert: {
+          admin_email: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          note: string
+          updated_at?: string
+        }
+        Update: {
+          admin_email?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          note?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_admin_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
         ]

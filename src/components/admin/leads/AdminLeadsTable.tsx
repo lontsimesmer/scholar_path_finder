@@ -1,4 +1,4 @@
-import { Copy, Loader2, Send } from "lucide-react";
+import { BellOff, BellRing, Copy, Loader2, MessageSquare, Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import {
   getAdminLeadPaymentBadgeClassName,
   getAdminLeadPaymentLabel,
   getAdminLeadPipelineLabel,
+  isFollowUpPaused,
 } from "@/lib/admin-leads";
 import { cn } from "@/lib/utils";
 
@@ -26,8 +27,11 @@ type AdminLeadsTableProps = {
   text: AdminLeadsText;
   dateFormatter: Intl.DateTimeFormat;
   isResending: boolean;
+  isTogglingPause: boolean;
   onCopyCheckoutLink: (lead: LeadRecord) => void;
   onResendFollowUp: (lead: LeadRecord) => void;
+  onOpenNotes: (lead: LeadRecord) => void;
+  onToggleFollowUpPause: (lead: LeadRecord) => void;
 };
 
 export function AdminLeadsTable({
@@ -36,8 +40,11 @@ export function AdminLeadsTable({
   text,
   dateFormatter,
   isResending,
+  isTogglingPause,
   onCopyCheckoutLink,
   onResendFollowUp,
+  onOpenNotes,
+  onToggleFollowUpPause,
 }: AdminLeadsTableProps) {
   return (
     <div className="admin-table overflow-hidden rounded-xl border border-border/40 bg-white">
@@ -73,6 +80,12 @@ export function AdminLeadsTable({
                     <p className="font-bold text-foreground">{lead.name}</p>
                     <p className="text-sm text-muted-foreground">{lead.email}</p>
                     <p className="text-xs text-muted-foreground">{lead.phone || text.noPhone}</p>
+                    {isFollowUpPaused(lead) ? (
+                      <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-destructive/20 bg-destructive/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-destructive">
+                        <BellOff className="h-3 w-3" />
+                        {text.followUpsPausedBadge}
+                      </span>
+                    ) : null}
                   </div>
                 </TableCell>
                 <TableCell className="max-w-md">
@@ -121,6 +134,39 @@ export function AdminLeadsTable({
                         >
                           <Send className="mr-2 h-3.5 w-3.5" />
                           {text.resendFollowUp}
+                        </Button>
+                      );
+                    })()}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => onOpenNotes(lead)}
+                      title={text.notesButton}
+                    >
+                      <MessageSquare className="mr-2 h-3.5 w-3.5" />
+                      {text.notesButton}
+                    </Button>
+                    {(() => {
+                      const paused = isFollowUpPaused(lead);
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className={cn(
+                            "rounded-xl",
+                            paused ? "border-primary/30 text-primary hover:bg-primary/5" : "",
+                          )}
+                          disabled={isTogglingPause}
+                          onClick={() => onToggleFollowUpPause(lead)}
+                          title={paused ? text.followUpsResumeButton : text.followUpsPauseButton}
+                        >
+                          {paused ? (
+                            <BellRing className="mr-2 h-3.5 w-3.5" />
+                          ) : (
+                            <BellOff className="mr-2 h-3.5 w-3.5" />
+                          )}
+                          {paused ? text.followUpsResumeButton : text.followUpsPauseButton}
                         </Button>
                       );
                     })()}
