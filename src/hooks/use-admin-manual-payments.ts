@@ -144,9 +144,15 @@ export const useAdminManualPayments = () => {
         "postgres_changes",
         { event: "*", schema: "public", table: "manual_payment_submissions" },
         (payload) => {
-          logger.info("Realtime event received", {
-            eventType: payload.eventType,
-          });
+          logger.info("Realtime submission event", { eventType: payload.eventType });
+          scheduleRefresh();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "leads" },
+        (payload) => {
+          logger.info("Realtime lead event", { eventType: payload.eventType });
           scheduleRefresh();
         },
       )

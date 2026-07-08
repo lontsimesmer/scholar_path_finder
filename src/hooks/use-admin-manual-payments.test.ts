@@ -181,6 +181,11 @@ describe("useAdminManualPayments", () => {
       { event: "*", schema: "public", table: "manual_payment_submissions" },
       expect.any(Function),
     );
+    expect(mocks.channelStub.on).toHaveBeenCalledWith(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "leads" },
+      expect.any(Function),
+    );
     expect(mocks.channelStub.subscribe).toHaveBeenCalled();
 
     unmount();
