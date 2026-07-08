@@ -367,6 +367,17 @@ Au minimum, ce dépôt dépend de :
 - `verify-contact-verification-code`
 - `get-contact-verification-status`
 - `send-follow-ups`
+- `admin-followup-settings` (config des relances, section 13)
+- `admin-lead-followup`
+- `admin-lead-toggle-followups`
+- `admin-notification-recipients`
+- `admin-team`
+- `send-password-reset`
+- `submit-manual-payment`
+- `validate-manual-payment`
+- `block-lead-manual-payment`
+- `get-manual-payment-status`
+- `create-document-request`
 
 Commandes de déploiement :
 
@@ -492,6 +503,13 @@ Après configuration, valider cette checklist.
 - les leads chargent
 - les paiements chargent
 - le prix de consultation peut être modifié
+- `/admin/followup-settings` charge et sauvegarde la config des relances
+
+### Relances automatiques
+
+- V7 appliquée : job `lead-followups-hourly` visible dans `cron.job`
+- Vault contient `send_follow_ups_url` et `send_follow_ups_service_role`
+- un `SELECT public.trigger_send_follow_ups();` manuel appelle l'Edge Function sans warning
 
 ### Vérification contact optionnelle
 
@@ -502,7 +520,63 @@ Uniquement si activée :
 - le throttling fonctionne
 - aucun état de vérification arbitraire d’utilisateur n’est exposé publiquement
 
-## 12. Ordre de Déploiement Suggéré
+## 13. Planificateur Postgres et Vault (relances automatiques)
+
+Depuis la migration V7, le déclenchement de `send-follow-ups` est planifié côté Postgres (extension `pg_cron`) et non plus par un cron externe. La fonction PL/pgSQL `public.trigger_send_follow_ups()` lit deux secrets Vault avant chaque appel HTTP asynchrone via `pg_net`. Voir le parcours métier détaillé dans [FLOWS.md §9](./FLOWS.md).
+
+### Ce que V7 fait automatiquement
+
+- active `pg_cron` et `pg_net`
+- crée `public.trigger_send_follow_ups()` (SECURITY DEFINER, `search_path` restreint)
+- programme le job `lead-followups-hourly` sur `0 * * * *`
+- insère la config par défaut dans `app_settings.leads.followup_config` (`enabled=true`, `max_follow_ups=14`, `interval_hours=24`)
+
+### Ce qu'il faut provisionner à la main
+
+Deux secrets Vault, à créer une seule fois via le SQL editor après la migration :
+
+```sql
+SELECT vault.create_secret(
+  'https://<project-ref>.supabase.co/functions/v1/send-follow-ups',
+  'send_follow_ups_url'
+);
+SELECT vault.create_secret(
+  '<SUPABASE_SERVICE_ROLE_KEY>',
+  'send_follow_ups_service_role'
+);
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` se récupère depuis Dashboard → Settings → API → `service_role`. Cette clé donne un accès administrateur complet ; Vault la stocke chiffrée au repos et seule la fonction `SECURITY DEFINER` peut la lire via `vault.decrypted_secrets`.
+
+Tant que ces deux secrets ne sont pas présents, le job cron tourne sans erreur, log un `WARNING` (`send-follow-ups skipped: missing Vault secrets`) et sort sans appel HTTP. C'est intentionnel : aucun email n'est envoyé partiellement.
+
+### Contrôle admin en runtime
+
+- page `/admin/followup-settings` (front) → Edge Function `admin-followup-settings`
+- toggle `enabled`, `max_follow_ups` (1–60), `interval_hours` (1–720)
+- pause par lead : `follow_up_paused_at` (bouton dans `/admin/leads`), indépendante de la config globale
+
+### Vérifier le job
+
+Depuis le SQL editor :
+
+```sql
+-- état des jobs planifiés
+SELECT jobid, jobname, schedule, active FROM cron.job WHERE jobname = 'lead-followups-hourly';
+
+-- historique récent des exécutions
+SELECT * FROM cron.job_run_details
+WHERE jobname = 'lead-followups-hourly'
+ORDER BY start_time DESC
+LIMIT 10;
+
+-- forcer un tick immédiat (respecte le toggle et les secrets Vault)
+SELECT public.trigger_send_follow_ups();
+```
+
+Les logs de la fonction Edge sont consultables via `mcp__supabase__get_logs` (service `edge-function`) ou le dashboard.
+
+## 14. Ordre de Déploiement Suggéré
 
 Ordre recommandé :
 
@@ -512,11 +586,12 @@ Ordre recommandé :
 4. configurer les URLs Auth
 5. lancer Flyway `validate` puis `migrate`
 6. déployer les Edge Functions
-7. vérifier storage et accès admin
-8. exécuter la checklist de validation manuelle
-9. activer seulement ensuite les fonctionnalités optionnelles comme la vérification contact
+7. provisionner les secrets Vault du planificateur (section 13) si V7 est appliquée
+8. vérifier storage et accès admin
+9. exécuter la checklist de validation manuelle
+10. activer seulement ensuite les fonctionnalités optionnelles comme la vérification contact
 
-## 13. Références Utiles du Dépôt
+## 15. Références Utiles du Dépôt
 
 - [README.md](../README.md)
 - [ARCHITECTURE.md](./ARCHITECTURE.md)

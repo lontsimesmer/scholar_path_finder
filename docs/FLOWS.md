@@ -183,7 +183,46 @@ Configuration requise :
 - `supabase/functions/send-password-reset/index.ts` : contient une copie FR du HTML pour la prod (indépendante des templates Auth Supabase, ce qui débloque le Free tier)
 - côté projet Supabase distant : secrets `BREVO_API_KEY`, `BREVO_EMAIL_SENDER`, `SITE_URL` (voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md))
 
-## 9. Ordre de Lecture Recommandé
+## 9. Relances Automatiques Configurables
+
+Objectif : réengager les leads dont le paiement n'est pas allé au bout, sans intervention manuelle, mais avec un pilotage 100 % côté admin.
+
+Composants :
+
+- planificateur Postgres via `pg_cron` (job `lead-followups-hourly`, expression `0 * * * *`)
+- fonction PL/pgSQL `public.trigger_send_follow_ups()` qui lit `app_settings.leads.followup_config` et deux secrets Vault avant d'appeler l'Edge Function via `pg_net`
+- Edge Function [send-follow-ups](../supabase/functions/send-follow-ups/index.ts) qui traite les leads éligibles
+- page admin [AdminFollowupSettings.tsx](../src/pages/AdminFollowupSettings.tsx) pour piloter le comportement en live
+- Edge Function [admin-followup-settings](../supabase/functions/admin-followup-settings/index.ts) qui lit/écrit la config (GET/POST protégés par `requireAdminUser`)
+
+Ce qui se passe à chaque tick horaire :
+
+1. `pg_cron` déclenche `trigger_send_follow_ups()`
+2. la fonction PL/pgSQL lit `app_settings.leads.followup_config`. Si `enabled=false`, log un `NOTICE` et sort — aucun appel HTTP
+3. sinon elle lit les secrets Vault `send_follow_ups_url` et `send_follow_ups_service_role`. Si l'un manque, warning et sortie
+4. `pg_net.http_post` envoie un POST asynchrone vers `send-follow-ups` avec `Authorization: Bearer <service_role>`
+5. l'Edge Function recharge la config (source de vérité), sélectionne jusqu'à 100 leads impayés éligibles (`status in (pending, follow_up)`, `payment_status = unpaid`, pas en pause, `next_follow_up_at < now()`, `follow_up_count < max_follow_ups`)
+6. pour chaque lead, envoie l'email de relance via Resend, tente le SMS si Twilio configuré, incrémente `follow_up_count`, met à jour `next_follow_up_at = now() + interval_hours`. Si la limite `max_follow_ups` est atteinte, `status = "expired"` et plus de relance
+
+Configuration exposée aux admins :
+
+- `enabled` : interrupteur global sans toucher au cron
+- `max_follow_ups` (1 à 60) : borne de la séquence par lead
+- `interval_hours` (1 à 720) : espacement entre deux relances
+
+Pause par lead : indépendante de la config globale. Chaque lead a un toggle "Ne plus relancer" ([AdminLeadsTable](../src/components/admin/leads/AdminLeadsTable.tsx)) qui écrit `follow_up_paused_at` — le lead est ignoré par la requête même si le système global est actif.
+
+Test manuel côté Postgres :
+
+```sql
+SELECT public.trigger_send_follow_ups();
+```
+
+Cette commande respecte le toggle et les secrets Vault. Utile pour valider une modification de config sans attendre l'heure suivante.
+
+Prérequis production : voir [SUPABASE_PRODUCTION.md](./SUPABASE_PRODUCTION.md) section pg_cron et Vault.
+
+## 10. Ordre de Lecture Recommandé
 
 1. [README.md](../README.md)
 2. [ARCHITECTURE.md](./ARCHITECTURE.md)

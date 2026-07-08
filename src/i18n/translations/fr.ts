@@ -768,6 +768,7 @@ export const fr = {
       faq: "FAQ",
       team: "Équipe admin",
       notifications: "Notifications",
+      followupSettings: "Relances auto",
     },
     signOut: "Déconnexion",
   },
@@ -1548,6 +1549,38 @@ export const fr = {
       errorLastRecipient:
         "Impossible de retirer le dernier destinataire. Ajoutez d'abord une autre adresse.",
       errorGeneric: "Une erreur inattendue est survenue. Réessayez.",
+    },
+  },
+
+  adminFollowupSettings: {
+    breadcrumbDashboard: "Tableau de bord",
+    breadcrumbCurrent: "Relances automatiques",
+    title: "Relances automatiques",
+    subtitle:
+      "Contrôlez si les relances email des leads impayés partent automatiquement, à quelle cadence et combien de fois.",
+    cardTitle: "Configuration du cron",
+    cardDescription:
+      "La tâche pg_cron s'exécute chaque heure. Elle lit cette configuration à chaque tick avant de traiter les leads éligibles.",
+    enabledLabel: "Activer les relances automatiques",
+    enabledDescription:
+      "Quand désactivé, le cron ne relance plus aucun lead — seule la relance manuelle depuis /admin/leads reste fonctionnelle.",
+    maxFollowUpsLabel: "Nombre maximum de relances par lead",
+    maxFollowUpsHelper: "Au-delà, le lead passe au statut « expiré » et n'est plus relancé (1–60).",
+    intervalHoursLabel: "Intervalle minimum entre 2 relances (heures)",
+    intervalHoursHelper:
+      "Un lead relancé ne redevient éligible qu'après ce délai. Le pg_cron tourne toutes les heures et respecte cet intervalle (1–720).",
+    saveButton: "Enregistrer",
+    savingButton: "Enregistrement…",
+    resetButton: "Réinitialiser",
+    cronNote:
+      "Astuce : le pg_cron s'exécute chaque heure pile. Il ignore les leads en pause, déjà payés ou au maximum, et il ne fait rien si les relances sont désactivées ci-dessus.",
+    toasts: {
+      loadErrorTitle: "Impossible de charger la configuration",
+      saveSuccessTitle: "Configuration enregistrée",
+      saveSuccessDescription: "La prochaine exécution du cron respectera ces paramètres.",
+      saveErrorTitle: "Enregistrement impossible",
+      invalidValues:
+        "Vérifiez les valeurs : nombre de relances entre 1 et 60, intervalle entre 1 et 720 heures.",
     },
   },
 

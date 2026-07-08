@@ -767,6 +767,7 @@ export const en = {
       faq: "FAQ",
       team: "Admin team",
       notifications: "Notifications",
+      followupSettings: "Auto follow-ups",
     },
     signOut: "Sign out",
   },
@@ -1540,6 +1541,38 @@ export const en = {
       errorLastRecipient:
         "You cannot remove the last recipient. Add another address first.",
       errorGeneric: "An unexpected error occurred. Please try again.",
+    },
+  },
+
+  adminFollowupSettings: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "Auto follow-ups",
+    title: "Auto follow-ups",
+    subtitle:
+      "Control whether unpaid-lead follow-up emails run automatically, at which cadence and how many times.",
+    cardTitle: "Cron configuration",
+    cardDescription:
+      "The pg_cron job runs every hour. It reads this configuration on each tick before processing eligible leads.",
+    enabledLabel: "Enable automatic follow-ups",
+    enabledDescription:
+      "When off, the cron stops all follow-ups — only manual re-send from /admin/leads keeps working.",
+    maxFollowUpsLabel: "Maximum follow-ups per lead",
+    maxFollowUpsHelper: "Beyond this the lead is marked \"expired\" and no longer chased (1–60).",
+    intervalHoursLabel: "Minimum interval between two follow-ups (hours)",
+    intervalHoursHelper:
+      "A lead becomes eligible again only after this delay. The cron runs hourly and respects this interval (1–720).",
+    saveButton: "Save",
+    savingButton: "Saving…",
+    resetButton: "Reset",
+    cronNote:
+      "Note: the pg_cron runs every hour on the hour. It skips paused, paid or maxed-out leads, and does nothing if follow-ups are disabled above.",
+    toasts: {
+      loadErrorTitle: "Failed to load configuration",
+      saveSuccessTitle: "Configuration saved",
+      saveSuccessDescription: "The next cron tick will respect these settings.",
+      saveErrorTitle: "Save failed",
+      invalidValues:
+        "Check the values: follow-up count 1–60, interval 1–720 hours.",
     },
   },
 
