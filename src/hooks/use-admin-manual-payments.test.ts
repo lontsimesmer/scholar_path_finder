@@ -3,15 +3,26 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAdminManualPayments } from "@/hooks/use-admin-manual-payments";
 
-const mocks = vi.hoisted(() => ({
-  from: vi.fn(),
-  invoke: vi.fn(),
-}));
+const mocks = vi.hoisted(() => {
+  const channel = {
+    on: vi.fn().mockReturnThis(),
+    subscribe: vi.fn().mockReturnThis(),
+  };
+  return {
+    from: vi.fn(),
+    invoke: vi.fn(),
+    channel: vi.fn().mockReturnValue(channel),
+    removeChannel: vi.fn(),
+    channelStub: channel,
+  };
+});
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     from: mocks.from,
     functions: { invoke: mocks.invoke },
+    channel: mocks.channel,
+    removeChannel: mocks.removeChannel,
   },
 }));
 
@@ -159,5 +170,21 @@ describe("useAdminManualPayments", () => {
     expect(mocks.invoke).toHaveBeenCalledWith("block-lead-manual-payment", {
       body: { leadId: "lead-1", reason: "Spam", unblock: false },
     });
+  });
+
+  it("subscribes to realtime changes on mount and cleans up on unmount", () => {
+    const { unmount } = renderHook(() => useAdminManualPayments());
+
+    expect(mocks.channel).toHaveBeenCalledWith("admin-manual-payments-realtime");
+    expect(mocks.channelStub.on).toHaveBeenCalledWith(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "manual_payment_submissions" },
+      expect.any(Function),
+    );
+    expect(mocks.channelStub.subscribe).toHaveBeenCalled();
+
+    unmount();
+
+    expect(mocks.removeChannel).toHaveBeenCalledWith(mocks.channelStub);
   });
 });

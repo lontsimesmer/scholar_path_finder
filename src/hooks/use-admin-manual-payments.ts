@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,6 +11,8 @@ import { createLogger, getErrorMessage } from "@/lib/logger";
 const logger = createLogger("useAdminManualPayments");
 
 type ValidationAction = "approve" | "reject";
+
+const REALTIME_REFRESH_DEBOUNCE_MS = 400;
 
 export const useAdminManualPayments = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -117,6 +119,50 @@ export const useAdminManualPayments = () => {
     },
     [loadSubmissions],
   );
+
+  const loadSubmissionsRef = useRef(loadSubmissions);
+  useEffect(() => {
+    loadSubmissionsRef.current = loadSubmissions;
+  }, [loadSubmissions]);
+
+  useEffect(() => {
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const scheduleRefresh = () => {
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+      }
+      refreshTimer = setTimeout(() => {
+        refreshTimer = null;
+        void loadSubmissionsRef.current();
+      }, REALTIME_REFRESH_DEBOUNCE_MS);
+    };
+
+    const channel = supabase
+      .channel("admin-manual-payments-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "manual_payment_submissions" },
+        (payload) => {
+          logger.info("Realtime event received", {
+            eventType: payload.eventType,
+          });
+          scheduleRefresh();
+        },
+      )
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          logger.warn("Realtime subscription unhealthy", { status });
+        }
+      });
+
+    return () => {
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+      }
+      void supabase.removeChannel(channel);
+    };
+  }, []);
 
   return {
     isLoading,
