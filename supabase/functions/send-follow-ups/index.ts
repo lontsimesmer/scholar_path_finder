@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { generateNurturingEmail, nurturingSubjects } from "../_shared/email-templates.ts";
 import { createServiceRoleClient } from "../_shared/auth-utils.ts";
+import { loadFollowupConfig } from "../_shared/followup-settings.ts";
 import { createLogger, getErrorMessage } from "../_shared/logger.ts";
 
 const corsHeaders = {
@@ -38,6 +39,19 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const supabase = createServiceRoleClient();
+    const config = await loadFollowupConfig(supabase);
+    if (!config.enabled) {
+      logger.info("Automated follow-ups disabled in settings; skipping");
+      return new Response(
+        JSON.stringify({ success: true, message: "Follow-ups disabled", processed: 0, disabled: true }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+    const maxFollowUps = config.maxFollowUps;
+    const intervalHours = config.intervalHours;
     const now = new Date().toISOString();
 
     const { data: leads, error: fetchError } = await supabase
@@ -47,7 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("payment_status", "unpaid")
       .is("follow_up_paused_at", null)
       .lt("next_follow_up_at", now)
-      .lt("follow_up_count", 14)
+      .lt("follow_up_count", maxFollowUps)
       .order("next_follow_up_at", { ascending: true })
       .limit(100);
 
@@ -122,17 +136,18 @@ const handler = async (req: Request): Promise<Response> => {
         }
 
         const nextFollowUp = new Date();
-        nextFollowUp.setHours(nextFollowUp.getHours() + 24);
+        nextFollowUp.setHours(nextFollowUp.getHours() + intervalHours);
 
         const newFollowUpCount = (lead.follow_up_count ?? 0) + 1;
-        const newStatus = newFollowUpCount >= 14 ? "expired" : "follow_up";
+        const reachedLimit = newFollowUpCount >= maxFollowUps;
+        const newStatus = reachedLimit ? "expired" : "follow_up";
 
         const { error: updateError } = await supabase
           .from("leads")
           .update({
             follow_up_count: newFollowUpCount,
             last_follow_up_at: new Date().toISOString(),
-            next_follow_up_at: newFollowUpCount >= 14 ? null : nextFollowUp.toISOString(),
+            next_follow_up_at: reachedLimit ? null : nextFollowUp.toISOString(),
             status: newStatus,
           })
           .eq("id", lead.id);

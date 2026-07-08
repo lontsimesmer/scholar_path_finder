@@ -6,6 +6,7 @@ import {
   LogOut,
   Shield,
   ShieldCheck,
+  Timer,
   UserPlus,
   Users,
   type LucideIcon,
@@ -54,6 +55,7 @@ type AdminSidebarText = {
     faq: string;
     team: string;
     notifications: string;
+    followupSettings: string;
   };
   signOut: string;
 };
@@ -94,6 +96,7 @@ export const AdminSidebar = ({ onSignOut, adminEmail, onNavigate }: AdminSidebar
       items: [
         { href: "/admin/team", label: text.items.team, icon: Shield },
         { href: "/admin/notifications", label: text.items.notifications, icon: Bell },
+        { href: "/admin/followup-settings", label: text.items.followupSettings, icon: Timer },
       ],
     },
   ];
