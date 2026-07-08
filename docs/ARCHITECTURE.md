@@ -61,6 +61,7 @@ Le parcours de paiement principal est CinetPay. Le backend est la source de vér
 - Accueil admin : [AdminDashboard.tsx](../src/pages/AdminDashboard.tsx)
 - CRM : [AdminCRM.tsx](../src/pages/AdminCRM.tsx)
 - Back-office blog : [AdminBlog.tsx](../src/pages/AdminBlog.tsx)
+- Configuration des relances automatiques : [AdminFollowupSettings.tsx](../src/pages/AdminFollowupSettings.tsx)
 
 ## Structure Backend
 
@@ -71,7 +72,9 @@ Edge Functions principales :
 - `create-cinetpay-payment` : initialise les transactions CinetPay
 - `cinetpay-webhook` : reçoit les notifications serveur de paiement
 - `get-cinetpay-payment-status` : réconcilie l’état du paiement après le retour navigateur
-- `send-follow-ups` : automatisation de relance et réactivation des leads
+- `send-follow-ups` : envoie une salve de relances email/SMS à chaque tick du cron. Lit `app_settings.leads.followup_config` à chaque exécution pour respecter le toggle et les paramètres admin.
+- `admin-followup-settings` : GET/POST admin (guard `requireAdminUser`) pour lire et modifier la config des relances automatiques.
+- `admin-lead-followup` / `admin-lead-toggle-followups` : relance manuelle et pause/reprise par lead depuis `/admin/leads`.
 
 Les helpers backend partagés sont dans `supabase/functions/_shared`.
 
@@ -85,6 +88,7 @@ Tables clés :
 - `student_documents` : fichiers déposés par les étudiants
 - `payment_transactions` : suivi des transactions CinetPay
 - `admins` : contrôle d’accès administrateur
+- `app_settings` : paramètres runtime modifiables par les admins (config des relances, destinataires email admin, etc.)
 - `blog_categories` / `blog_posts` : contenu public du blog
 
 ## Ordre de Lecture Recommandé
