@@ -19,6 +19,7 @@ coverage
 .supabase/
 supabase/.temp/
 supabase/.branches/
+supabase/db_data/
 .tmp-supabase-config/
 .local-skills/
 .gemini/

@@ -42,7 +42,7 @@ export function ContactInfoColumn() {
   );
 
   return (
-    <div className="animate-in space-y-12 fade-in slide-in-from-left-4 duration-1000">
+    <div className="animate-in space-y-8 fade-in slide-in-from-left-4 duration-1000 sm:space-y-10 lg:space-y-12">
       <SectionHeading
         badge={t.contact.badge}
         title={t.contact.title}
@@ -51,23 +51,35 @@ export function ContactInfoColumn() {
         align="left"
       />
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {contactInfo.map((info) => (
-          <a key={info.label} href={info.href} className="group flex items-start gap-4 transition-transform hover:translate-x-1 sm:gap-6">
+          <a
+            key={info.label}
+            href={info.href}
+            className="group flex flex-col items-start gap-3 rounded-[1.25rem] border border-border/40 bg-background/60 p-4 transition-transform hover:translate-x-1 sm:flex-row sm:items-start sm:gap-4 sm:p-5"
+          >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/10 bg-primary/5 text-primary transition-all group-hover:bg-primary group-hover:text-white">
               <info.icon className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">{info.label}</p>
-              <p className="break-words text-sm font-semibold text-foreground/80 sm:text-base">{info.value}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                {info.label}
+              </p>
+              <p className="break-words text-sm font-semibold leading-6 text-foreground/80 sm:text-base">
+                {info.value}
+              </p>
             </div>
           </a>
         ))}
       </div>
 
-      <div className="rounded-[2rem] border border-border/40 bg-secondary/30 p-6 sm:p-8">
-        <h4 className="font-display text-xl font-bold text-foreground">{t.hero.advisoryLabel}</h4>
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground/80">{t.footer.ctaDescription}</p>
+      <div className="rounded-[1.5rem] border border-border/40 bg-secondary/30 p-5 sm:p-6 lg:p-8">
+        <h4 className="font-display text-lg font-bold text-foreground sm:text-xl">
+          {t.hero.advisoryLabel}
+        </h4>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground/80">
+          {t.footer.ctaDescription}
+        </p>
         <div className="mt-6 flex items-center gap-2 text-sm font-bold text-primary">
           <span>
             {t.hero.stats.successRate} {t.contact.successRateSuffix}
