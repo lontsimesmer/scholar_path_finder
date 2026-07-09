@@ -603,6 +603,12 @@ export const fr = {
     },
   },
 
+  home: {
+    seoTitle: "Conseil en études à l'étranger & mobilité académique",
+    seoDescription:
+      "Power Prestation accompagne les étudiants du Cameroun vers les études à l'étranger : choix d'université, demandes de bourses, appui au visa et placement en stage au Canada, en France, en Allemagne et ailleurs.",
+  },
+
   blog: {
     seoTitle: "Blog & Guides Académiques",
     seoDescription: "Découvrez nos guides complets pour réussir votre mobilité académique depuis le Cameroun.",

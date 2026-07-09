@@ -8,8 +8,18 @@ import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { useSEO } from "@/hooks/use-seo";
+import { useLanguage } from "@/i18n/language";
 
 const Index = () => {
+  const { t } = useLanguage();
+
+  useSEO({
+    title: t.home.seoTitle,
+    description: t.home.seoDescription,
+    url: "/",
+  });
+
   return (
     <div className="min-h-screen overflow-x-clip bg-background">
       <Header />
