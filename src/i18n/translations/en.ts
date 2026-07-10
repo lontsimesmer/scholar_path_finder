@@ -613,6 +613,12 @@ export const en = {
     },
   },
 
+  home: {
+    seoTitle: "Study Abroad & Academic Mobility Consulting",
+    seoDescription:
+      "Power Prestation helps students in Cameroon study abroad — university selection, scholarship applications, visa support, and internship placement in Canada, France, Germany, and beyond.",
+  },
+
   blog: {
     seoTitle: "Blog & Academic Guides",
     seoDescription: "Discover our comprehensive guides to succeed in your academic mobility from Cameroon.",

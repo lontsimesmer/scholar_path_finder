@@ -2,26 +2,28 @@ import React, { useEffect, useState } from "react";
 import { Language, LanguageContext, translations } from "./language";
 
 const isSupportedLanguage = (value: string | null): value is Language =>
-  value === "en" || value === "fr";
+  value === "fr" || value === "en";
 
 const getInitialLanguage = (): Language => {
   if (typeof window === "undefined") {
-    return "en";
+    return "fr";
   }
 
   try {
     const saved = window.localStorage.getItem("language");
-    return isSupportedLanguage(saved) ? saved : "en";
+    return isSupportedLanguage(saved) ? saved : "fr";
   } catch {
-    return "en";
+    return "fr";
   }
 };
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
   const setLanguage = (lang: Language) => {
-    const nextLanguage = isSupportedLanguage(lang) ? lang : "en";
+    const nextLanguage = isSupportedLanguage(lang) ? lang : "fr";
 
     setLanguageState(nextLanguage);
 

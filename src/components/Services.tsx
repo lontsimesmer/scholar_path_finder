@@ -1,4 +1,12 @@
-import { ArrowRight, Award, BookOpen, Briefcase, FileCheck, Globe, GraduationCap } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  BookOpen,
+  Briefcase,
+  FileCheck,
+  Globe,
+  GraduationCap,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/language";
 import SectionHeading from "@/components/SectionHeading";
@@ -59,12 +67,10 @@ const Services = () => {
               key={service.title}
               animation="slide-up"
               delay={index * 100}
-              className={cn(index === 0 && "xl:col-span-2")}
             >
               <Card
                 className={cn(
                   "group h-full relative overflow-hidden border-border/40 bg-secondary/10 shadow-none hover:shadow-medium transition-all duration-500",
-                  index === 0 && "xl:min-h-[20rem]",
                 )}
               >
                 <CardContent className="relative flex h-full flex-col p-6 pt-6 lg:p-10 lg:pt-10">
@@ -81,10 +87,15 @@ const Services = () => {
                     <h3 className="font-display text-2xl font-bold text-foreground">
                       {service.title}
                     </h3>
-                    <p className="leading-relaxed text-muted-foreground/80">{service.description}</p>
+                    <p className="leading-relaxed text-muted-foreground/80">
+                      {service.description}
+                    </p>
                   </div>
 
-                  <a href="#contact" className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary group-hover:translate-x-1 transition-transform lg:mt-10">
+                  <a
+                    href="#contact"
+                    className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary group-hover:translate-x-1 transition-transform lg:mt-10"
+                  >
                     <span>{t.nav.contactUs}</span>
                     <ArrowRight size={14} />
                   </a>
