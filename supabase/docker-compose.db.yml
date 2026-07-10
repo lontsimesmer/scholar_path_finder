@@ -1,4 +1,4 @@
-version: "3.8"
+# Local development only. DO NOT use these credentials in production.
 services:
   supabase-db:
     image: postgres:17

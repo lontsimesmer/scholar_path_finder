@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 
 const SITE_URL = "https://www.powerprestation.ca";
+const BRAND = "Power Prestation";
+const DEFAULT_TITLE = `${BRAND} | Study Abroad & Academic Mobility Consulting`;
+const DEFAULT_DESCRIPTION =
+  "Power Prestation is a study-abroad and academic mobility consultancy in Yaoundé, Cameroon. Expert help with university selection, scholarship applications, visas, and internship placement.";
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 interface SEOProps {
@@ -37,20 +41,20 @@ const toAbsoluteUrl = (url?: string) => {
   return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
+const withBrand = (title: string) =>
+  title.includes(BRAND) ? title : `${title} | ${BRAND}`;
+
 export const useSEO = ({ title, description, image, url }: SEOProps) => {
   useEffect(() => {
-    if (title) {
-      const fullTitle = `${title} | Power Prestation`;
-      document.title = fullTitle;
-      upsertMeta("og:title", title, "property");
-      upsertMeta("twitter:title", fullTitle);
-    }
+    const fullTitle = title ? withBrand(title) : DEFAULT_TITLE;
+    document.title = fullTitle;
+    upsertMeta("og:title", fullTitle, "property");
+    upsertMeta("twitter:title", fullTitle);
 
-    if (description) {
-      upsertMeta("description", description);
-      upsertMeta("og:description", description, "property");
-      upsertMeta("twitter:description", description);
-    }
+    const finalDescription = description ?? DEFAULT_DESCRIPTION;
+    upsertMeta("description", finalDescription);
+    upsertMeta("og:description", finalDescription, "property");
+    upsertMeta("twitter:description", finalDescription);
 
     const absoluteImage = toAbsoluteUrl(image) ?? DEFAULT_IMAGE;
     upsertMeta("og:image", absoluteImage, "property");
