@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
+import { buildBlogListing, buildBreadcrumbList } from "@/lib/structured-data";
 
 interface Post {
   id: string;
@@ -26,9 +27,36 @@ const Blog = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const listingJsonLd = useMemo(
+    () =>
+      buildBlogListing(
+        posts.map((post) => ({
+          title: (language === "fr" ? post.title_fr : post.title_en) || t.blog.untitled,
+          path: `/blog/${language === "fr" ? post.slug_fr : post.slug_en}`,
+          publishedTime: post.created_at,
+        })),
+        t.blog.seoTitle,
+        t.blog.seoDescription,
+        language,
+      ),
+    [posts, language, t.blog.seoTitle, t.blog.seoDescription, t.blog.untitled],
+  );
+
   useSEO({
     title: t.blog.seoTitle,
     description: t.blog.seoDescription,
+    // Without an explicit url the hook falls back to the site root, which
+    // canonicalises this listing away to the homepage and drops it from the index.
+    url: "/blog",
+    language,
+    keywords: t.blog.seoKeywords,
+    jsonLd: [
+      listingJsonLd,
+      buildBreadcrumbList([
+        { name: t.nav.home, path: "/" },
+        { name: t.nav.blog, path: "/blog" },
+      ]),
+    ],
   });
 
   useEffect(() => {

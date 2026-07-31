@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,7 @@ const ResetPassword = () => {
   const { t } = useLanguage();
   const security = t.security;
   const text = t.resetPassword;
+  usePrivateRouteSeo(t.pageTitles.resetPassword);
 
   const [status, setStatus] = useState<Status>("verifying");
   const [newPassword, setNewPassword] = useState("");

@@ -1,5 +1,6 @@
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { useLanguage } from "@/i18n/language";
 import SectionHeading from "@/components/SectionHeading";
 import aboutImage from "@/assets/about-image.jpg";
@@ -20,9 +21,11 @@ const About = () => {
           {/* Visual Side - Elegant Framing */}
           <div className="relative animate-in fade-in slide-in-from-left-4 duration-1000 order-2 lg:order-1">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-border/40 shadow-strong">
-              <img
+              <OptimizedImage
                 src={aboutImage}
-                alt="Students collaborating"
+                alt={t.about.imageAlt}
+                width={626}
+                height={418}
                 className="h-full w-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-transparent to-transparent" />

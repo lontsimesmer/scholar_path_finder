@@ -4,7 +4,9 @@ import { Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 import logoImage from "@/assets/logo.png";
 
@@ -12,6 +14,8 @@ const Verify2FA = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { t } = useLanguage();
+  usePrivateRouteSeo(t.pageTitles.verify2fa);
   const [code, setCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);

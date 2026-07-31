@@ -1,4 +1,4 @@
-# Power Prestation — https://www.powerprestation.ca
+# Power Prestation — https://powerprestation.ca
 # Allow crawling of public pages; keep private / transactional routes out of the index.
 
 User-agent: *
@@ -13,4 +13,4 @@ Disallow: /verify-contact
 Disallow: /checkout
 Disallow: /payment-success
 
-Sitemap: https://www.powerprestation.ca/sitemap.xml
+Sitemap: https://powerprestation.ca/sitemap.xml

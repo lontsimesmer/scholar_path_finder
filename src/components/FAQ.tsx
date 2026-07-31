@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useFaqEntries } from "@/hooks/use-faq-entries";
+import { useJsonLd } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
 import { localizeFaqEntries } from "@/lib/faq";
+import { buildFaqPage } from "@/lib/structured-data";
 import SectionHeading from "@/components/SectionHeading";
 
 const FAQ = () => {
@@ -26,6 +28,15 @@ const FAQ = () => {
       answer: item.answer,
     }));
   }, [entries, language, t.faq.items]);
+
+  /*
+   * FAQPage rich results are emitted from here rather than from the page,
+   * because this is where the answers are loaded, and Google requires the
+   * marked-up questions to be the ones actually visible to the user. The "faq"
+   * slot keeps this block independent of the page-level structured data.
+   * This section only renders on the homepage, hence the hard-coded path.
+   */
+  useJsonLd("faq", buildFaqPage(items, "/"));
 
   return (
     <section id="faq" className="section-padding">

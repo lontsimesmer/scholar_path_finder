@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap');
+/*
+ * The Inter / Playfair Display stylesheet is loaded from index.html instead of
+ * an @import here. An @import inside the bundled CSS is only discovered after
+ * that CSS has been fetched and parsed, which serialises two round trips on the
+ * critical rendering path; the <link> in the document starts both immediately.
+ * Keep the two font lists in sync — index.html is the only loader.
+ */
 
 @tailwind base;
 @tailwind components;

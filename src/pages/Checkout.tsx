@@ -7,6 +7,7 @@ import { CheckoutPackageSummary } from "@/components/checkout/CheckoutPackageSum
 import { CheckoutPaymentPanel } from "@/components/checkout/CheckoutPaymentPanel";
 import { useCheckout } from "@/hooks/use-checkout";
 import { useCheckoutSettings } from "@/hooks/use-checkout-settings";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
 import {
@@ -19,6 +20,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  usePrivateRouteSeo(t.pageTitles.checkout);
   const { settings: checkoutSettings } = useCheckoutSettings();
   const requestedLeadId = searchParams.get("leadId")?.trim() || null;
   const requestedEmail = searchParams.get("email")?.trim() || "";

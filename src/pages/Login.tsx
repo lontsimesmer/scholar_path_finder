@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BrandMark from "@/components/BrandMark";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/language";
@@ -40,6 +41,7 @@ const Login = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const loginText = t.login as LoginTextExtensions;
+  usePrivateRouteSeo(t.pageTitles.login);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");

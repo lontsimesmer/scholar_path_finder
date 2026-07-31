@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useContactVerification } from "@/hooks/use-contact-verification";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
+import { useLanguage } from "@/i18n/language";
 import { type VerificationChannel } from "@/lib/contact-verification";
 
 const channelIconMap: Record<VerificationChannel, typeof Mail> = {
@@ -28,6 +30,11 @@ const VerifyContact = () => {
     handleResend,
     goToLogin,
   } = useContactVerification();
+  const { t } = useLanguage();
+
+  // Declared above the loading/invalid-link early returns so the route is
+  // marked noindex in every state, not only once the code form renders.
+  usePrivateRouteSeo(t.pageTitles.verifyContact);
 
   if (isLoading) {
     return (

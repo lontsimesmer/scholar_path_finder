@@ -16,6 +16,7 @@ import { useSecurityText } from "@/components/security/security-text";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDashboard } from "@/hooks/use-dashboard";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
 import { DashboardText, sanitizeDashboardRedirect } from "@/lib/dashboard";
@@ -27,6 +28,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dashboardText = t.dashboard as DashboardText;
   const securityText = useSecurityText();
+  usePrivateRouteSeo(t.pageTitles.dashboard);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const redirectAfterCompletion = sanitizeDashboardRedirect(searchParams.get("redirect"));
   const {

@@ -10,6 +10,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeRichTextHtml } from "@/lib/sanitize-rich-text";
+import { buildBlogPosting, buildBreadcrumbList } from "@/lib/structured-data";
 
 interface Post {
   id: string;
@@ -23,10 +24,7 @@ interface Post {
   excerpt_en: string;
   image_url: string;
   created_at: string;
-  meta_title_fr?: string;
-  meta_description_fr?: string;
-  meta_title_en?: string;
-  meta_description_en?: string;
+  updated_at: string;
 }
 
 const BlogPost = () => {
@@ -70,10 +68,55 @@ const BlogPost = () => {
     ? new Date(post.created_at).toLocaleDateString(language === "fr" ? "fr-FR" : "en-US")
     : "";
 
+  /*
+   * Every post is reachable at both its French and its English slug, and both
+   * URLs render whichever language the visitor has selected. Canonicalising on
+   * the slug for the language actually being rendered means the two URLs
+   * consolidate instead of competing as duplicates. Crawlers have no stored
+   * language preference, so they see the French default and consolidate on the
+   * French slug.
+   */
+  const canonicalPath = post
+    ? `/blog/${language === "fr" ? post.slug_fr : post.slug_en}`
+    : undefined;
+
+  const articleJsonLd = useMemo(() => {
+    if (!post || !title || !canonicalPath) {
+      return null;
+    }
+
+    return [
+      buildBlogPosting({
+        title,
+        description: excerpt || "",
+        html: sanitizedContent,
+        image: post.image_url,
+        path: canonicalPath,
+        publishedTime: post.created_at,
+        modifiedTime: post.updated_at,
+        language,
+      }),
+      buildBreadcrumbList([
+        { name: t.nav.home, path: "/" },
+        { name: t.nav.blog, path: "/blog" },
+        { name: title, path: canonicalPath },
+      ]),
+    ];
+  }, [post, title, excerpt, sanitizedContent, canonicalPath, language, t.nav.home, t.nav.blog]);
+
   useSEO({
     title: title || "",
     description: excerpt || "",
     image: post?.image_url,
+    imageAlt: title,
+    // Without this the hook falls back to the site root, which canonicalises
+    // every article away to the homepage and keeps the blog out of the index.
+    url: canonicalPath,
+    type: "article",
+    language,
+    publishedTime: post?.created_at,
+    modifiedTime: post?.updated_at,
+    jsonLd: articleJsonLd ?? undefined,
   });
 
   const handleShare = async (platform: "facebook" | "twitter" | "link") => {

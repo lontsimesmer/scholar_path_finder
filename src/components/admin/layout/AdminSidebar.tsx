@@ -4,6 +4,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   LogOut,
+  Search,
   Shield,
   ShieldCheck,
   Timer,
@@ -56,6 +57,7 @@ type AdminSidebarText = {
     team: string;
     notifications: string;
     followupSettings: string;
+    seo: string;
   };
   signOut: string;
 };
@@ -89,6 +91,7 @@ export const AdminSidebar = ({ onSignOut, adminEmail, onNavigate }: AdminSidebar
       items: [
         { href: "/admin/blog", label: text.items.blog, icon: FileText },
         { href: "/admin/faq", label: text.items.faq, icon: HelpCircle },
+        { href: "/admin/seo", label: text.items.seo, icon: Search },
       ],
     },
     {

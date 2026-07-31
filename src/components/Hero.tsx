@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import BrandMark from "@/components/BrandMark";
 import { useLanguage } from "@/i18n/language";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -112,9 +113,17 @@ const Hero = () => {
           {/* Right Content - Elegant Visuals */}
           <div className="relative animate-in fade-in zoom-in-95 duration-1000 delay-300">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] border border-border/40 shadow-strong sm:aspect-[3/4] xl:aspect-[4/5]">
-              <img
+              {/*
+                The LCP element on the homepage: eager, high fetch priority, and
+                carrying its intrinsic 1920x1080 dimensions so the browser
+                reserves the box before the bytes land.
+              */}
+              <OptimizedImage
                 src={heroBg}
-                alt="Students"
+                alt={t.hero.imageAlt}
+                width={1920}
+                height={1080}
+                priority
                 className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent" />

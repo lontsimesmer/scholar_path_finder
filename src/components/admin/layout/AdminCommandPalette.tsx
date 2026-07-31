@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Loader2,
   Plus,
+  Search,
   ShieldCheck,
   UserPlus,
   Users,
@@ -57,6 +58,7 @@ type AdminSidebarText = {
     manualPayments: string;
     blog: string;
     faq: string;
+    seo: string;
   };
 };
 
@@ -208,6 +210,12 @@ export const AdminCommandPalette = ({ open, onOpenChange }: AdminCommandPaletteP
       },
       { label: sidebarText.items.blog, icon: FileText, to: "/admin/blog", keywords: ["articles", "posts"] },
       { label: sidebarText.items.faq, icon: HelpCircle, to: "/admin/faq", keywords: ["help", "questions"] },
+      {
+        label: sidebarText.items.seo,
+        icon: Search,
+        to: "/admin/seo",
+        keywords: ["seo", "pagespeed", "lighthouse", "vitals", "referencement", "performance"],
+      },
     ],
     [sidebarText.items],
   );

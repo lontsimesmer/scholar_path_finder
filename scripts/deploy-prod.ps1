@@ -101,6 +101,7 @@ $DefaultFunctions = @(
   "process-mobile-money",
   "send-contact-verification-code",
   "send-follow-ups",
+  "seo-report",
   "submit-lead",
   "submit-manual-payment",
   "update-checkout-settings",

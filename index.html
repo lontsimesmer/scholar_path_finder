@@ -16,17 +16,47 @@
       content="Power Prestation, Power Prestation Cameroun, study abroad, university consulting, scholarship assistance, international education, visa guidance, academic mobility, études à l'étranger, mobilité étudiante, bourse d'études, agence études Yaoundé, Cameroun"
     />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#1D3473" />
     <meta name="application-name" content="Power Prestation" />
+    <meta name="format-detection" content="telephone=yes" />
+    <!-- Geographic targeting signals for the Yaoundé / Cameroon market -->
+    <meta name="geo.region" content="CM-CE" />
+    <meta name="geo.placename" content="Yaoundé" />
 
-    <!-- Canonical -->
-    <link rel="canonical" href="https://www.powerprestation.ca/" />
+    <!--
+      Canonical. The apex domain is the served host: www.powerprestation.ca
+      returns a 301 to it, so canonicals must not point at the www form.
+    -->
+    <link rel="canonical" href="https://powerprestation.ca/" />
 
-    <!-- Language alternates -->
-    <link rel="alternate" hreflang="fr" href="https://www.powerprestation.ca/" />
-    <link rel="alternate" hreflang="en" href="https://www.powerprestation.ca/en" />
-    <link rel="alternate" hreflang="x-default" href="https://www.powerprestation.ca/" />
+    <!--
+      No hreflang alternates are declared. Language is chosen client-side and
+      persisted in localStorage, so both translations live at the same URL and
+      there is no distinct per-language URL to point at. Advertising an /en
+      alternate that serves identical markup is a self-conflicting signal.
+      Restore these tags once locale-prefixed routes (/fr, /en) exist.
+    -->
+
+    <!--
+      Fonts. Declared here rather than with an @import at the top of index.css,
+      which cost an extra round trip on the critical path: the browser had to
+      download and parse the bundled stylesheet before it could even discover
+      the Google Fonts URL, delaying first paint and pushing out LCP. Loading it
+      from the document lets both requests start during the initial HTML parse.
+
+      The preconnects matter because the CSS and the font files live on two
+      different hosts: fonts.googleapis.com serves the stylesheet and
+      fonts.gstatic.com serves the woff2 files, so the second connection is
+      warmed while the first is still in flight. gstatic needs `crossorigin`
+      because fonts are always fetched in CORS mode.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    />
 
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -36,7 +66,7 @@
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Power Prestation" />
-    <meta property="og:url" content="https://www.powerprestation.ca/" />
+    <meta property="og:url" content="https://powerprestation.ca/" />
     <meta property="og:locale" content="fr_CA" />
     <meta property="og:locale:alternate" content="en_CA" />
     <meta property="og:title" content="Power Prestation | Study Abroad & Academic Mobility Consulting" />
@@ -44,8 +74,8 @@
       property="og:description"
       content="Expert guidance for studying abroad — university selection, scholarship applications, visa support, and internship placement. Transform your academic dreams into a global reality."
     />
-    <meta property="og:image" content="https://www.powerprestation.ca/og-image.jpg" />
-    <meta property="og:image:secure_url" content="https://www.powerprestation.ca/og-image.jpg" />
+    <meta property="og:image" content="https://powerprestation.ca/og-image.jpg" />
+    <meta property="og:image:secure_url" content="https://powerprestation.ca/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1920" />
     <meta property="og:image:height" content="1080" />
@@ -59,7 +89,7 @@
       name="twitter:description"
       content="Expert guidance for studying abroad — university selection, scholarship applications, visa support, and internship placement."
     />
-    <meta name="twitter:image" content="https://www.powerprestation.ca/og-image.jpg" />
+    <meta name="twitter:image" content="https://powerprestation.ca/og-image.jpg" />
     <meta name="twitter:image:alt" content="Power Prestation — study abroad and academic mobility consulting" />
 
     <!-- Structured Data: Organization / Professional Service -->
@@ -67,12 +97,12 @@
       {
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
-        "@id": "https://www.powerprestation.ca/#organization",
+        "@id": "https://powerprestation.ca/#organization",
         "name": "Power Prestation",
         "alternateName": "Power Prestation International",
-        "url": "https://www.powerprestation.ca/",
-        "logo": "https://www.powerprestation.ca/favicon.png",
-        "image": "https://www.powerprestation.ca/og-image.jpg",
+        "url": "https://powerprestation.ca/",
+        "logo": "https://powerprestation.ca/favicon.png",
+        "image": "https://powerprestation.ca/og-image.jpg",
         "description": "Study-abroad and academic mobility consultancy helping students with university selection, scholarship applications, visa support, and internship placement.",
         "email": "powerprestationint@gmail.com",
         "telephone": "+237674819411",
@@ -97,6 +127,7 @@
           "availableLanguage": ["French", "English"]
         },
         "knowsLanguage": ["fr", "en"],
+        "hasOfferCatalog": { "@id": "https://powerprestation.ca/#services" },
         "sameAs": [
           "https://www.facebook.com/profile.php?id=61578800394432",
           "https://www.tiktok.com/@power.prestation",
@@ -106,16 +137,92 @@
       }
     </script>
 
+    <!--
+      Structured Data: service catalogue. Static rather than injected at runtime
+      so non-JavaScript crawlers still see which services the business offers.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "OfferCatalog",
+        "@id": "https://powerprestation.ca/#services",
+        "name": "Academic and professional mobility services",
+        "provider": { "@id": "https://powerprestation.ca/#organization" },
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "position": 1,
+            "itemOffered": {
+              "@type": "Service",
+              "name": "University selection",
+              "serviceType": "Study abroad consulting",
+              "description": "Guidance to find universities and programmes matching a student's academic profile, career goals, and budget.",
+              "provider": { "@id": "https://powerprestation.ca/#organization" },
+              "availableLanguage": ["fr", "en"]
+            }
+          },
+          {
+            "@type": "Offer",
+            "position": 2,
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Scholarship assistance",
+              "serviceType": "Scholarship application support",
+              "description": "Identifying and applying for scholarships that match a student's profile to maximise financial support.",
+              "provider": { "@id": "https://powerprestation.ca/#organization" },
+              "availableLanguage": ["fr", "en"]
+            }
+          },
+          {
+            "@type": "Offer",
+            "position": 3,
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Student visa guidance",
+              "serviceType": "Visa application guidance",
+              "description": "Step-by-step support with student and work visa applications, documentation, and interview preparation.",
+              "provider": { "@id": "https://powerprestation.ca/#organization" },
+              "availableLanguage": ["fr", "en"]
+            }
+          },
+          {
+            "@type": "Offer",
+            "position": 4,
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Internship and placement assistance",
+              "serviceType": "Internship placement",
+              "description": "Help securing internships and professional placements abroad as part of an academic mobility plan.",
+              "provider": { "@id": "https://powerprestation.ca/#organization" },
+              "availableLanguage": ["fr", "en"]
+            }
+          },
+          {
+            "@type": "Offer",
+            "position": 5,
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Application file preparation",
+              "serviceType": "Admission application support",
+              "description": "Preparation and review of complete admission files, including motivation letters and supporting documents.",
+              "provider": { "@id": "https://powerprestation.ca/#organization" },
+              "availableLanguage": ["fr", "en"]
+            }
+          }
+        ]
+      }
+    </script>
+
     <!-- Structured Data: Website -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "@id": "https://www.powerprestation.ca/#website",
-        "url": "https://www.powerprestation.ca/",
+        "@id": "https://powerprestation.ca/#website",
+        "url": "https://powerprestation.ca/",
         "name": "Power Prestation",
         "description": "Study-abroad and academic mobility consulting.",
-        "publisher": { "@id": "https://www.powerprestation.ca/#organization" },
+        "publisher": { "@id": "https://powerprestation.ca/#organization" },
         "inLanguage": ["fr", "en"]
       }
     </script>
@@ -129,18 +236,39 @@
         run JavaScript still index a meaningful description of the business.
       -->
       <main style="max-width: 720px; margin: 0 auto; padding: 2rem; font-family: system-ui, -apple-system, Arial, sans-serif; color: #1D3473;">
-        <h1>Power Prestation — Study Abroad &amp; Academic Mobility Consulting</h1>
+        <h1>Power Prestation — Study Abroad &amp; Academic Mobility Consulting in Yaoundé, Cameroon</h1>
         <p>
           Power Prestation is an academic and professional mobility consultancy based in
           Yaoundé, Cameroon. We guide students and professionals through every step of
-          studying and working abroad.
+          studying and working abroad — from choosing a university to landing in the
+          destination country.
         </p>
         <h2>Our services</h2>
         <ul>
-          <li>University and program selection</li>
-          <li>Scholarship application support</li>
-          <li>Student and work visa guidance</li>
-          <li>Internship and placement assistance</li>
+          <li>University and programme selection for study abroad</li>
+          <li>Scholarship application support for African students</li>
+          <li>Student and work visa guidance for international students</li>
+          <li>Internship and professional placement assistance</li>
+          <li>Complete admission file preparation and review</li>
+        </ul>
+        <h2>Destinations we support</h2>
+        <p>
+          We help Cameroonian and other African students apply to institutions in Canada,
+          France, Germany, Belgium, and beyond, including scholarship and student visa
+          procedures for each destination.
+        </p>
+        <h2>Conseil en études à l'étranger depuis le Cameroun</h2>
+        <p>
+          Power Prestation accompagne les étudiants du Cameroun dans leur mobilité
+          académique : choix d'université, demande de bourse d'études, constitution du
+          dossier d'admission et accompagnement au visa étudiant. Agence de conseil
+          étudiant basée à Yaoundé, quartier Fouda.
+        </p>
+        <h2>Read more</h2>
+        <ul>
+          <li><a href="/blog">Blog: study abroad, scholarship, and visa guides</a></li>
+          <li><a href="/legal/privacy">Privacy policy</a></li>
+          <li><a href="/legal/terms">Terms of service</a></li>
         </ul>
         <p>
           Contact us: <a href="mailto:powerprestationint@gmail.com">powerprestationint@gmail.com</a>

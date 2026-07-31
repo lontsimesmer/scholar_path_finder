@@ -1195,7 +1195,7 @@ VALUES (
     "account_number": "+237 698 090 6123",
     "currency": "XAF",
     "amount": 15625,
-    "instructions_fr": "Composez #150# ou ouvrez l'application Orange Money, envoyez 15 625 XAF au +237 698 090 6123 (PETNJI), puis téléversez la capture du SMS de confirmation.",
+    "instructions_fr": "Composez #150# ou ouvrez l''application Orange Money, envoyez 15 625 XAF au +237 698 090 6123 (PETNJI), puis téléversez la capture du SMS de confirmation.",
     "instructions_en": "Dial #150# or open the Orange Money app, send 15,625 XAF to +237 698 090 6123 (PETNJI), then upload the confirmation SMS screenshot."
   }'::jsonb,
   'Manual Orange Money payment instructions displayed on checkout when payment_mode = manual_orange_money.'

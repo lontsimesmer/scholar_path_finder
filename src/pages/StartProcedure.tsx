@@ -9,6 +9,7 @@ import { ProcedureProfileSummaryCard } from "@/components/procedure/ProcedurePro
 import { ProcedureRequestFormCard } from "@/components/procedure/ProcedureRequestFormCard";
 import { ProcedureStatusCard } from "@/components/procedure/ProcedureStatusCard";
 import { Button } from "@/components/ui/button";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useStartProcedure } from "@/hooks/use-start-procedure";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
@@ -19,6 +20,15 @@ const StartProcedure = () => {
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const procedureText = t.startProcedure as StartProcedureText;
+
+  /*
+   * Reserved for signed-in students: a crawler only ever sees the loading shell
+   * or the "complete your profile" gate, never indexable content. It is
+   * therefore marked noindex and excluded from sitemap.xml, where it previously
+   * sat at priority 0.8 and invited Google to index an empty page.
+   */
+  usePrivateRouteSeo(t.pageTitles.startProcedure);
+
   const {
     actions,
     setters,

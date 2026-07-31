@@ -1,12 +1,23 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
+import { useLanguage } from "@/i18n/language";
 import { createLogger } from "@/lib/logger";
 
 const logger = createLogger("NotFound");
 
 const NotFound = () => {
   const location = useLocation();
+  const { t } = useLanguage();
+
+  /*
+   * A soft 404: the CDN rewrite serves index.html with a 200 for unknown paths,
+   * so there is no status code telling crawlers this page is missing. The
+   * noindex tag is the only signal that keeps mistyped and stale URLs out of
+   * the index.
+   */
+  usePrivateRouteSeo(t.pageTitles.notFound);
 
   useEffect(() => {
     logger.warn("User attempted to access a non-existent route", {

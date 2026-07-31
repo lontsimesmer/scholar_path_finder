@@ -3,12 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, FileText, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
+import { buildBreadcrumbList, buildWebPage } from "@/lib/structured-data";
 
 const LegalDocument = () => {
   const navigate = useNavigate();
   const { document } = useParams();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const content = useMemo(() => {
     if (!document || !(document in t.legal.documents)) {
@@ -17,6 +19,37 @@ const LegalDocument = () => {
 
     return t.legal.documents[document as keyof typeof t.legal.documents];
   }, [document, t]);
+
+  /*
+   * Declared before the not-found early return so both branches get a
+   * self-referencing canonical. Without it these pages inherited whatever
+   * canonical the previously visited route left in the head, which pointed the
+   * sitemap's /legal/* entries back at the homepage and dropped them from the
+   * index.
+   *
+   * An unrecognised slug renders a "document not found" card behind a 200, so
+   * it is marked noindex rather than canonicalised to a real document.
+   */
+  const path = `/legal/${document ?? ""}`;
+  useSEO({
+    title: content ? content.title : t.legal.notFoundTitle,
+    description: content ? content.summary : t.legal.notFoundDescription,
+    // Self-referencing in both branches. On the unrecognised-slug branch the
+    // canonical is ignored anyway because of noindex, but leaving it unset would
+    // fall back to the site root and point a legal URL at the homepage.
+    url: path,
+    noindex: !content,
+    language,
+    jsonLd: content
+      ? [
+          buildWebPage(content.title, content.summary, path, language),
+          buildBreadcrumbList([
+            { name: t.nav.home, path: "/" },
+            { name: content.title, path },
+          ]),
+        ]
+      : undefined,
+  });
 
   if (!content) {
     return (

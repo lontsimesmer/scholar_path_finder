@@ -9,6 +9,7 @@ import { ChangePasswordDialog } from "@/components/security/ChangePasswordDialog
 import { useSecurityText } from "@/components/security/security-text";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { supabase } from "@/integrations/supabase/client";
 import { getAdminSession } from "@/lib/admin-session";
 
@@ -39,6 +40,15 @@ export const AdminLayout = ({
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(skipAuthGuard);
+
+  /*
+   * Every admin screen goes through this layout, so marking the route noindex
+   * here covers all of /admin/* at once. It also has to run before the
+   * `authChecked` early return: otherwise navigating from a public page into
+   * /admin would leave the previous route's indexable robots tag and its
+   * canonical URL in the document head.
+   */
+  usePrivateRouteSeo(title);
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {

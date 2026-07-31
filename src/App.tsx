@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import ScrollToHash from "@/components/ScrollToHash";
+import { useWebVitals } from "@/hooks/use-web-vitals";
 
 const Index = lazy(() => import("./pages/Index"));
 const Checkout = lazy(() => import("./pages/Checkout"));
@@ -29,6 +30,7 @@ const AdminFAQ = lazy(() => import("./pages/AdminFAQ"));
 const AdminTeam = lazy(() => import("./pages/AdminTeam"));
 const AdminNotifications = lazy(() => import("./pages/AdminNotifications"));
 const AdminFollowupSettings = lazy(() => import("./pages/AdminFollowupSettings"));
+const AdminSEO = lazy(() => import("./pages/AdminSEO"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -43,7 +45,15 @@ const PageLoader = () => (
   </div>
 );
 
-const App = () => (
+const App = () => {
+  /*
+   * Mounted at the app root rather than per page: the observers are registered
+   * once for the document lifetime and flush at page hide, which is what the
+   * LCP and CLS definitions expect.
+   */
+  useWebVitals();
+
+  return (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <TooltipProvider>
@@ -72,6 +82,7 @@ const App = () => (
               <Route path="/admin/team" element={<AdminTeam />} />
               <Route path="/admin/notifications" element={<AdminNotifications />} />
               <Route path="/admin/followup-settings" element={<AdminFollowupSettings />} />
+              <Route path="/admin/seo" element={<AdminSEO />} />
               <Route path="/admin/students/:studentId" element={<AdminCRMStudent />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
@@ -84,6 +95,7 @@ const App = () => (
       </TooltipProvider>
     </LanguageProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

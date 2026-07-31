@@ -1,6 +1,8 @@
 export const fr = {
   // Header
   nav: {
+    // Utilisé comme libellé racine du fil d'Ariane (données structurées).
+    home: "Accueil",
     services: "Services",
     aboutUs: "À Propos",
     howItWorks: "Comment Ça Marche",
@@ -31,6 +33,9 @@ export const fr = {
       studentsPlaced: "Étudiants Placés",
       successRate: "Taux de Réussite",
     },
+    // Texte alternatif du visuel héros, qui est l'élément LCP de la page.
+    imageAlt:
+      "Des étudiants préparent leur dossier d'études à l'étranger avec un conseiller Power Prestation à Yaoundé",
   },
 
   // Services
@@ -92,6 +97,8 @@ export const fr = {
     ],
     yearsOfExcellence: "Années d'Excellence",
     learnMore: "En Savoir Plus",
+    imageAlt:
+      "Les conseillers Power Prestation examinent les options d'université et de bourse avec un étudiant",
   },
 
   // How It Works
@@ -614,15 +621,41 @@ export const fr = {
     },
   },
 
+  // Titres d'onglet des routes authentifiées et transactionnelles. Ces pages
+  // sont en noindex : ces titres servent uniquement à l'orientation de
+  // l'utilisateur, qui voyait jusqu'ici le titre de l'accueil partout.
+  pageTitles: {
+    login: "Connexion",
+    forgotPassword: "Réinitialiser le mot de passe",
+    resetPassword: "Choisir un nouveau mot de passe",
+    verify2fa: "Vérification en deux étapes",
+    verifyContact: "Vérifier vos coordonnées",
+    startProcedure: "Démarrer votre procédure",
+    checkout: "Paiement",
+    paymentSuccess: "Paiement confirmé",
+    dashboard: "Mon espace",
+    admin: "Administration",
+    notFound: "Page introuvable",
+  },
+
   home: {
-    seoTitle: "Conseil en études à l'étranger & mobilité académique",
+    // Le hook useSEO ajoute " | Power Prestation" : le titre de page reste donc
+    // sous ~41 caractères pour survivre à la troncature (~60) de Google.
+    seoTitle: "Études à l'étranger au Cameroun",
     seoDescription:
-      "Power Prestation accompagne les étudiants du Cameroun vers les études à l'étranger : choix d'université, demandes de bourses, appui au visa et placement en stage au Canada, en France, en Allemagne et ailleurs.",
+      "Agence de conseil étudiant à Yaoundé : choix d'université, bourse d'études, dossier d'admission et visa étudiant pour le Canada, la France et l'Allemagne.",
+    seoKeywords:
+      "études à l'étranger, agence conseil étudiant Yaoundé, bourse d'études placement, visa étudiant international, mobilité académique Cameroun, conseil universitaire Afrique, étudier au Canada depuis le Cameroun",
+    seoImageAlt:
+      "Conseillers Power Prestation accompagnant un étudiant dans son dossier d'études à l'étranger à Yaoundé, Cameroun",
   },
 
   blog: {
-    seoTitle: "Blog & Guides Académiques",
-    seoDescription: "Découvrez nos guides complets pour réussir votre mobilité académique depuis le Cameroun.",
+    seoTitle: "Guides études à l'étranger & bourses",
+    seoDescription:
+      "Guides pour étudiants africains : étudier au Canada, aux États-Unis ou au Royaume-Uni, trouver une bourse d'études et préparer son visa étudiant étape par étape.",
+    seoKeywords:
+      "comment étudier au Canada depuis le Cameroun, bourse d'études pour étudiants africains, visa étudiant international, études à l'étranger",
     heroTitleLeading: "Conseils &",
     heroTitleHighlight: "Guides Académiques",
     heroSubtitle: "Tout ce qu'il faut savoir pour préparer votre départ : bourses, visas et choix d'universités.",
@@ -772,6 +805,7 @@ export const fr = {
       manualPayments: "Paiements manuels",
       blog: "Blog",
       faq: "FAQ",
+      seo: "SEO & performance",
       team: "Équipe admin",
       notifications: "Notifications",
       followupSettings: "Relances auto",
@@ -1590,6 +1624,71 @@ export const fr = {
     },
   },
 
+  adminSeo: {
+    breadcrumbDashboard: "Tableau de bord",
+    breadcrumbCurrent: "SEO & performance",
+    title: "SEO & performance",
+    subtitle:
+      "Scores Lighthouse et Core Web Vitals des pages publiques, mesurés par l'API Google PageSpeed Insights.",
+    refreshButton: "Lancer l'audit",
+    refreshingButton: "Audit en cours…",
+    strategyMobile: "Mobile",
+    strategyDesktop: "Ordinateur",
+    generatedAt: "Dernier audit :",
+    neverRun: "jamais lancé",
+    emptyTitle: "Aucun audit pour le moment",
+    emptyDescription:
+      "Rien n'a encore été mesuré. Lancez un audit pour récupérer les scores de l'accueil, du blog et des pages légales. Comptez environ une minute : Google exécute un passage Lighthouse complet par URL.",
+    missingKeyTitle: "Clé API PageSpeed manquante",
+    missingKeyDescription:
+      "Définissez GOOGLE_PAGESPEED_API_KEY comme secret Supabase puis redéployez la fonction seo-report. Créez la clé dans Google Cloud Console avec l'API PageSpeed Insights activée — le palier gratuit couvre 25 000 requêtes par jour.",
+    metrics: {
+      performance: "Performance",
+      seo: "SEO",
+      accessibility: "Accessibilité",
+      bestPractices: "Bonnes pratiques",
+      averageSuffix: "Moyenne sur les pages auditées",
+    },
+    pagesTitle: "Pages auditées",
+    pagesDescription:
+      "Seules les routes indexables sont auditées. Les pages connectées et transactionnelles sont en noindex : leurs scores ne peuvent pas influencer le classement.",
+    labTitle: "Données de laboratoire",
+    fieldTitle: "Données terrain (vrais utilisateurs)",
+    fieldUnavailable:
+      "Trafic réel encore insuffisant pour que Chrome remonte des données terrain sur cette URL. Les données de laboratoire sont à gauche.",
+    opportunitiesTitle: "Principaux gains possibles",
+    noOpportunities: "Aucun gain significatif signalé.",
+    auditFailed: "Audit échoué :",
+    recommendationsTitle: "Recommandations",
+    recommendationsDescription:
+      "Déduites des scores ci-dessus, par priorité décroissante. Les données terrain priment sur celles de laboratoire, car ce sont elles que Google utilise pour classer.",
+    noRecommendations: "Aucun problème détecté lors du dernier audit.",
+    priority: {
+      high: "Élevée",
+      medium: "Moyenne",
+      low: "Faible",
+    },
+    labels: {
+      lcp: "LCP",
+      cls: "CLS",
+      inp: "INP",
+      ttfb: "TTFB",
+      tbt: "Temps de blocage total",
+      fcp: "FCP",
+      savings: "gain",
+    },
+    gscTitle: "Google Search Console",
+    gscDescription:
+      "Les impressions, clics et l'état d'indexation se consultent dans Search Console. L'outil n'est pas intégré ici car son API exige une clé privée de compte de service Google, qui n'a pas sa place dans une Edge Function.",
+    gscButton: "Ouvrir Search Console",
+    toasts: {
+      loadErrorTitle: "Chargement du rapport SEO impossible",
+      refreshSuccessTitle: "Audit terminé",
+      refreshSuccessDescription: "Les scores et recommandations ont été mis à jour.",
+      refreshErrorTitle: "Audit échoué",
+    },
+  },
+
   legal: {
     documents: {
       privacy: {
@@ -1879,9 +1978,9 @@ fr.footer.links.howItWorks = "Comment Ça Marche";
 fr.footer.links.testimonials = "Témoignages";
 fr.footer.links.privacyPolicy = "Politique de Confidentialité";
 
-fr.blog.seoTitle = "Blog & Guides Académiques";
+fr.blog.seoTitle = "Guides études à l'étranger & bourses";
 fr.blog.seoDescription =
-  "Découvrez nos guides complets pour réussir votre mobilité académique depuis le Cameroun.";
+  "Guides pour étudiants africains : étudier au Canada, aux États-Unis ou au Royaume-Uni, trouver une bourse d'études et préparer son visa étudiant étape par étape.";
 fr.blog.heroTitleHighlight = "Guides Académiques";
 fr.blog.heroSubtitle =
   "Tout ce qu'il faut savoir pour préparer votre départ : bourses, visas et choix d'universités.";

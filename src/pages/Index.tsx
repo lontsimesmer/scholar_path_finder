@@ -10,14 +10,19 @@ import Footer from "@/components/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
+import { buildWebPage } from "@/lib/structured-data";
 
 const Index = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   useSEO({
     title: t.home.seoTitle,
     description: t.home.seoDescription,
     url: "/",
+    language,
+    keywords: t.home.seoKeywords,
+    imageAlt: t.home.seoImageAlt,
+    jsonLd: buildWebPage(t.home.seoTitle, t.home.seoDescription, "/", language),
   });
 
   return (

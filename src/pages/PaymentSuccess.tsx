@@ -4,6 +4,7 @@ import { AlertCircle, Calendar, Check, Clock, Loader2, Mail, MessageCircle } fro
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import BrandMark from "@/components/BrandMark";
+import { usePrivateRouteSeo } from "@/hooks/use-private-route-seo";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger, getErrorMessage } from "@/lib/logger";
@@ -31,6 +32,7 @@ const PaymentSuccess = () => {
   const paymentSuccessText = t.paymentSuccess as typeof t.paymentSuccess & {
     cinetpayPendingDetails: string;
   };
+  usePrivateRouteSeo(t.pageTitles.paymentSuccess);
   const [paymentState, setPaymentState] = useState<PaymentState>("loading");
   const [details, setDetails] = useState<string | null>(null);
   const leadId = searchParams.get("leadId");

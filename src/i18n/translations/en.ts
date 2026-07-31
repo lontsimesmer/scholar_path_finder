@@ -1,6 +1,8 @@
 export const en = {
   // Header
   nav: {
+    // Used as the root label of breadcrumb structured data.
+    home: "Home",
     services: "Services",
     aboutUs: "About Us",
     howItWorks: "How It Works",
@@ -31,6 +33,10 @@ export const en = {
       studentsPlaced: "Students Placed",
       successRate: "Success Rate",
     },
+    // Alt text for the hero visual, which is the page's LCP element. Describes
+    // the image and the service rather than repeating the page title.
+    imageAlt:
+      "Students preparing their study abroad applications with a Power Prestation adviser in Yaoundé",
   },
 
   // Services
@@ -91,6 +97,8 @@ export const en = {
     ],
     yearsOfExcellence: "Years of Excellence",
     learnMore: "Learn More About Us",
+    imageAlt:
+      "Power Prestation advisers reviewing university and scholarship options with a student",
   },
 
   // How It Works
@@ -613,15 +621,42 @@ export const en = {
     },
   },
 
+  // Browser-tab titles for authenticated and transactional routes. These pages
+  // are noindex, so the titles are purely for user orientation in tabs and
+  // history — but until now every one of them inherited the homepage title.
+  pageTitles: {
+    login: "Sign in",
+    forgotPassword: "Reset your password",
+    resetPassword: "Choose a new password",
+    verify2fa: "Two-factor verification",
+    verifyContact: "Verify your contact details",
+    startProcedure: "Start your procedure",
+    checkout: "Checkout",
+    paymentSuccess: "Payment confirmed",
+    dashboard: "My dashboard",
+    admin: "Administration",
+    notFound: "Page not found",
+  },
+
   home: {
-    seoTitle: "Study Abroad & Academic Mobility Consulting",
+    // Titles are kept under ~41 characters: the useSEO hook appends
+    // " | Power Prestation", and the whole string has to survive Google's
+    // ~60-character SERP truncation.
+    seoTitle: "Study Abroad Consulting in Cameroon",
     seoDescription:
-      "Power Prestation helps students in Cameroon study abroad — university selection, scholarship applications, visa support, and internship placement in Canada, France, Germany, and beyond.",
+      "Study abroad consulting in Yaoundé, Cameroon. We help students pick a university, win scholarships, and secure student visas for Canada, France and Germany.",
+    seoKeywords:
+      "study abroad consulting Cameroon, scholarship assistance Yaoundé, international student visa, academic mobility platform, university consulting Africa, scholarship applications for African students, visa guidance for international students",
+    seoImageAlt:
+      "Power Prestation advisers guiding a student through a study abroad application in Yaoundé, Cameroon",
   },
 
   blog: {
-    seoTitle: "Blog & Academic Guides",
-    seoDescription: "Discover our comprehensive guides to succeed in your academic mobility from Cameroon.",
+    seoTitle: "Study Abroad Guides & Scholarships",
+    seoDescription:
+      "Guides for African students: how to study in Canada, the USA and the UK, find scholarships, and prepare a student visa application step by step.",
+    seoKeywords:
+      "how to study in Canada as a Cameroonian student, scholarship applications for African students, visa guidance for international students, études à l'étranger",
     heroTitleLeading: "Academic",
     heroTitleHighlight: "Expertise & Blog",
     heroSubtitle: "Everything you need to prepare your next move: scholarships, visas, and university choices.",
@@ -771,6 +806,7 @@ export const en = {
       manualPayments: "Manual payments",
       blog: "Blog",
       faq: "FAQ",
+      seo: "SEO & performance",
       team: "Admin team",
       notifications: "Notifications",
       followupSettings: "Auto follow-ups",
@@ -1579,6 +1615,71 @@ export const en = {
       saveErrorTitle: "Save failed",
       invalidValues:
         "Check the values: follow-up count 1–60, interval 1–720 hours.",
+    },
+  },
+
+  adminSeo: {
+    breadcrumbDashboard: "Dashboard",
+    breadcrumbCurrent: "SEO & performance",
+    title: "SEO & performance",
+    subtitle:
+      "Lighthouse scores and Core Web Vitals for the public pages, measured by the Google PageSpeed Insights API.",
+    refreshButton: "Run audit",
+    refreshingButton: "Auditing…",
+    strategyMobile: "Mobile",
+    strategyDesktop: "Desktop",
+    generatedAt: "Last audit:",
+    neverRun: "never run",
+    emptyTitle: "No audit yet",
+    emptyDescription:
+      "Nothing has been measured so far. Run an audit to fetch scores for the homepage, the blog and the legal pages. It takes about a minute — Google runs a full Lighthouse pass per URL.",
+    missingKeyTitle: "PageSpeed API key missing",
+    missingKeyDescription:
+      "Set GOOGLE_PAGESPEED_API_KEY as a Supabase secret and redeploy the seo-report function. Create the key in Google Cloud Console with the PageSpeed Insights API enabled — the free tier covers 25,000 requests a day.",
+    metrics: {
+      performance: "Performance",
+      seo: "SEO",
+      accessibility: "Accessibility",
+      bestPractices: "Best practices",
+      averageSuffix: "Average across audited pages",
+    },
+    pagesTitle: "Audited pages",
+    pagesDescription:
+      "Only indexable routes are audited. Signed-in and transactional pages are noindex, so their scores cannot affect ranking.",
+    labTitle: "Lab data",
+    fieldTitle: "Field data (real users)",
+    fieldUnavailable:
+      "Not enough real-user traffic yet for Chrome to report field data for this URL. Lab data is on the left.",
+    opportunitiesTitle: "Biggest opportunities",
+    noOpportunities: "No significant opportunities reported.",
+    auditFailed: "Audit failed:",
+    recommendationsTitle: "Recommendations",
+    recommendationsDescription:
+      "Derived from the scores above, highest priority first. Field data takes precedence over lab data because that is what Google ranks on.",
+    noRecommendations: "No issues found in the last audit.",
+    priority: {
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+    },
+    labels: {
+      lcp: "LCP",
+      cls: "CLS",
+      inp: "INP",
+      ttfb: "TTFB",
+      tbt: "Total blocking time",
+      fcp: "FCP",
+      savings: "saves",
+    },
+    gscTitle: "Google Search Console",
+    gscDescription:
+      "Impressions, clicks and index coverage live in Search Console. It is not embedded here because its API requires a Google service-account private key, which does not belong in an Edge Function.",
+    gscButton: "Open Search Console",
+    toasts: {
+      loadErrorTitle: "Failed to load the SEO report",
+      refreshSuccessTitle: "Audit complete",
+      refreshSuccessDescription: "Scores and recommendations have been updated.",
+      refreshErrorTitle: "Audit failed",
     },
   },
 
