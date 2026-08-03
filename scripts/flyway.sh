@@ -10,6 +10,12 @@ JDBC_URL="${FLYWAY_URL:-jdbc:postgresql://127.0.0.1:15422/postgres}"
 DB_USER="${FLYWAY_USER:-postgres}"
 DB_PASSWORD="${FLYWAY_PASSWORD:-postgres}"
 
+# baselineOnMigrate lets Flyway adopt a database that already contains the V1
+# schema (dashboard / supabase db push setups) without trying to re-run it.
+# On an empty schema it is a no-op, so leaving it enabled is safe for dev too.
+BASELINE_ON_MIGRATE="${FLYWAY_BASELINE_ON_MIGRATE:-true}"
+BASELINE_VERSION="${FLYWAY_BASELINE_VERSION:-1}"
+
 COMMAND="${1:-}"
 if [ -z "$COMMAND" ]; then
   echo "Usage: $0 {migrate|info|validate}"
@@ -24,6 +30,8 @@ if command -v "$FLYWAY_BIN" >/dev/null 2>&1; then
     "-password=$DB_PASSWORD" \
     "-connectRetries=10" \
     "-schemas=public" \
+    "-baselineOnMigrate=$BASELINE_ON_MIGRATE" \
+    "-baselineVersion=$BASELINE_VERSION" \
     "$COMMAND"
   exit $?
 fi
@@ -45,4 +53,6 @@ docker run --rm \
   "-password=$DB_PASSWORD" \
   "-connectRetries=10" \
   "-schemas=public" \
+  "-baselineOnMigrate=$BASELINE_ON_MIGRATE" \
+  "-baselineVersion=$BASELINE_VERSION" \
   "$COMMAND"
