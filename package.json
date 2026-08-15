@@ -10,6 +10,7 @@
         "build:dev": "vite build --mode development && node scripts/generate-sitemap.mjs",
         "sitemap:generate": "node scripts/generate-sitemap.mjs",
         "prerender": "node scripts/prerender.mjs",
+        "smoke:dev": "node scripts/smoke-test-dev.mjs",
         "lint": "eslint .",
         "preview": "vite preview",
         "db:supabase:start": "powershell -ExecutionPolicy Bypass -File ./scripts/local-supabase.ps1 start",
