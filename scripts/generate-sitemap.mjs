@@ -6,11 +6,12 @@
  * (copied from public/sitemap.xml by Vite) in place.
  */
 
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createClient } from "@supabase/supabase-js";
+
+import { fetchPublishedBlogPosts, loadEnvFile } from "./lib/blog-posts.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
@@ -26,28 +27,6 @@ const STATIC_URLS = [
   { loc: `${SITE_URL}/legal/terms`, changefreq: "yearly", priority: "0.3" },
   { loc: `${SITE_URL}/legal/cookies`, changefreq: "yearly", priority: "0.3" },
 ];
-
-const loadEnvFile = async () => {
-  const envPath = resolve(repoRoot, ".env");
-  if (!existsSync(envPath)) return;
-  const raw = await readFile(envPath, "utf8");
-  for (const line of raw.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const match = trimmed.match(/^([A-Z0-9_]+)\s*=\s*(.*)$/i);
-    if (!match) continue;
-    const key = match[1];
-    if (process.env[key] !== undefined) continue;
-    let value = match[2];
-    if (
-      (value.startsWith("\"") && value.endsWith("\"")) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    process.env[key] = value;
-  }
-};
 
 const escapeXml = (value) =>
   value
@@ -70,29 +49,9 @@ const renderSitemap = (urls) => {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n\n${body}\n\n</urlset>\n`;
 };
 
-const fetchBlogUrls = async () => {
-  const url = process.env.VITE_SUPABASE_URL;
-  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) {
-    console.warn(
-      "[sitemap] Supabase env vars missing (VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY). Falling back to static sitemap.",
-    );
-    return [];
-  }
-
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { data, error } = await supabase
-    .from("blog_posts")
-    .select("slug_fr, slug_en, updated_at")
-    .eq("status", "published");
-
-  if (error) {
-    console.warn(`[sitemap] Supabase query failed: ${error.message}. Falling back to static sitemap.`);
-    return [];
-  }
-
+const toBlogUrls = (posts) => {
   const urls = [];
-  for (const row of data ?? []) {
+  for (const row of posts) {
     const lastmod = row.updated_at ? new Date(row.updated_at).toISOString().slice(0, 10) : undefined;
     if (row.slug_fr) {
       urls.push({
@@ -120,18 +79,21 @@ const main = async () => {
     process.exit(0);
   }
 
-  await loadEnvFile();
+  await loadEnvFile(repoRoot);
 
-  let blogUrls = [];
+  let posts = [];
   try {
-    blogUrls = await fetchBlogUrls();
+    posts = await fetchPublishedBlogPosts();
   } catch (error) {
     console.warn(`[sitemap] Unexpected error while fetching blog posts: ${error?.message ?? error}`);
   }
 
+  const blogUrls = toBlogUrls(posts);
   const xml = renderSitemap([...STATIC_URLS, ...blogUrls]);
   await writeFile(sitemapPath, xml, "utf8");
-  console.log(`[sitemap] Wrote ${sitemapPath} with ${STATIC_URLS.length + blogUrls.length} URLs (${blogUrls.length} blog posts).`);
+  console.log(
+    `[sitemap] Wrote ${sitemapPath} with ${STATIC_URLS.length + blogUrls.length} URLs (${blogUrls.length} blog posts).`,
+  );
 };
 
 main().catch((error) => {
