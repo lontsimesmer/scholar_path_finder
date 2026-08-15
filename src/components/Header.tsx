@@ -33,7 +33,9 @@ const Header = () => {
     // Auth check
     const checkAuth = async () => {
       logger.info("Checking header auth session");
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         logger.info("Header session found", { userId: session.user.id });
         setUser({ id: session.user.id, email: session.user.email });
@@ -43,7 +45,9 @@ const Header = () => {
           .eq("email", session.user.email)
           .maybeSingle();
 
-        logger.info("Header admin status resolved", { isAdmin: Boolean(admin) });
+        logger.info("Header admin status resolved", {
+          isAdmin: Boolean(admin),
+        });
         setIsAdmin(!!admin);
       } else {
         logger.info("No active session in header");
@@ -54,8 +58,13 @@ const Header = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      logger.info("Header auth state changed", { event, hasSession: Boolean(session) });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      logger.info("Header auth state changed", {
+        event,
+        hasSession: Boolean(session),
+      });
 
       if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") {
         return;
@@ -80,12 +89,16 @@ const Header = () => {
   const localized = useLocalizedPath();
   const homePath = localized("/");
   const isHomePage = stripLangFromPath(location.pathname) === "/";
-  const homeAnchor = (anchor: string) => (isHomePage ? anchor : `${homePath}${anchor}`);
+  const homeAnchor = (anchor: string) =>
+    isHomePage ? anchor : `${homePath}${anchor}`;
 
   const navLinks = [
     { href: homeAnchor("#services"), label: t.nav.services },
     { href: homeAnchor("#about"), label: t.nav.aboutUs },
-    { href: homeAnchor("#how-it-works"), label: t.nav.howItWorks },
+    {
+      href: homeAnchor("#how-it-works"),
+      label: t.nav.howItWorks,
+    },
     { href: homeAnchor("#faq"), label: t.nav.faq },
     { href: localized("/blog"), label: t.nav.blog, isInternal: true },
   ];
@@ -95,7 +108,7 @@ const Header = () => {
       <div className="mx-auto max-w-[90rem] px-0">
         <div
           className={cn(
-            "mx-auto w-full rounded-[1.75rem] border px-4 transition-all duration-300 md:rounded-full md:px-6",
+            "mx-auto w-full rounded-[1.75rem] border px-4 transition-all duration-300 md:rounded-[1.2rem] md:px-6",
             isScrolled
               ? "border-white/60 bg-white/85 shadow-medium backdrop-blur-xl"
               : "border-white/35 bg-white/62 shadow-soft backdrop-blur-xl",
@@ -119,7 +132,7 @@ const Header = () => {
 
             <div className="hidden xl:flex flex-1 justify-center px-2">
               <nav className="flex items-center rounded-full border border-border/40 bg-secondary/40 px-1 py-1 shadow-sm min-w-max">
-                {navLinks.map((link) => (
+                {navLinks.map((link) =>
                   link.isInternal ? (
                     <Link
                       key={link.href}
@@ -136,8 +149,8 @@ const Header = () => {
                     >
                       {link.label}
                     </a>
-                  )
-                ))}
+                  ),
+                )}
               </nav>
             </div>
 
@@ -148,7 +161,7 @@ const Header = () => {
                 {user ? (
                   <NotificationsBell
                     userId={isAdmin ? null : user.id}
-                    adminEmail={isAdmin ? user.email ?? null : null}
+                    adminEmail={isAdmin ? (user.email ?? null) : null}
                   />
                 ) : null}
 
@@ -159,7 +172,11 @@ const Header = () => {
                   >
                     <User size={14} />
                     <span className="hidden xl:inline">
-                      {isAdmin ? "Admin Hub" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                      {isAdmin
+                        ? "Admin Hub"
+                        : language === "fr"
+                          ? "Mon Dossier"
+                          : "My Portal"}
                     </span>
                   </Link>
                 ) : (
@@ -172,10 +189,13 @@ const Header = () => {
                   </Link>
                 )}
               </div>
-              <Button asChild className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center">
+              <Button
+                asChild
+                className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center"
+              >
                 <a href={homeAnchor("#contact")}>{t.nav.contactUs}</a>
               </Button>
-              
+
               <div className="xl:hidden">
                 <button
                   type="button"
@@ -188,17 +208,24 @@ const Header = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          {isMenuOpen && (
-            <div className="xl:hidden pb-4 animate-fade-in">
-              <div className="rounded-[1.5rem] border border-white/70 bg-white/92 p-4 shadow-medium">
+        {isMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-[9998] pointer-events-auto bg-transparent xl:hidden"
+              onClick={() => setIsMenuOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="fixed inset-x-4 top-[5.5rem] z-[9999] backdrop-blur-xl bg-white/62 xl:hidden animate-fade-in">
+              <div className="rounded-[0.9rem] border border-white/70 bg-white/85 p-4 shadow-medium backdrop-blur-xl">
                 <nav className="flex flex-col gap-2">
-                  {navLinks.map((link) => (
+                  {navLinks.map((link) =>
                     link.isInternal ? (
                       <Link
                         key={link.href}
                         to={link.href}
-                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
+                        className="rounded-lg px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
@@ -207,49 +234,60 @@ const Header = () => {
                       <a
                         key={link.href}
                         href={link.href}
-                        className="rounded-2xl px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
+                        className="rounded-lg px-4 py-3 text-sm font-medium text-foreground/80 transition-colors duration-200 hover:bg-secondary/70 hover:text-primary text-center"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         {link.label}
                       </a>
-                    )
-                  ))}
+                    ),
+                  )}
                   <div className="h-px bg-border/40 my-2" />
                   {user ? (
                     <Link
                       to={isAdmin ? "/admin/crm" : "/dashboard"}
-                      className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-widest text-primary hover:bg-secondary/70 transition-colors"
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold uppercase tracking-widest text-primary hover:bg-secondary/70 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <User size={18} />
-                      {isAdmin ? "Admin CRM" : (language === "fr" ? "Mon Dossier" : "My Portal")}
+                      {isAdmin
+                        ? "Admin CRM"
+                        : language === "fr"
+                          ? "Mon Dossier"
+                          : "My Portal"}
                     </Link>
                   ) : (
                     <Link
                       to="/login"
-                      className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold uppercase tracking-widest text-primary hover:bg-secondary/70 transition-colors"
+                      className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold uppercase tracking-widest text-primary hover:bg-secondary/70 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <User size={18} />
                       {t.login.signInTab}
                     </Link>
                   )}
-                  <div className="mt-3 flex items-center justify-between rounded-2xl border border-border/40 bg-secondary/40 px-3 py-2 md:hidden">
+                  <div className="mt-3 flex items-center justify-between rounded-lg border border-border/40 bg-secondary/40 px-3 py-2 md:hidden">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">
                       {language === "fr" ? "Langue" : "Language"}
                     </span>
-                    <LanguageSwitcher />
+                    <LanguageSwitcher compact />
                   </div>
-                  <Button variant="outline" className="mt-3 w-full text-center" asChild>
-                    <a href={homeAnchor("#contact")} onClick={() => setIsMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="mt-3 w-full text-center"
+                    asChild
+                  >
+                    <a
+                      href={homeAnchor("#contact")}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
                       {t.nav.contactUs}
                     </a>
                   </Button>
                 </nav>
               </div>
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </header>
   );

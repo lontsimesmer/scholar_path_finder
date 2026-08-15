@@ -29,7 +29,9 @@ type ContactProcedureFormProps = {
   isSubmitting: boolean;
   isAuthLoading: boolean;
   onSubmit: (event: React.FormEvent) => void;
-  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   onCountryCodeChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
   onConfirmPasswordChange: (value: string) => void;
@@ -57,12 +59,14 @@ export function ContactProcedureForm({
   onConfirmPasswordChange,
 }: ContactProcedureFormProps) {
   return (
-    <form onSubmit={onSubmit} className="space-y-10">
+    <form onSubmit={onSubmit} className="space-y-6 sm:space-y-8 lg:space-y-10">
       <div className="rounded-[1.2rem] border border-border/40 bg-secondary/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
-        {sessionUser ? contactFormText.signedInHint : contactFormText.createAccountHint}
+        {sessionUser
+          ? contactFormText.signedInHint
+          : contactFormText.createAccountHint}
       </div>
 
-      <div className="grid gap-10 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:gap-10">
         <div className="group relative space-y-2">
           <label htmlFor="first-name" className={labelClassName}>
             {contactFormText.firstName}
@@ -114,7 +118,7 @@ export function ContactProcedureForm({
       </div>
 
       {!sessionUser ? (
-        <div className="grid gap-10 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:gap-10">
           <div className="group relative space-y-2">
             <label htmlFor="password" className={labelClassName}>
               {contactFormText.password}
@@ -153,8 +157,11 @@ export function ContactProcedureForm({
         <label htmlFor="phone" className={labelClassName}>
           {t.contact.form.phone}
         </label>
-        <div className="flex items-center gap-4 border-b border-border/40 transition-all duration-500 group-focus-within:border-primary">
-          <CountryCodeSelect value={countryCode} onValueChange={onCountryCodeChange} />
+        <div className="flex flex-col gap-2 border-b border-border/40 transition-all duration-500 group-focus-within:border-primary sm:flex-row sm:items-center sm:gap-4">
+          <CountryCodeSelect
+            value={countryCode}
+            onValueChange={onCountryCodeChange}
+          />
           <Input
             id="phone"
             name="phone"
@@ -184,24 +191,29 @@ export function ContactProcedureForm({
         />
       </div>
 
-      <div className="pt-4">
+      <div className="pt-2 sm:pt-4">
         <Button
           type="submit"
-          size="xl"
-          className="group relative w-full overflow-hidden bg-primary py-7 shadow-none transition-all duration-500 hover:bg-navy"
+          size="lg"
+          className="group relative w-full overflow-hidden rounded-full bg-primary py-5 shadow-none transition-all duration-500 hover:bg-navy sm:py-6 lg:py-7"
           disabled={isSubmitting || isAuthLoading}
         >
           {isSubmitting || isAuthLoading ? (
             <Loader2 className="animate-spin" size={20} />
           ) : (
-            <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em]">
-              {sessionUser ? contactFormText.submitProcedure : contactFormText.createAccountAndSubmit}
-              <ArrowRight size={16} className="transition-transform duration-500 group-hover:translate-x-2" />
+            <span className="flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] sm:text-xs sm:tracking-[0.25em]">
+              {sessionUser
+                ? contactFormText.submitProcedure
+                : contactFormText.createAccountAndSubmit}
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-500 group-hover:translate-x-2"
+              />
             </span>
           )}
         </Button>
 
-        <p className="mt-6 text-center text-[10px] uppercase tracking-widest text-muted-foreground/40">
+        <p className="mt-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground/40 sm:mt-6">
           {t.contact.form.privacyNote}
         </p>
       </div>
