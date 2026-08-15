@@ -1,5 +1,8 @@
+import { useLocation } from "react-router-dom";
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/language";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
+import { stripLangFromPath } from "@/lib/localized-path";
 import { Button } from "@/components/ui/button";
 import BrandMark from "@/components/BrandMark";
 
@@ -23,24 +26,29 @@ const socialLinks = [
 
 const Footer = () => {
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
+  const location = useLocation();
+  const isHomePage = stripLangFromPath(location.pathname) === "/";
+  const homePath = localized("/");
+  const homeAnchor = (anchor: string) => (isHomePage ? anchor : `${homePath}${anchor}`);
 
   const footerLinks = {
     services: [
-      { label: t.footer.links.universitySelection, href: "#services" },
-      { label: t.footer.links.scholarshipAssistance, href: "#services" },
-      { label: t.footer.links.visaGuidance, href: "#services" },
-      { label: t.footer.links.internshipPlacement, href: "#services" },
+      { label: t.footer.links.universitySelection, href: homeAnchor("#services") },
+      { label: t.footer.links.scholarshipAssistance, href: homeAnchor("#services") },
+      { label: t.footer.links.visaGuidance, href: homeAnchor("#services") },
+      { label: t.footer.links.internshipPlacement, href: homeAnchor("#services") },
     ],
     company: [
-      { label: t.footer.links.aboutUs, href: "#about" },
-      { label: t.footer.links.howItWorks, href: "#how-it-works" },
-      { label: t.footer.links.testimonials, href: "#testimonials" },
-      { label: t.footer.links.contact, href: "#contact" },
+      { label: t.footer.links.aboutUs, href: homeAnchor("#about") },
+      { label: t.footer.links.howItWorks, href: homeAnchor("#how-it-works") },
+      { label: t.footer.links.testimonials, href: homeAnchor("#testimonials") },
+      { label: t.footer.links.contact, href: homeAnchor("#contact") },
     ],
     legal: [
-      { label: t.footer.links.privacyPolicy, href: "/legal/privacy" },
-      { label: t.footer.links.termsOfService, href: "/legal/terms" },
-      { label: t.footer.links.cookiePolicy, href: "/legal/cookies" },
+      { label: t.footer.links.privacyPolicy, href: localized("/legal/privacy") },
+      { label: t.footer.links.termsOfService, href: localized("/legal/terms") },
+      { label: t.footer.links.cookiePolicy, href: localized("/legal/cookies") },
     ],
   };
 
@@ -123,7 +131,7 @@ const Footer = () => {
                   asChild
                   className="hidden md:inline-flex shrink-0 border-white/14 bg-white/7 text-navy-foreground hover:border-white/24 hover:bg-white/10"
                 >
-                  <a href="#contact">
+                  <a href={homeAnchor("#contact")}>
                     {t.nav.contactUs}
                     <ArrowRight className="h-4 w-4" />
                   </a>

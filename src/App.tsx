@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import ScrollToHash from "@/components/ScrollToHash";
 
@@ -43,46 +43,85 @@ const PageLoader = () => (
   </div>
 );
 
+// Redirects legacy bare public URLs to their /fr/ equivalent (default language)
+// while preserving the search and hash so anchor links keep working.
+const LegacyRedirect = ({ to }: { to: string }) => {
+  const location = useLocation();
+  return <Navigate to={`${to}${location.search}${location.hash}`} replace />;
+};
+
+const LegacyBlogSlugRedirect = () => {
+  const { slug } = useParams();
+  const location = useLocation();
+  return <Navigate to={`/fr/blog/${slug ?? ""}${location.search}${location.hash}`} replace />;
+};
+
+const LegacyLegalRedirect = () => {
+  const { document } = useParams();
+  const location = useLocation();
+  return <Navigate to={`/fr/legal/${document ?? ""}${location.search}${location.hash}`} replace />;
+};
+
+const AppRoutes = () => (
+  <Suspense fallback={<PageLoader />}>
+    <Routes>
+      {/* Public routes — localized under /fr/... and /en/... */}
+      <Route path="/fr" element={<Index />} />
+      <Route path="/en" element={<Index />} />
+      <Route path="/fr/blog" element={<Blog />} />
+      <Route path="/en/blog" element={<Blog />} />
+      <Route path="/fr/blog/:slug" element={<BlogPost />} />
+      <Route path="/en/blog/:slug" element={<BlogPost />} />
+      <Route path="/fr/legal/:document" element={<LegalDocument />} />
+      <Route path="/en/legal/:document" element={<LegalDocument />} />
+
+      {/* Legacy URLs -> 301 to French (default) equivalents. Hosting
+          rewrites in _redirects handle the same at the CDN edge; these
+          in-app fallbacks cover local dev and any SPA-side navigation. */}
+      <Route path="/" element={<LegacyRedirect to="/fr" />} />
+      <Route path="/blog" element={<LegacyRedirect to="/fr/blog" />} />
+      <Route path="/blog/:slug" element={<LegacyBlogSlugRedirect />} />
+      <Route path="/legal/:document" element={<LegacyLegalRedirect />} />
+
+      {/* Private / transactional routes stay unprefixed */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/verify-2fa" element={<Verify2FA />} />
+      <Route path="/verify-contact" element={<VerifyContact />} />
+      <Route path="/start-procedure" element={<StartProcedure />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/blog" element={<AdminBlog />} />
+      <Route path="/admin/leads" element={<AdminLeads />} />
+      <Route path="/admin/payments" element={<Navigate to="/admin" replace />} />
+      <Route path="/admin/manual-payments" element={<AdminManualPayments />} />
+      <Route path="/admin/faq" element={<AdminFAQ />} />
+      <Route path="/admin/team" element={<AdminTeam />} />
+      <Route path="/admin/notifications" element={<AdminNotifications />} />
+      <Route path="/admin/followup-settings" element={<AdminFollowupSettings />} />
+      <Route path="/admin/students/:studentId" element={<AdminCRMStudent />} />
+      <Route path="/admin/crm" element={<AdminCRM />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Suspense>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+    <BrowserRouter>
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
           <ScrollToHash />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verify-2fa" element={<Verify2FA />} />
-              <Route path="/verify-contact" element={<VerifyContact />} />
-              <Route path="/start-procedure" element={<StartProcedure />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/legal/:document" element={<LegalDocument />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/blog" element={<AdminBlog />} />
-              <Route path="/admin/leads" element={<AdminLeads />} />
-              <Route path="/admin/payments" element={<Navigate to="/admin" replace />} />
-              <Route path="/admin/manual-payments" element={<AdminManualPayments />} />
-              <Route path="/admin/faq" element={<AdminFAQ />} />
-              <Route path="/admin/team" element={<AdminTeam />} />
-              <Route path="/admin/notifications" element={<AdminNotifications />} />
-              <Route path="/admin/followup-settings" element={<AdminFollowupSettings />} />
-              <Route path="/admin/students/:studentId" element={<AdminCRMStudent />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/admin/crm" element={<AdminCRM />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </LanguageProvider>
+          <AppRoutes />
+        </TooltipProvider>
+      </LanguageProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

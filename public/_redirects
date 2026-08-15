@@ -1,1 +1,10 @@
+# Legacy public URLs -> permanent redirect to their /fr/ equivalent
+# (default language, matching the Cameroon-first audience).
+/                    /fr                 301!
+/blog                /fr/blog            301!
+/blog/*              /fr/blog/:splat     301!
+/legal/*             /fr/legal/:splat    301!
+
+# SPA catch-all: any URL that isn't a pre-rendered static file falls
+# back to index.html so react-router-dom can render the target route.
 /*  /index.html  200

@@ -4,12 +4,15 @@ import { ArrowLeft, FileText, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSEO } from "@/hooks/use-seo";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 
 const LegalDocument = () => {
   const navigate = useNavigate();
   const { document } = useParams();
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
+  const homePath = localized("/");
 
   const content = useMemo(() => {
     if (!document || !(document in t.legal.documents)) {
@@ -38,7 +41,7 @@ const LegalDocument = () => {
           <p className="mt-4 text-lg leading-8 text-muted-foreground">
             {t.legal.notFoundDescription}
           </p>
-          <Button size="lg" className="mt-8" onClick={() => navigate("/")}>
+          <Button size="lg" className="mt-8" onClick={() => navigate(homePath)}>
             {t.legal.backHome}
           </Button>
         </div>
@@ -99,9 +102,9 @@ const LegalDocument = () => {
 
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button size="lg" asChild>
-                  <a href="/#contact">{t.legal.contactTeam}</a>
+                  <a href={`${homePath}#contact`}>{t.legal.contactTeam}</a>
                 </Button>
-                <Button variant="outline" size="lg" onClick={() => navigate("/")}>
+                <Button variant="outline" size="lg" onClick={() => navigate(homePath)}>
                   {t.legal.returnHome}
                 </Button>
               </div>

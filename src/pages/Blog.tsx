@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSEO } from "@/hooks/use-seo";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,6 +24,7 @@ interface Post {
 
 const Blog = () => {
   const { language, t } = useLanguage();
+  const localized = useLocalizedPath();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,7 +89,7 @@ const Blog = () => {
 
                 return (
                   <ScrollReveal key={post.id} animation="slide-up" delay={index * 100}>
-                    <Link to={`/blog/${slug}`} className="group block">
+                    <Link to={localized(`/blog/${slug}`)} className="group block">
                       <article className="space-y-5">
                         <div className="aspect-video overflow-hidden rounded-2xl border border-border/40 bg-secondary/20 shadow-soft">
                           {post.image_url ? (

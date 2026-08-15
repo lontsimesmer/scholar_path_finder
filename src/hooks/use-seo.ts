@@ -1,5 +1,13 @@
 import { useEffect } from "react";
 
+import {
+  DEFAULT_LANG,
+  SUPPORTED_LANGS,
+  isPublicRoutePath,
+  stripLangFromPath,
+  swapLangInPath,
+} from "@/lib/localized-path";
+
 interface SEOProps {
   title?: string;
   description?: string;
@@ -24,27 +32,71 @@ const upsertMeta = (name: string, content: string, attr: "name" | "property" = "
   element.setAttribute("content", content);
 };
 
-const upsertLink = (rel: string, href: string) => {
-  let element = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+const upsertCanonical = (href: string) => {
+  let element = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
   if (!element) {
     element = document.createElement("link");
-    element.setAttribute("rel", rel);
+    element.setAttribute("rel", "canonical");
     document.head.appendChild(element);
   }
   element.setAttribute("href", href);
 };
 
+const setHreflangLinks = (
+  entries: Array<{ hreflang: string; href: string }>,
+) => {
+  const existing = document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]');
+  existing.forEach((node) => node.parentNode?.removeChild(node));
+  for (const entry of entries) {
+    const link = document.createElement("link");
+    link.setAttribute("rel", "alternate");
+    link.setAttribute("hreflang", entry.hreflang);
+    link.setAttribute("href", entry.href);
+    document.head.appendChild(link);
+  }
+};
+
+/**
+ * Canonical, og:url and hreflang alternates always point to the
+ * production origin regardless of where the app is currently running
+ * (dev server, vite preview during prerender, staging). This ensures
+ * search engines never index or advertise a non-production URL.
+ */
+const getOrigin = () => DEFAULT_ORIGIN;
+
+const resolvePathname = (url?: string) => {
+  if (typeof window !== "undefined" && window.location) {
+    return url ?? window.location.pathname;
+  }
+  return url ?? "/";
+};
+
 const resolveUrl = (url?: string) => {
-  if (url) return url;
-  if (typeof window === "undefined") return DEFAULT_ORIGIN;
-  return `${window.location.origin}${window.location.pathname}`;
+  if (url && /^https?:\/\//i.test(url)) return url;
+  const pathname = resolvePathname(url);
+  return `${getOrigin()}${pathname}`;
 };
 
 const resolveImage = (image?: string) => {
   if (!image) return `${DEFAULT_ORIGIN}/og-image.jpg`;
   if (image.startsWith("http")) return image;
-  const base = typeof window !== "undefined" ? window.location.origin : DEFAULT_ORIGIN;
+  const base = getOrigin();
   return `${base}${image.startsWith("/") ? "" : "/"}${image}`;
+};
+
+const buildHreflangEntries = (pathname: string) => {
+  if (!isPublicRoutePath(pathname)) return [];
+  const bare = stripLangFromPath(pathname);
+  const origin = getOrigin();
+  const entries = SUPPORTED_LANGS.map((lang) => ({
+    hreflang: lang,
+    href: `${origin}${swapLangInPath(bare, lang)}`,
+  }));
+  entries.push({
+    hreflang: "x-default",
+    href: `${origin}${swapLangInPath(bare, DEFAULT_LANG)}`,
+  });
+  return entries;
 };
 
 export const useSEO = ({
@@ -63,6 +115,7 @@ export const useSEO = ({
       document.title = `${title}${suffix}`;
     }
 
+    const pathname = resolvePathname(url);
     const resolvedUrl = resolveUrl(url);
     const resolvedImage = resolveImage(image);
 
@@ -81,7 +134,8 @@ export const useSEO = ({
     upsertMeta("og:url", resolvedUrl, "property");
     upsertMeta("og:image", resolvedImage, "property");
     upsertMeta("twitter:image", resolvedImage);
-    upsertLink("canonical", resolvedUrl);
+    upsertCanonical(resolvedUrl);
+    setHreflangLinks(buildHreflangEntries(pathname));
 
     if (keywords) {
       upsertMeta("keywords", keywords);

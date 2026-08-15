@@ -9,6 +9,7 @@ import BrandMark from "@/components/BrandMark";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/language";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ADMIN_DASHBOARD_PATH, isAdminEmail } from "@/lib/admin-session";
 import {
@@ -39,6 +40,7 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
   const loginText = t.login as LoginTextExtensions;
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState(searchParams.get("email") || "");
@@ -380,7 +382,7 @@ const Login = () => {
                 </Tabs>
 
                 <div className="text-center pt-4">
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+                  <Button variant="ghost" size="sm" onClick={() => navigate(localized("/"))} className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
                     {t.login.backHome}
                   </Button>
                 </div>

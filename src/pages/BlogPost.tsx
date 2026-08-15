@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useSEO } from "@/hooks/use-seo";
 import { useJsonLd } from "@/hooks/use-jsonld";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeRichTextHtml } from "@/lib/sanitize-rich-text";
@@ -35,6 +36,8 @@ const BlogPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { language, t } = useLanguage();
+  const localized = useLocalizedPath();
+  const blogPath = localized("/blog");
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,7 +53,7 @@ const BlogPost = () => {
         .maybeSingle();
 
       if (error || !data) {
-        navigate("/blog");
+        navigate(blogPath);
         return;
       }
 
@@ -59,7 +62,7 @@ const BlogPost = () => {
     };
 
     fetchPost();
-  }, [slug, navigate]);
+  }, [slug, navigate, blogPath]);
 
   const title = language === "fr" ? post?.title_fr : post?.title_en;
   const content = language === "fr" ? post?.content_fr : post?.content_en;
@@ -142,7 +145,7 @@ const BlogPost = () => {
         <article className="section-container max-w-4xl">
           <ScrollReveal animation="fade-in">
             <button
-              onClick={() => navigate("/blog")}
+              onClick={() => navigate(blogPath)}
               className="mb-10 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
             >
               <ArrowLeft size={14} />
@@ -214,7 +217,7 @@ const BlogPost = () => {
               <h3 className="font-display text-2xl font-bold text-foreground">{t.blogPost.ctaTitle}</h3>
               <p className="mx-auto max-w-xl text-muted-foreground">{t.blogPost.ctaDescription}</p>
               <Button size="xl" asChild className="px-10">
-                <a href="/#contact">{t.blogPost.ctaButton}</a>
+                <a href={`${localized("/")}#contact`}>{t.blogPost.ctaButton}</a>
               </Button>
             </div>
           </ScrollReveal>

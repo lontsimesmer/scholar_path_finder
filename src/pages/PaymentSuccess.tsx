@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import BrandMark from "@/components/BrandMark";
 import { useLanguage } from "@/i18n/language";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger, getErrorMessage } from "@/lib/logger";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,8 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
+  const homePath = localized("/");
   const paymentSuccessText = t.paymentSuccess as typeof t.paymentSuccess & {
     cinetpayPendingDetails: string;
   };
@@ -113,7 +116,7 @@ const PaymentSuccess = () => {
       return;
     }
 
-    navigate("/");
+    navigate(homePath);
   };
 
   useEffect(() => {
@@ -289,7 +292,7 @@ const PaymentSuccess = () => {
                 {t.paymentSuccess.returnToCheckout}
               </Button>
             )}
-            <Button onClick={() => navigate("/")} size="lg">
+            <Button onClick={() => navigate(homePath)} size="lg">
               {t.paymentSuccess.backHome}
             </Button>
           </div>

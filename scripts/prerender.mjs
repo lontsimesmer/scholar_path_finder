@@ -5,19 +5,24 @@
  * fully populated markup (meta, canonical, JSON-LD, main content) instead
  * of an empty <div id="root">.
  *
+ * Every public route is rendered twice — once under /fr/... and once
+ * under /en/... — matching the bilingual routing layout. Blog posts
+ * are pre-rendered per language when a language-specific slug exists.
+ *
  * Flow:
  *   1. Boots `vite preview` against dist/ on a random free port.
- *   2. Uses Puppeteer to visit each public route, waits for network idle,
- *      captures the rendered HTML and rewrites it back to dist/<path>/index.html.
+ *   2. Uses Puppeteer to visit each localized route, waits for network
+ *      idle, captures the rendered HTML and writes it back to
+ *      dist/<lang>/<...>/index.html.
  *   3. Kills the preview server.
  *
  * If Puppeteer or the preview server cannot start, the script logs a
- * warning and exits without failing the build (Netlify _redirects still
- * routes everything through the client-side SPA).
+ * warning and exits without failing the build (SPA fallback keeps
+ * working via _redirects on the hosting side).
  */
 
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { dirname, resolve } from "node:path";
 import { spawn } from "node:child_process";
@@ -29,13 +34,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
 const distDir = resolve(repoRoot, "dist");
 
-const STATIC_ROUTES = [
-  "/",
-  "/blog",
-  "/legal/privacy",
-  "/legal/terms",
-  "/legal/cookies",
-];
+const LANGUAGES = ["fr", "en"];
+const STATIC_PATHS = ["/", "/blog", "/legal/privacy", "/legal/terms", "/legal/cookies"];
 
 const findFreePort = () =>
   new Promise((resolvePort, rejectPort) => {
@@ -88,10 +88,16 @@ const routeToFilePath = (route) => {
   return resolve(dir, "index.html");
 };
 
+const buildLocalizedRoute = (lang, path) => {
+  const bare = path === "/" ? "" : path;
+  return `/${lang}${bare}`;
+};
+
 const prerenderRoute = async (page, baseUrl, route) => {
   const target = `${baseUrl}${route}`;
   await page.goto(target, { waitUntil: "networkidle0", timeout: 30000 });
-  // Give the app one more frame to flush any late React updates (Supabase, useSEO, useJsonLd).
+  // Give the app one more frame to flush any late React updates
+  // (Supabase, useSEO, useJsonLd).
   await new Promise((r) => setTimeout(r, 250));
   const html = await page.content();
   const outputPath = routeToFilePath(route);
@@ -101,21 +107,37 @@ const prerenderRoute = async (page, baseUrl, route) => {
 };
 
 const collectRoutes = async () => {
-  const routes = [...STATIC_ROUTES];
+  const routes = [];
+  for (const lang of LANGUAGES) {
+    for (const path of STATIC_PATHS) {
+      routes.push({ lang, route: buildLocalizedRoute(lang, path) });
+    }
+  }
+
   try {
     const posts = await fetchPublishedBlogPosts();
-    const seen = new Set();
     for (const post of posts) {
-      for (const slug of [post.slug_fr, post.slug_en]) {
-        if (!slug || seen.has(slug)) continue;
-        seen.add(slug);
-        routes.push(`/blog/${slug}`);
+      const slugPerLang = { fr: post.slug_fr, en: post.slug_en };
+      for (const lang of LANGUAGES) {
+        const slug = slugPerLang[lang];
+        if (!slug) continue;
+        routes.push({ lang, route: `/${lang}/blog/${slug}` });
       }
     }
   } catch (error) {
     console.warn(`[prerender] Failed to list blog posts: ${error?.message ?? error}`);
   }
   return routes;
+};
+
+const setLocaleForPage = async (page, lang) => {
+  await page.evaluateOnNewDocument((value) => {
+    try {
+      window.localStorage.setItem("language", value);
+    } catch {
+      // Ignore storage failures.
+    }
+  }, lang);
 };
 
 const main = async () => {
@@ -154,26 +176,24 @@ const main = async () => {
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 800 });
-    // Force the French locale before any app script runs so that the
-    // pre-rendered snapshot matches our FR-first meta/hreflang strategy.
-    await page.evaluateOnNewDocument(() => {
-      try {
-        window.localStorage.setItem("language", "fr");
-      } catch {
-        // Ignore storage failures — page will fall back to the default language.
-      }
-    });
-    // Fail loud on unhandled console errors to help debugging.
-    page.on("pageerror", (err) => console.warn(`[prerender] page error: ${err.message}`));
+    // Fail loud on unhandled page errors to help debugging.
+    for (const { lang, route } of routes) {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1280, height: 800 });
+      // Prime localStorage with the target language before the SPA
+      // scripts run so useLanguage resolves correctly on first paint.
+      await setLocaleForPage(page, lang);
+      page.on("pageerror", (err) =>
+        console.warn(`[prerender] page error (${route}): ${err.message}`),
+      );
 
-    for (const route of routes) {
       try {
         const outPath = await prerenderRoute(page, baseUrl, route);
         console.log(`[prerender]   ${route} -> ${outPath}`);
       } catch (error) {
         console.warn(`[prerender]   ${route} FAILED: ${error?.message ?? error}`);
+      } finally {
+        await page.close().catch(() => undefined);
       }
     }
   } catch (error) {

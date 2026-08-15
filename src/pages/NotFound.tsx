@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@/lib/logger";
 import { useSEO } from "@/hooks/use-seo";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 
 const logger = createLogger("NotFound");
@@ -10,6 +11,7 @@ const logger = createLogger("NotFound");
 const NotFound = () => {
   const location = useLocation();
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
 
   useSEO({
     title: t.seo.notFound.title,
@@ -34,7 +36,7 @@ const NotFound = () => {
           {t.seo.notFound.description}
         </p>
         <Button asChild size="lg" className="mt-8">
-          <a href="/">{t.legal.backHome}</a>
+          <a href={localized("/")}>{t.legal.backHome}</a>
         </Button>
       </div>
     </div>

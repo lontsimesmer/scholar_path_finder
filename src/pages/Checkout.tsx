@@ -9,6 +9,7 @@ import { useCheckout } from "@/hooks/use-checkout";
 import { useCheckoutSettings } from "@/hooks/use-checkout-settings";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import {
   DEFAULT_MANUAL_ORANGE_MONEY,
   type CheckoutPaymentMode,
@@ -19,6 +20,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
   const { settings: checkoutSettings } = useCheckoutSettings();
   const requestedLeadId = searchParams.get("leadId")?.trim() || null;
   const requestedEmail = searchParams.get("email")?.trim() || "";
@@ -96,7 +98,7 @@ const Checkout = () => {
           <Button onClick={() => navigate("/dashboard")} className="rounded-2xl px-6">
             {t.checkout.backToDashboard}
           </Button>
-          <Button variant="ghost" onClick={() => navigate("/")}>
+          <Button variant="ghost" onClick={() => navigate(localized("/"))}>
             {t.checkout.backToHome}
           </Button>
         </div>

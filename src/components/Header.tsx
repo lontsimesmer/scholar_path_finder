@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import BrandMark from "@/components/BrandMark";
 import NotificationsBell from "@/components/notifications/NotificationsBell";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 import { createLogger } from "@/lib/logger";
+import { stripLangFromPath } from "@/lib/localized-path";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -75,14 +77,17 @@ const Header = () => {
   }, []);
 
   const location = useLocation();
-  const isHomePage = location.pathname === "/";
+  const localized = useLocalizedPath();
+  const homePath = localized("/");
+  const isHomePage = stripLangFromPath(location.pathname) === "/";
+  const homeAnchor = (anchor: string) => (isHomePage ? anchor : `${homePath}${anchor}`);
 
   const navLinks = [
-    { href: isHomePage ? "#services" : "/#services", label: t.nav.services },
-    { href: isHomePage ? "#about" : "/#about", label: t.nav.aboutUs },
-    { href: isHomePage ? "#how-it-works" : "/#how-it-works", label: t.nav.howItWorks },
-    { href: isHomePage ? "#faq" : "/#faq", label: t.nav.faq },
-    { href: "/blog", label: t.nav.blog, isInternal: true },
+    { href: homeAnchor("#services"), label: t.nav.services },
+    { href: homeAnchor("#about"), label: t.nav.aboutUs },
+    { href: homeAnchor("#how-it-works"), label: t.nav.howItWorks },
+    { href: homeAnchor("#faq"), label: t.nav.faq },
+    { href: localized("/blog"), label: t.nav.blog, isInternal: true },
   ];
 
   return (
@@ -97,7 +102,7 @@ const Header = () => {
           )}
         >
           <div className="flex h-16 items-center justify-between gap-4 md:h-[4.5rem]">
-            <Link to="/" className="flex items-center gap-3 shrink-0">
+            <Link to={homePath} className="flex items-center gap-3 shrink-0">
               <BrandMark
                 size="md"
                 className={cn(
@@ -168,7 +173,7 @@ const Header = () => {
                 )}
               </div>
               <Button asChild className="hidden sm:flex px-4 h-10 rounded-full text-[12px] font-bold uppercase tracking-wider text-center">
-                <a href={isHomePage ? "#contact" : "/#contact"}>{t.nav.contactUs}</a>
+                <a href={homeAnchor("#contact")}>{t.nav.contactUs}</a>
               </Button>
               
               <div className="xl:hidden">
@@ -236,7 +241,7 @@ const Header = () => {
                     <LanguageSwitcher />
                   </div>
                   <Button variant="outline" className="mt-3 w-full text-center" asChild>
-                    <a href={isHomePage ? "#contact" : "/#contact"} onClick={() => setIsMenuOpen(false)}>
+                    <a href={homeAnchor("#contact")} onClick={() => setIsMenuOpen(false)}>
                       {t.nav.contactUs}
                     </a>
                   </Button>
