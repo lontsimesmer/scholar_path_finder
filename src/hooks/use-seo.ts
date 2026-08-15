@@ -7,6 +7,7 @@ import {
   stripLangFromPath,
   swapLangInPath,
 } from "@/lib/localized-path";
+import { SITE_URL } from "@/lib/site";
 
 interface SEOProps {
   title?: string;
@@ -20,7 +21,6 @@ interface SEOProps {
 }
 
 const SITE_NAME = "Power Prestation";
-const DEFAULT_ORIGIN = "https://www.powerprestation.com";
 
 const upsertMeta = (name: string, content: string, attr: "name" | "property" = "name") => {
   let element = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`);
@@ -62,7 +62,7 @@ const setHreflangLinks = (
  * (dev server, vite preview during prerender, staging). This ensures
  * search engines never index or advertise a non-production URL.
  */
-const getOrigin = () => DEFAULT_ORIGIN;
+const getOrigin = () => SITE_URL;
 
 const resolvePathname = (url?: string) => {
   if (typeof window !== "undefined" && window.location) {
@@ -78,7 +78,7 @@ const resolveUrl = (url?: string) => {
 };
 
 const resolveImage = (image?: string) => {
-  if (!image) return `${DEFAULT_ORIGIN}/og-image.jpg`;
+  if (!image) return `${SITE_URL}/og-image.jpg`;
   if (image.startsWith("http")) return image;
   const base = getOrigin();
   return `${base}${image.startsWith("/") ? "" : "/"}${image}`;

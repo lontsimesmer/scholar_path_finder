@@ -116,6 +116,11 @@ Important :
 - `supabase/migrations` : migrations SQL Flyway pour le schéma et les règles de sécurité. La baseline est `V1__baseline.sql` ; les évolutions suivantes sont versionnées en `V2__*.sql`, `V3__*.sql`, etc.
 - `docs` : guides d’onboarding, architecture, environnement local, production et tests.
 
+## Variables d'environnement frontend
+
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` : endpoint et clé publiable du projet Supabase, consommés par `src/integrations/supabase/client.ts`.
+- `VITE_SITE_URL` : origine absolue utilisée pour les URLs SEO (canonical, hreflang, og:url, JSON-LD, sitemap, robots.txt). Défaut : `https://www.powerprestation.com`. À surcharger si le domaine de production change.
+
 ## Notes Supabase
 
 - Les identifiants frontend viennent de `.env` ou `.env.local` via `VITE_SUPABASE_*`.

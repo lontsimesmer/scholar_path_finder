@@ -1,4 +1,5 @@
-export const SITE_URL = "https://www.powerprestation.com";
+import { SITE_URL } from "@/lib/site";
+export { SITE_URL };
 
 const SOCIAL_PROFILES = [
   "https://www.facebook.com/profile.php?id=61578800394432",

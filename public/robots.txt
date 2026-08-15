@@ -1,4 +1,6 @@
-# https://www.powerprestation.com/robots.txt
+# Fallback robots.txt served if the build-time regeneration (via
+# scripts/generate-robots.mjs) has not run yet. The build script
+# overwrites this file in dist/ with the correct VITE_SITE_URL.
 
 User-agent: *
 Allow: /

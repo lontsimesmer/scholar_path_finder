@@ -6,9 +6,10 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build && node scripts/generate-sitemap.mjs && node scripts/prerender.mjs",
-        "build:dev": "vite build --mode development && node scripts/generate-sitemap.mjs",
+        "build": "vite build && node scripts/generate-sitemap.mjs && node scripts/generate-robots.mjs && node scripts/prerender.mjs",
+        "build:dev": "vite build --mode development && node scripts/generate-sitemap.mjs && node scripts/generate-robots.mjs",
         "sitemap:generate": "node scripts/generate-sitemap.mjs",
+        "robots:generate": "node scripts/generate-robots.mjs",
         "prerender": "node scripts/prerender.mjs",
         "smoke:dev": "node scripts/smoke-test-dev.mjs",
         "lint": "eslint .",

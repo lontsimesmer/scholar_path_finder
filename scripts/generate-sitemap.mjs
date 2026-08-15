@@ -4,8 +4,10 @@
  * published blog posts pulled from Supabase. Emits both /fr/ and /en/
  * variants for every public route, cross-linked via xhtml:link
  * rel="alternate" hreflang so Google understands the language pairing.
- * If Supabase cannot be reached the script still writes the static
- * routes and exits without error.
+ *
+ * Site origin comes from VITE_SITE_URL (loaded from .env via
+ * loadEnvFile). If it is missing the script falls back to the
+ * production URL so the build stays deterministic.
  */
 
 import { writeFile } from "node:fs/promises";
@@ -20,13 +22,9 @@ const repoRoot = resolve(__dirname, "..");
 const distDir = resolve(repoRoot, "dist");
 const sitemapPath = resolve(distDir, "sitemap.xml");
 
-const SITE_URL = "https://www.powerprestation.com";
 const LANGUAGES = ["fr", "en"];
 const DEFAULT_LANG = "fr";
 
-// Each entry: { path, changefreq, priority, slugs? }
-// `path` is the bare public path without any /fr or /en prefix.
-// For blog posts, slugs = { fr, en } lets us emit the language-specific slug.
 const STATIC_ENTRIES = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/blog", changefreq: "weekly", priority: "0.8" },
@@ -34,6 +32,11 @@ const STATIC_ENTRIES = [
   { path: "/legal/terms", changefreq: "yearly", priority: "0.3" },
   { path: "/legal/cookies", changefreq: "yearly", priority: "0.3" },
 ];
+
+const resolveSiteUrl = () => {
+  const raw = (process.env.VITE_SITE_URL ?? "").trim();
+  return (raw || "https://www.powerprestation.com").replace(/\/+$/, "");
+};
 
 const escapeXml = (value) =>
   value
@@ -43,14 +46,14 @@ const escapeXml = (value) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
 
-const localize = (lang, path) => {
+const localize = (siteUrl, lang, path) => {
   const bare = path === "/" ? "" : path;
-  return `${SITE_URL}/${lang}${bare}`;
+  return `${siteUrl}/${lang}${bare}`;
 };
 
-const localizeSlug = (lang, slugs) => {
+const localizeSlug = (siteUrl, lang, slugs) => {
   const slug = slugs[lang] ?? slugs[DEFAULT_LANG];
-  return `${SITE_URL}/${lang}/blog/${slug}`;
+  return `${siteUrl}/${lang}/blog/${slug}`;
 };
 
 const renderUrl = ({ loc, alternates, changefreq, priority, lastmod }) => {
@@ -71,25 +74,21 @@ const renderSitemap = (urls) => {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n\n${body}\n\n</urlset>\n`;
 };
 
-const buildStaticVariants = (entry) =>
-  LANGUAGES.map((lang) => {
-    const loc = localize(lang, entry.path);
-    const alternates = [
+const buildStaticVariants = (siteUrl, entry) =>
+  LANGUAGES.map((lang) => ({
+    loc: localize(siteUrl, lang, entry.path),
+    alternates: [
       ...LANGUAGES.map((otherLang) => ({
         hreflang: otherLang,
-        href: localize(otherLang, entry.path),
+        href: localize(siteUrl, otherLang, entry.path),
       })),
-      { hreflang: "x-default", href: localize(DEFAULT_LANG, entry.path) },
-    ];
-    return {
-      loc,
-      alternates,
-      changefreq: entry.changefreq,
-      priority: entry.priority,
-    };
-  });
+      { hreflang: "x-default", href: localize(siteUrl, DEFAULT_LANG, entry.path) },
+    ],
+    changefreq: entry.changefreq,
+    priority: entry.priority,
+  }));
 
-const buildBlogVariants = (post) => {
+const buildBlogVariants = (siteUrl, post) => {
   const slugs = {};
   if (post.slug_fr) slugs.fr = post.slug_fr;
   if (post.slug_en) slugs.en = post.slug_en;
@@ -99,26 +98,21 @@ const buildBlogVariants = (post) => {
     ? new Date(post.updated_at).toISOString().slice(0, 10)
     : undefined;
 
-  return LANGUAGES.filter((lang) => slugs[lang]).map((lang) => {
-    const loc = localizeSlug(lang, slugs);
-    const alternates = [
+  const defaultLang = slugs[DEFAULT_LANG] ? DEFAULT_LANG : Object.keys(slugs)[0];
+
+  return LANGUAGES.filter((lang) => slugs[lang]).map((lang) => ({
+    loc: localizeSlug(siteUrl, lang, slugs),
+    alternates: [
       ...LANGUAGES.filter((otherLang) => slugs[otherLang]).map((otherLang) => ({
         hreflang: otherLang,
-        href: localizeSlug(otherLang, slugs),
+        href: localizeSlug(siteUrl, otherLang, slugs),
       })),
-      {
-        hreflang: "x-default",
-        href: localizeSlug(slugs[DEFAULT_LANG] ? DEFAULT_LANG : Object.keys(slugs)[0], slugs),
-      },
-    ];
-    return {
-      loc,
-      alternates,
-      changefreq: "monthly",
-      priority: "0.7",
-      lastmod,
-    };
-  });
+      { hreflang: "x-default", href: localizeSlug(siteUrl, defaultLang, slugs) },
+    ],
+    changefreq: "monthly",
+    priority: "0.7",
+    lastmod,
+  }));
 };
 
 const main = async () => {
@@ -128,6 +122,7 @@ const main = async () => {
   }
 
   await loadEnvFile(repoRoot);
+  const siteUrl = resolveSiteUrl();
 
   let posts = [];
   try {
@@ -136,14 +131,14 @@ const main = async () => {
     console.warn(`[sitemap] Unexpected error while fetching blog posts: ${error?.message ?? error}`);
   }
 
-  const staticUrls = STATIC_ENTRIES.flatMap(buildStaticVariants);
-  const blogUrls = posts.flatMap(buildBlogVariants);
+  const staticUrls = STATIC_ENTRIES.flatMap((entry) => buildStaticVariants(siteUrl, entry));
+  const blogUrls = posts.flatMap((post) => buildBlogVariants(siteUrl, post));
   const urls = [...staticUrls, ...blogUrls];
 
   const xml = renderSitemap(urls);
   await writeFile(sitemapPath, xml, "utf8");
   console.log(
-    `[sitemap] Wrote ${sitemapPath} with ${urls.length} URLs (${staticUrls.length} static + ${blogUrls.length} blog).`,
+    `[sitemap] Wrote ${sitemapPath} for ${siteUrl} with ${urls.length} URLs (${staticUrls.length} static + ${blogUrls.length} blog).`,
   );
 };
 
