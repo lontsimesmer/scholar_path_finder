@@ -1605,6 +1605,30 @@ export const en = {
     contactTeam: "Contact the Team",
     returnHome: "Return Home",
   },
+
+  seo: {
+    home: {
+      title: "Study Abroad Consulting from Cameroon | Scholarships, Visas & Universities",
+      description:
+        "Power Prestation helps Cameroonian students study abroad: university selection, scholarship applications, student visas and international internships. Book a consultation in Yaoundé.",
+      keywords:
+        "study abroad Cameroon, scholarship consulting, student visa, university selection, international internships, Yaoundé",
+    },
+    startProcedure: {
+      title: "Start Your Procedure",
+      description:
+        "Kick off your academic mobility procedure with Power Prestation and let our advisors handle university, scholarship, and visa steps.",
+    },
+    legal: {
+      title: "Legal Information",
+      description:
+        "Power Prestation legal information: privacy, terms of service and cookie policy for our academic mobility services.",
+    },
+    notFound: {
+      title: "Page not found",
+      description: "The page you requested does not exist or may have moved.",
+    },
+  },
 };
 
 type EnCheckoutPaymentExtensions = typeof en.checkout.payment & {

@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useSEO } from "@/hooks/use-seo";
+import { useJsonLd } from "@/hooks/use-jsonld";
 import { useLanguage } from "@/i18n/language";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeRichTextHtml } from "@/lib/sanitize-rich-text";
+import { buildArticleSchema, SITE_URL } from "@/lib/jsonld";
 
 interface Post {
   id: string;
@@ -74,7 +76,23 @@ const BlogPost = () => {
     title: title || "",
     description: excerpt || "",
     image: post?.image_url,
+    type: "article",
   });
+
+  const articleSchema = useMemo(() => {
+    if (!post || !title) return null;
+    const canonicalSlug = language === "fr" ? post.slug_fr : post.slug_en;
+    return buildArticleSchema({
+      title,
+      description: excerpt || "",
+      image: post.image_url,
+      url: `${SITE_URL}/blog/${canonicalSlug}`,
+      datePublished: post.created_at,
+      language,
+    });
+  }, [post, title, excerpt, language]);
+
+  useJsonLd(`article-${post?.id ?? "loading"}`, articleSchema);
 
   const handleShare = async (platform: "facebook" | "twitter" | "link") => {
     const currentUrl = window.location.href;

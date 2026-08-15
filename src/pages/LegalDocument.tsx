@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, FileText, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useSEO } from "@/hooks/use-seo";
 import { useLanguage } from "@/i18n/language";
 
 const LegalDocument = () => {
@@ -17,6 +18,12 @@ const LegalDocument = () => {
 
     return t.legal.documents[document as keyof typeof t.legal.documents];
   }, [document, t]);
+
+  useSEO({
+    title: content?.title ?? t.seo.legal.title,
+    description: content?.summary ?? t.seo.legal.description,
+    noindex: !content,
+  });
 
   if (!content) {
     return (

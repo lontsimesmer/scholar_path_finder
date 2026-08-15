@@ -9,6 +9,7 @@ import { ProcedureProfileSummaryCard } from "@/components/procedure/ProcedurePro
 import { ProcedureRequestFormCard } from "@/components/procedure/ProcedureRequestFormCard";
 import { ProcedureStatusCard } from "@/components/procedure/ProcedureStatusCard";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/use-seo";
 import { useStartProcedure } from "@/hooks/use-start-procedure";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/language";
@@ -19,6 +20,12 @@ const StartProcedure = () => {
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const procedureText = t.startProcedure as StartProcedureText;
+
+  useSEO({
+    title: t.seo.startProcedure.title,
+    description: t.seo.startProcedure.description,
+    noindex: true,
+  });
   const {
     actions,
     setters,

@@ -1613,6 +1613,30 @@ export const fr = {
     contactTeam: "Contacter l'équipe",
     returnHome: "Retourner à l'accueil",
   },
+
+  seo: {
+    home: {
+      title: "Études à l'étranger depuis le Cameroun | Bourses, visas & universités",
+      description:
+        "Power Prestation accompagne les étudiants camerounais qui souhaitent partir étudier à l'étranger : sélection d'université, bourses, visas étudiants et stages à l'international. Consultation à Yaoundé.",
+      keywords:
+        "études à l'étranger Cameroun, bourses d'études, visa étudiant, sélection université, stages internationaux, Yaoundé",
+    },
+    startProcedure: {
+      title: "Démarrer votre procédure",
+      description:
+        "Lancez votre procédure de mobilité académique avec Power Prestation : nos conseillers pilotent les étapes université, bourse et visa.",
+    },
+    legal: {
+      title: "Informations légales",
+      description:
+        "Informations légales de Power Prestation : confidentialité, conditions d'utilisation et politique de cookies pour nos services de mobilité académique.",
+    },
+    notFound: {
+      title: "Page introuvable",
+      description: "La page demandée n'existe pas ou a été déplacée.",
+    },
+  },
 };
 
 type FrCheckoutPaymentExtensions = typeof fr.checkout.payment & {
