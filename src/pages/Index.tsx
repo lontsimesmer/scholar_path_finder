@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
@@ -9,16 +10,29 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useSEO } from "@/hooks/use-seo";
+import { useJsonLd } from "@/hooks/use-jsonld";
 import { useLanguage } from "@/i18n/language";
+import {
+  buildLocalBusinessSchema,
+  buildOrganizationSchema,
+  buildWebSiteSchema,
+} from "@/lib/jsonld";
 
 const Index = () => {
   const { t } = useLanguage();
 
   useSEO({
-    title: t.home.seoTitle,
-    description: t.home.seoDescription,
-    url: "/",
+    title: t.seo.home.title,
+    description: t.seo.home.description,
+    keywords: t.seo.home.keywords,
+    titleSuffix: false,
   });
+
+  const homeSchemas = useMemo(
+    () => [buildOrganizationSchema(), buildLocalBusinessSchema(), buildWebSiteSchema()],
+    [],
+  );
+  useJsonLd("home", homeSchemas);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-background">

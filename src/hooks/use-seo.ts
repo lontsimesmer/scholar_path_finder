@@ -1,22 +1,29 @@
 import { useEffect } from "react";
 
-const SITE_URL = "https://www.powerprestation.ca";
-const BRAND = "Power Prestation";
-const DEFAULT_TITLE = `${BRAND} | Study Abroad & Academic Mobility Consulting`;
-const DEFAULT_DESCRIPTION =
-  "Power Prestation is a study-abroad and academic mobility consultancy in Yaoundé, Cameroon. Expert help with university selection, scholarship applications, visas, and internship placement.";
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
+import {
+  DEFAULT_LANG,
+  SUPPORTED_LANGS,
+  isPublicRoutePath,
+  stripLangFromPath,
+  swapLangInPath,
+} from "@/lib/localized-path";
+import { SITE_URL } from "@/lib/site";
 
 interface SEOProps {
   title?: string;
   description?: string;
   image?: string;
-  /** Absolute or root-relative path for this page, e.g. "/blog". */
   url?: string;
+  keywords?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+  titleSuffix?: string | false;
 }
 
+const SITE_NAME = "Power Prestation";
+
 const upsertMeta = (name: string, content: string, attr: "name" | "property" = "name") => {
-  let element = document.querySelector(`meta[${attr}="${name}"]`);
+  let element = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${name}"]`);
   if (!element) {
     element = document.createElement("meta");
     element.setAttribute(attr, name);
@@ -26,42 +33,119 @@ const upsertMeta = (name: string, content: string, attr: "name" | "property" = "
 };
 
 const upsertCanonical = (href: string) => {
-  let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.setAttribute("rel", "canonical");
+  let element = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!element) {
+    element = document.createElement("link");
+    element.setAttribute("rel", "canonical");
+    document.head.appendChild(element);
+  }
+  element.setAttribute("href", href);
+};
+
+const setHreflangLinks = (
+  entries: Array<{ hreflang: string; href: string }>,
+) => {
+  const existing = document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]');
+  existing.forEach((node) => node.parentNode?.removeChild(node));
+  for (const entry of entries) {
+    const link = document.createElement("link");
+    link.setAttribute("rel", "alternate");
+    link.setAttribute("hreflang", entry.hreflang);
+    link.setAttribute("href", entry.href);
     document.head.appendChild(link);
   }
-  link.setAttribute("href", href);
 };
 
-const toAbsoluteUrl = (url?: string) => {
-  if (!url) return undefined;
-  if (url.startsWith("http")) return url;
-  return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+/**
+ * Canonical, og:url and hreflang alternates always point to the
+ * production origin regardless of where the app is currently running
+ * (dev server, vite preview during prerender, staging). This ensures
+ * search engines never index or advertise a non-production URL.
+ */
+const getOrigin = () => SITE_URL;
+
+const resolvePathname = (url?: string) => {
+  if (typeof window !== "undefined" && window.location) {
+    return url ?? window.location.pathname;
+  }
+  return url ?? "/";
 };
 
-const withBrand = (title: string) =>
-  title.includes(BRAND) ? title : `${title} | ${BRAND}`;
+const resolveUrl = (url?: string) => {
+  if (url && /^https?:\/\//i.test(url)) return url;
+  const pathname = resolvePathname(url);
+  return `${getOrigin()}${pathname}`;
+};
 
-export const useSEO = ({ title, description, image, url }: SEOProps) => {
+const resolveImage = (image?: string) => {
+  if (!image) return `${SITE_URL}/og-image.jpg`;
+  if (image.startsWith("http")) return image;
+  const base = getOrigin();
+  return `${base}${image.startsWith("/") ? "" : "/"}${image}`;
+};
+
+const buildHreflangEntries = (pathname: string) => {
+  if (!isPublicRoutePath(pathname)) return [];
+  const bare = stripLangFromPath(pathname);
+  const origin = getOrigin();
+  const entries = SUPPORTED_LANGS.map((lang) => ({
+    hreflang: lang,
+    href: `${origin}${swapLangInPath(bare, lang)}`,
+  }));
+  entries.push({
+    hreflang: "x-default",
+    href: `${origin}${swapLangInPath(bare, DEFAULT_LANG)}`,
+  });
+  return entries;
+};
+
+export const useSEO = ({
+  title,
+  description,
+  image,
+  url,
+  keywords,
+  type = "website",
+  noindex = false,
+  titleSuffix,
+}: SEOProps) => {
   useEffect(() => {
-    const fullTitle = title ? withBrand(title) : DEFAULT_TITLE;
-    document.title = fullTitle;
-    upsertMeta("og:title", fullTitle, "property");
-    upsertMeta("twitter:title", fullTitle);
+    if (title) {
+      const suffix = titleSuffix === false ? "" : ` | ${titleSuffix ?? SITE_NAME}`;
+      document.title = `${title}${suffix}`;
+    }
 
-    const finalDescription = description ?? DEFAULT_DESCRIPTION;
-    upsertMeta("description", finalDescription);
-    upsertMeta("og:description", finalDescription, "property");
-    upsertMeta("twitter:description", finalDescription);
+    const pathname = resolvePathname(url);
+    const resolvedUrl = resolveUrl(url);
+    const resolvedImage = resolveImage(image);
 
-    const absoluteImage = toAbsoluteUrl(image) ?? DEFAULT_IMAGE;
-    upsertMeta("og:image", absoluteImage, "property");
-    upsertMeta("twitter:image", absoluteImage);
+    if (description) {
+      upsertMeta("description", description);
+      upsertMeta("og:description", description, "property");
+      upsertMeta("twitter:description", description);
+    }
 
-    const absoluteUrl = toAbsoluteUrl(url) ?? `${SITE_URL}/`;
-    upsertMeta("og:url", absoluteUrl, "property");
-    upsertCanonical(absoluteUrl);
-  }, [title, description, image, url]);
+    if (title) {
+      upsertMeta("og:title", title, "property");
+      upsertMeta("twitter:title", title);
+    }
+
+    upsertMeta("og:type", type, "property");
+    upsertMeta("og:url", resolvedUrl, "property");
+    upsertMeta("og:image", resolvedImage, "property");
+    upsertMeta("twitter:image", resolvedImage);
+    upsertCanonical(resolvedUrl);
+    setHreflangLinks(buildHreflangEntries(pathname));
+
+    if (keywords) {
+      upsertMeta("keywords", keywords);
+    }
+
+    upsertMeta(
+      "robots",
+      noindex
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large, max-snippet:-1",
+    );
+  }, [title, description, image, url, keywords, type, noindex, titleSuffix]);
 };

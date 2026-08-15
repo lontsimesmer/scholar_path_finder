@@ -6,6 +6,7 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+import { useLocalizedPath } from "@/hooks/use-localized-path";
 import { useLanguage } from "@/i18n/language";
 import BrandMark from "@/components/BrandMark";
 
@@ -45,11 +46,13 @@ const socialLinks = [
 
 const Footer = () => {
   const { t } = useLanguage();
+  const localized = useLocalizedPath();
 
   const footerLinks = {
     legal: [
-      { label: t.footer.links.privacyPolicy, href: "/legal/privacy" },
-      { label: t.footer.links.termsOfService, href: "/legal/terms" },
+      { label: t.footer.links.privacyPolicy, href: localized("/legal/privacy") },
+      { label: t.footer.links.termsOfService, href: localized("/legal/terms") },
+      { label: t.footer.links.cookiePolicy, href: localized("/legal/cookies") },
     ],
   };
 

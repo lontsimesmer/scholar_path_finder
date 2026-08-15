@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { useFaqEntries } from "@/hooks/use-faq-entries";
+import { useJsonLd } from "@/hooks/use-jsonld";
 import { useLanguage } from "@/i18n/language";
 import { localizeFaqEntries } from "@/lib/faq";
+import { buildFaqPageSchema } from "@/lib/jsonld";
 import SectionHeading from "@/components/SectionHeading";
 
 const FAQ = () => {
@@ -26,6 +28,15 @@ const FAQ = () => {
       answer: item.answer,
     }));
   }, [entries, language, t.faq.items]);
+
+  const faqSchema = useMemo(
+    () =>
+      items.length > 0
+        ? buildFaqPageSchema(items.map(({ question, answer }) => ({ question, answer })))
+        : null,
+    [items],
+  );
+  useJsonLd("faq", faqSchema);
 
   return (
     <section id="faq" className="section-padding">

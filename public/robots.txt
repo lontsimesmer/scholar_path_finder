@@ -1,16 +1,23 @@
-# Power Prestation — https://www.powerprestation.ca
-# Allow crawling of public pages; keep private / transactional routes out of the index.
+# Fallback robots.txt served if the build-time regeneration (via
+# scripts/generate-robots.mjs) has not run yet. The build script
+# overwrites this file in dist/ with the correct VITE_SITE_URL.
 
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/
+Allow: /legal/
+
 Disallow: /admin
+Disallow: /admin/
 Disallow: /dashboard
+Disallow: /checkout
+Disallow: /payment-success
+Disallow: /start-procedure
 Disallow: /login
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /verify-2fa
 Disallow: /verify-contact
-Disallow: /checkout
-Disallow: /payment-success
 
-Sitemap: https://www.powerprestation.ca/sitemap.xml
+Sitemap: https://www.powerprestation.com/sitemap.xml
