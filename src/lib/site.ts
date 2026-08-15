@@ -6,4 +6,4 @@
  */
 const RAW = (import.meta.env?.VITE_SITE_URL ?? "").toString().trim();
 
-export const SITE_URL: string = (RAW || "https://www.powerprestation.ca").replace(/\/+$/, "");
+export const SITE_URL: string = (RAW || "https://powerprestation.ca").replace(/\/+$/, "");
