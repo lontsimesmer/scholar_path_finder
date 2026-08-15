@@ -19,7 +19,7 @@ const robotsPath = resolve(distDir, "robots.txt");
 
 const resolveSiteUrl = () => {
   const raw = (process.env.VITE_SITE_URL ?? "").trim();
-  return (raw || "https://www.powerprestation.com").replace(/\/+$/, "");
+  return (raw || "https://www.powerprestation.ca").replace(/\/+$/, "");
 };
 
 const render = (siteUrl) => `# ${siteUrl}/robots.txt

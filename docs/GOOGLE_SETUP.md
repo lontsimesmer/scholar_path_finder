@@ -11,9 +11,9 @@ Il couvre :
 
 Prérequis :
 
-- Le site est déployé et accessible sur `https://www.powerprestation.com` (ou l'origine définie par `VITE_SITE_URL`).
+- Le site est déployé et accessible sur `https://www.powerprestation.ca` (ou l'origine définie par `VITE_SITE_URL`).
 - Le sitemap est publié à `/sitemap.xml`.
-- L'accès admin au registrar DNS du domaine `powerprestation.com`.
+- L'accès admin au registrar DNS du domaine `powerprestation.ca`.
 - Un compte Google — idéalement un compte pro dédié à l'entreprise, pas un compte personnel.
 
 ## 1. Google Search Console
@@ -25,7 +25,7 @@ Search Console est l'interface qui permet de savoir comment Google voit le site 
 1. Ouvrir https://search.google.com/search-console/ et se connecter avec le compte Google qui gérera le site.
 2. Cliquer sur `Ajouter une propriété`.
 3. Choisir le type `Domaine` (et non `Préfixe de l'URL`). Le type `Domaine` couvre `http`, `https`, `www` et tous les sous-domaines d'un coup.
-4. Saisir `powerprestation.com` (sans `https://` ni `www.`).
+4. Saisir `powerprestation.ca` (sans `https://` ni `www.`).
 5. Google renvoie une chaîne de vérification à ajouter en enregistrement `TXT` à la racine du domaine, par exemple :
 
    ```text
@@ -54,12 +54,12 @@ Le sitemap est régénéré à chaque `npm run build` par `scripts/generate-site
 Pour éviter d'attendre le crawl naturel (qui peut prendre plusieurs semaines sur un domaine neuf) :
 
 1. Menu `Inspection de l'URL` en haut de l'écran.
-2. Coller `https://www.powerprestation.com/fr` → `Entrée`.
+2. Coller `https://www.powerprestation.ca/fr` → `Entrée`.
 3. Attendre le résultat (« URL absente de l'index » au début), puis cliquer `Demander une indexation`. Google la met en file prioritaire (24-72h).
 4. Répéter pour :
-   - `https://www.powerprestation.com/en`
-   - `https://www.powerprestation.com/fr/blog`
-   - `https://www.powerprestation.com/en/blog`
+   - `https://www.powerprestation.ca/en`
+   - `https://www.powerprestation.ca/fr/blog`
+   - `https://www.powerprestation.ca/en/blog`
    - chaque nouvel article publié dans les premières semaines
 
 Limite : environ 10 demandes d'indexation par jour et par propriété.
@@ -86,7 +86,7 @@ Business Profile (ex-Google My Business) fait apparaître le cabinet dans Google
    - **Adresse** : `FOUDA, derrière le FNE, Yaoundé, Cameroun` (celle du footer du site)
    - **Zone desservie** : Cameroun (ajouter les pays limitrophes si vous les couvrez : Tchad, RCA, Gabon, Congo)
    - **Téléphone** : `+237 674 819 411`
-   - **Site web** : `https://www.powerprestation.com/fr`
+   - **Site web** : `https://www.powerprestation.ca/fr`
    - **Horaires** : ceux réels du cabinet, à mettre à jour lors des jours fériés
 
 ### Vérifier la fiche
@@ -126,8 +126,8 @@ Bing représente une part de trafic non négligeable (≈ 5-10 % selon les pays)
 
 1. Ouvrir https://www.bing.com/webmasters/.
 2. `Add a site` → choisir `Import from Google Search Console`. Bing lit directement la liste des propriétés vérifiées côté Google, plus besoin de re-prouver la propriété DNS.
-3. Sélectionner `powerprestation.com`.
-4. Vérifier que le sitemap est bien importé (menu `Sitemaps`), sinon soumettre `https://www.powerprestation.com/sitemap.xml` manuellement.
+3. Sélectionner `powerprestation.ca`.
+4. Vérifier que le sitemap est bien importé (menu `Sitemaps`), sinon soumettre `https://www.powerprestation.ca/sitemap.xml` manuellement.
 
 ## 4. Actions récurrentes
 
