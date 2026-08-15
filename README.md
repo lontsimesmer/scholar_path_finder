@@ -119,7 +119,7 @@ Important :
 ## Variables d'environnement frontend
 
 - `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` : endpoint et clé publiable du projet Supabase, consommés par `src/integrations/supabase/client.ts`.
-- `VITE_SITE_URL` : origine absolue utilisée pour les URLs SEO (canonical, hreflang, og:url, JSON-LD, sitemap, robots.txt). Défaut : `https://www.powerprestation.com`. À surcharger si le domaine de production change.
+- `VITE_SITE_URL` : origine absolue utilisée pour les URLs SEO (canonical, hreflang, og:url, JSON-LD, sitemap, robots.txt). Défaut : `https://www.powerprestation.ca`. À surcharger si le domaine de production change.
 
 ## Notes Supabase
 
