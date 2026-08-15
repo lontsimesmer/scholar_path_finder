@@ -75,6 +75,24 @@ interface ArticleInput {
   language: "fr" | "en";
 }
 
+interface FaqQuestion {
+  question: string;
+  answer: string;
+}
+
+export const buildFaqPageSchema = (items: FaqQuestion[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map(({ question, answer }) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: answer,
+    },
+  })),
+});
+
 export const buildArticleSchema = ({
   title,
   description,

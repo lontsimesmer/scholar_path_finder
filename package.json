@@ -6,8 +6,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
-        "build:dev": "vite build --mode development",
+        "build": "vite build && node scripts/generate-sitemap.mjs",
+        "build:dev": "vite build --mode development && node scripts/generate-sitemap.mjs",
+        "sitemap:generate": "node scripts/generate-sitemap.mjs",
         "lint": "eslint .",
         "preview": "vite preview",
         "db:supabase:start": "powershell -ExecutionPolicy Bypass -File ./scripts/local-supabase.ps1 start",
