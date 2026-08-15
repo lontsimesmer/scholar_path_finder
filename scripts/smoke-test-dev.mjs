@@ -67,7 +67,7 @@ const runScenarios = async (browser) => {
     record("title starts with FR wording", /Études|Bourses|Cameroun/.test(meta.title), `title=${meta.title}`);
     record(
       "canonical points to production /fr",
-      meta.canonical === "https://www.powerprestation.ca/fr",
+      meta.canonical === "https://powerprestation.ca/fr",
       `canonical=${meta.canonical}`,
     );
     record(
@@ -114,7 +114,7 @@ const runScenarios = async (browser) => {
     );
     record(
       "canonical points to production /en",
-      meta.canonical === "https://www.powerprestation.ca/en",
+      meta.canonical === "https://powerprestation.ca/en",
       `canonical=${meta.canonical}`,
     );
     await page.close();

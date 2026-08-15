@@ -35,7 +35,7 @@ const STATIC_ENTRIES = [
 
 const resolveSiteUrl = () => {
   const raw = (process.env.VITE_SITE_URL ?? "").trim();
-  return (raw || "https://www.powerprestation.ca").replace(/\/+$/, "");
+  return (raw || "https://powerprestation.ca").replace(/\/+$/, "");
 };
 
 const escapeXml = (value) =>

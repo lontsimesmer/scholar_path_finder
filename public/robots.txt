@@ -20,4 +20,4 @@ Disallow: /reset-password
 Disallow: /verify-2fa
 Disallow: /verify-contact
 
-Sitemap: https://www.powerprestation.ca/sitemap.xml
+Sitemap: https://powerprestation.ca/sitemap.xml

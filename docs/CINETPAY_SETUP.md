@@ -60,7 +60,7 @@ Exemples :
 
 - frontend local uniquement : `http://127.0.0.1:8080`
 - local avec tunnel public : `https://xxxx.ngrok-free.app`
-- production : `https://www.powerprestation.ca`
+- production : `https://powerprestation.ca`
 
 Important :
 
